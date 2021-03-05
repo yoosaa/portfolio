@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="wrapper">
+  <div id="app" class="wrapper content">
     <GlobalNav />
     <MainContents />
   </div>
@@ -8,6 +8,8 @@
 <script>
 import GlobalNav from '@/components/GlobalNav.vue'
 import MainContents from '@/components/MainContent.vue'
+
+import RoundedBoxGeometry from '@/js/drawBackground'
 
 export default {
   name: 'Index',
@@ -34,6 +36,11 @@ export default {
   components: {
     GlobalNav,
     MainContents
+  },
+  mounted: function(){
+    this.$nextTick(function(){
+    RoundedBoxGeometry()
+    })
   }
 }
 </script>

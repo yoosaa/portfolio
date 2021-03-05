@@ -23,15 +23,8 @@ export default {
         leave: 'animate__animated animate__fadeOutRight',
         duration: 400,
       },
-    };
-  },
-  watch: {
-    $route(to, from) {
-
-      console.log(to)
-      console.log(from)
-    },
-  },
+    }
+  }
 };
 </script>
 

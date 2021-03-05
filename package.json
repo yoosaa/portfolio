@@ -17,7 +17,10 @@
         "vue-router": "*",
         "vuex": "^3.6.2",
         "chart.js": "*",
-        "vue-chartjs": "*"
+        "vue-chartjs": "*",
+        "three": "*",
+        "gsap": "*",
+        "three-rounded-box": "*"
     },
     "devDependencies": {
         "@vue/cli-plugin-babel": "^4.5.0",

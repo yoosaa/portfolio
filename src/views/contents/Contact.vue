@@ -7,11 +7,11 @@
           </div>
           <div class="section-lead">
             <p>
-              お問い合わせは、<br class="sp-only">SNSかメールでお願いいたします。
+              お問い合わせは、<br class="sp-only">メールでお願いいたします。
             </p>
           </div>
           <div class="section-body contact">
-            <ul class="contact-list">
+            <!-- <ul class="contact-list">
               <li class="contact-item">
                 <a class="contact-link" href="https://twitter.com/" target="_blank"><img class="contact-image"
                     src="img/contact/icon_tw.png" alt=""></a>
@@ -20,8 +20,8 @@
                 <a class="contact-link" href="https://www.facebook.com/" target="_blank"><img class="contact-image"
                     src="img/contact/icon_fb.png" alt=""></a>
               </li>
-            </ul>
-            <div class="contact-text">xxxxxx@gmail.com</div>
+            </ul> -->
+            <div class="contact-text">my56sets@gmail.com</div>
           </div>
         </div>
       </section>
