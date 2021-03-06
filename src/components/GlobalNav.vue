@@ -8,3 +8,9 @@
       </ul>
     </nav>
 </template>
+
+<style>
+  .gnav{
+    z-index: 2;
+  }
+</style>

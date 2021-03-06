@@ -19,8 +19,8 @@ export default {
   data() {
     return {
       transition: {
-        enter: 'animate__animated animate__bounceIn',
-        leave: 'animate__animated animate__fadeOutRight',
+        enter: 'animate__animated animate__fadeIn',
+        leave: 'animate__animated animate__fadeOutDown',
         duration: 400,
       },
     }

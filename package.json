@@ -20,7 +20,8 @@
         "vue-chartjs": "*",
         "three": "*",
         "gsap": "*",
-        "three-rounded-box": "*"
+        "three-rounded-box": "*",
+        "fabric": "*"
     },
     "devDependencies": {
         "@vue/cli-plugin-babel": "^4.5.0",

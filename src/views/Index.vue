@@ -1,15 +1,15 @@
 <template>
-  <div id="app" class="wrapper content">
+  <div id="app" class="wrapper content" v-cloak>
     <GlobalNav />
     <MainContents />
+    <Curtain />
   </div>
 </template>
 
 <script>
 import GlobalNav from '@/components/GlobalNav.vue'
 import MainContents from '@/components/MainContent.vue'
-
-import RoundedBoxGeometry from '@/js/drawBackground'
+import Curtain from '@/components/curtain.vue'
 
 export default {
   name: 'Index',
@@ -35,12 +35,8 @@ export default {
   },
   components: {
     GlobalNav,
-    MainContents
-  },
-  mounted: function(){
-    this.$nextTick(function(){
-    RoundedBoxGeometry()
-    })
+    MainContents,
+    Curtain
   }
 }
 </script>

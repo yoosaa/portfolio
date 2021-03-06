@@ -7,7 +7,7 @@
           </div>
           <div class="section-lead">
             <p>
-              未経験ですが頑張ります！
+              頑張ります！
             </p>
           </div>
           <h3 class="sub-title font-opensans fz-30 mb-15 mt-48 font-center">FrontEnd</h3>
@@ -132,3 +132,10 @@
       </section>
       <!-- /.skill-section -->
 </template>
+
+
+<style scoped>
+.skill-section{
+  padding-bottom: 200px;
+}
+</style>
