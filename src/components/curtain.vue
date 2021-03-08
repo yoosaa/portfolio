@@ -1,8 +1,5 @@
 <template>
-    <div>
-        <div class="curtain_left" :class='this.class'></div>
-        <div class="curtain_right" :class='this.class'></div>
-    </div>
+      <div class="curtain" :class='this.class'></div>
 </template>
 
 <script>
@@ -45,28 +42,22 @@ export default {
 </script>
 
 <style scoped>
-    .curtain_left,
-    .curtain_right{
+    .curtain{
         z-index: 1;
+        width: 100vw;
         height: 100vh;
         position: fixed;
         top: 0;
         transition: .1s;
         background-color: rgb(51, 51, 51);
     }
-    .curtain_left{
+    .curtain.js-close{
+        width: 100vw;
         left: 0;
     }
-    .curtain_right{
-        right: 0;
-    }
-    .curtain_left.js-close,
-    .curtain_right.js-close{
-        width: 50vw;
-    }
-    .curtain_left.js-open,
-    .curtain_right.js-open{
+    .curtain.js-open{
         width: 0;
+        right: 0;
     }
 
 </style>
