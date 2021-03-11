@@ -16,25 +16,29 @@ export default new Router({
             path: '/',
             name: 'index',
             props: true,
-            component: MainVidual
+            component: MainVidual,
+            meta: { title: 'portfolio', desc: 'とあるフロントエンドのポートフォリオ' }
         },
         {
             path: '/about',
             name: 'about',
             props: true,
-            component: About
+            component: About,
+            meta: { title: 'portfolio', desc: 'とあるフロントエンドのポートフォリオ' }
         },
         {
             path: '/skills',
             name: 'skills',
             props: true,
-            component: Skills
+            component: Skills,
+            meta: { title: 'portfolio', desc: 'とあるフロントエンドのポートフォリオ' }
         },
         {
             path: '/contact',
             name: 'contact',
             props: true,
-            component: Contact
+            component: Contact,
+            meta: { title: 'portfolio', desc: 'とあるフロントエンドのポートフォリオ' }
         },
     ]
 })

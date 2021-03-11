@@ -70,7 +70,7 @@ li {
 
 @media screen and (max-width: 767px) {
     .fz-30 {
-        font-size: 18px;
+        font-size: 172%;
     }
 }
 
@@ -525,7 +525,7 @@ li {
     }
     /* レイアウト */
     .wrapper {
-        padding-top: 82px;
+        padding-top: 56px;
     }
     .section {
         padding: 50px 0;

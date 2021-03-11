@@ -16,22 +16,14 @@ import Curtain from '@/components/curtain.vue'
 export default {
   name: 'Index',
   head: {
-    title(){
-      return {
-        inner: "portfolio"
-      }
-    },
     meta: [
-      { name: 'viewport', content: 'width=device-width,initial-scale=1.0,user-scalable=no'},
-      { name: 'description', content: ''},
       { property: 'og:type', content: 'website'},
-      { property: 'og:title', content: 'website'},
-      { property: 'og:url', content: 'website'},
-      { property: 'og:image', content: 'website'},
-      { property: 'og:description', content: 'website'},
+      { property: 'og:title', content: 'portfolio'},
+      { property: 'og:url', content: 'https://yoosaa.github.io/portfolio-s/'},
+      { property: 'og:description', content: 'とあるフロントエンドのポートフォリオ'},
     ],
     link: [
-      {rel: 'canonical', href: ''},
+      {rel: 'canonical', href: 'https://yoosaa.github.io/portfolio-s/'},
       {rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Open+Sans:700'},
     ]
   },
@@ -40,6 +32,34 @@ export default {
     GlobalNav,
     MainContents,
     Curtain
+  },
+   methods : {
+    createTitleDesc : function(routeInstance){
+         // タイトルを設定
+        if(routeInstance.meta.title){
+            var setTitle = routeInstance.meta.title;
+            document.title = setTitle;
+        } else {
+            document.title = 'portfolio'
+        }
+
+        // メタタグdescription設定
+        if(routeInstance.meta.desc){
+            var setDesc = routeInstance.meta.desc;
+            document.querySelector("meta[name='description']").setAttribute('content', setDesc)
+        } else {
+            document.querySelector("meta[name='description']").setAttribute('content', 'description is not set')
+        }
+    },
+   },
+   mounted : function(){
+      var routeInstance = this.$route;
+      this.createTitleDesc(routeInstance);
+  },
+  watch: { 
+      '$route' (routeInstance) {
+          this.createTitleDesc(routeInstance);
+      }
   }
 }
 </script>
