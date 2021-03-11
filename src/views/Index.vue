@@ -1,5 +1,6 @@
 <template>
   <div id="app" class="wrapper content" v-cloak>
+    <BackGround />
     <GlobalNav />
     <MainContents />
     <Curtain />
@@ -7,6 +8,7 @@
 </template>
 
 <script>
+import BackGround from '@/components/BackgroundNoise.vue'
 import GlobalNav from '@/components/GlobalNav.vue'
 import MainContents from '@/components/MainContent.vue'
 import Curtain from '@/components/curtain.vue'
@@ -34,6 +36,7 @@ export default {
     ]
   },
   components: {
+    BackGround,
     GlobalNav,
     MainContents,
     Curtain
@@ -44,4 +47,5 @@ export default {
 <style>
 @import "../css/reset.css";
 @import "../css/style.css";
+@import "../css/txt_noize.css";
 </style>

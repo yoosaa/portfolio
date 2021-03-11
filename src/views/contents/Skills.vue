@@ -3,14 +3,15 @@
       <section class="skill-section section animate" id="skill-section">
         <div class="inner">
           <div class="section-heading">
-            <h2 class="heading-primary">SKILL</h2>
+            <h2 class="heading-primary noise" data-text="SKILL">SKILL</h2>
           </div>
           <div class="section-lead">
             <p>
               頑張ります！
             </p>
           </div>
-          <h3 class="sub-title font-opensans fz-30 mb-15 mt-48 font-center">FrontEnd</h3>
+          <div class="font-opensans fz-30 mb-15 mt-48 font-center ">
+          <h3 class="sub-title noise" data-text="FrontEnd">FrontEnd</h3></div>
           <div class="section-body skill">
             <div class="skill-list">
               <div class="skill-item">
@@ -61,7 +62,8 @@
           </div>
 
 
-          <h3 class="sub-title font-opensans fz-30 mb-15 mt-48 font-center">BackEnd</h3>
+          <div class="font-opensans fz-30 mb-15 mt-48 font-center ">
+          <h3 class="sub-title noise" data-text="BackEnd">BackEnd</h3></div>
           <div class="section-body skill">
             <div class="skill-list">
               <div class="skill-item">
@@ -90,7 +92,8 @@
           </div>
 
 
-          <h3 class="sub-title font-opensans fz-30 mb-15 mt-48 font-center">その他ツール等</h3>
+          <div class="font-opensans fz-30 mb-15 mt-48 font-center ">
+          <h3 class="sub-title noise" data-text="その他ツール等">その他ツール等</h3></div>
           <div class="section-body skill">
             <div class="skill-list">
               <div class="skill-item">

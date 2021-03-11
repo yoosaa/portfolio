@@ -93,6 +93,7 @@ li {
     line-height: 1;
     margin-bottom: 15px;
     letter-spacing: .05em;
+    display: inline-block;
 }
 
 .section-heading {
@@ -158,6 +159,7 @@ li {
     font-size: 64px;
     line-height: 1;
     letter-spacing: .2em;
+    white-space: nowrap;
 }
 
 .logo-subtitle {
@@ -165,6 +167,11 @@ li {
     margin-top: 5px;
     text-align: center;
     letter-spacing: .2em;
+    display: inline-block;
+}
+
+.sub-title {
+    display: inline-block;
 }
 
 
@@ -513,14 +520,15 @@ li {
         margin-bottom: 20px;
     }
     .heading-primary {
-        font-size: 22px;
+        font-size: 220%;
+        ;
     }
     /* レイアウト */
     .wrapper {
         padding-top: 82px;
     }
     .section {
-        padding: 60px 0;
+        padding: 50px 0;
     }
     .section .inner {
         padding: 0 15px;

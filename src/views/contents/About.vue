@@ -3,7 +3,7 @@
       <section class="about-section section animate" id="about-section">
         <div class="inner">
           <div class="section-heading">
-            <h2 class="heading-primary">ABOUT</h2>
+          <h2 class="heading-primary noise" data-text="ABOUT">ABOUT</h2>
           </div>
           <div class="section-lead">
             <p>

@@ -7,6 +7,12 @@
         "build": "vue-cli-service build",
         "lint": "vue-cli-service lint"
     },
+    "extends": [
+        "google",
+        "plugin:vue/vue3-recommended",
+        "@vue/prettier"
+
+    ],
     "dependencies": {
         "animate.css": "*",
         "axios": "^0.21.1",
@@ -21,7 +27,8 @@
         "three": "*",
         "gsap": "*",
         "three-rounded-box": "*",
-        "fabric": "*"
+        "fabric": "*",
+        "pixi.js": "*"
     },
     "devDependencies": {
         "@vue/cli-plugin-babel": "^4.5.0",
@@ -30,6 +37,7 @@
         "babel-eslint": "^10.1.0",
         "eslint": "^6.7.2",
         "eslint-plugin-vue": "^6.2.2",
+        "eslint-config-google": "*",
         "sass": "^1.32.8",
         "sass-loader": "^10.1.1",
         "vue-template-compiler": "^2.6.11"
@@ -52,5 +60,19 @@
         "> 1%",
         "last 2 versions",
         "not dead"
-    ]
+    ],
+    "rules": {
+        "prettier/prettier": [
+            "error",
+            {
+                "htmlWhitespaceSensitivity": "ignore",
+                "semi": true,
+                "singleQuote": true,
+                "trailingComma": "es5",
+                "bracketSpacing": false,
+                "printWidth": 80
+            }
+        ],
+        "vue/max-attributes-per-line": "off"
+    }
 }
