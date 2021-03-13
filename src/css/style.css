@@ -70,7 +70,7 @@ li {
 
 @media screen and (max-width: 767px) {
     .fz-30 {
-        font-size: 172%;
+        font-size: 105%;
     }
 }
 
@@ -378,6 +378,7 @@ li {
 
 .skill-body {
     flex: 1;
+    font-size: 120%;
 }
 
 .skill-body p:not(:last-child) {
@@ -610,7 +611,7 @@ li {
         margin-bottom: 0;
     }
     .skill-image-wrapper {
-        flex: 0 0 75px;
+        flex: 0 0 25%;
         margin-right: 15px;
     }
     .rate {
