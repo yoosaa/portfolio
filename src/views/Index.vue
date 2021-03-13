@@ -56,7 +56,7 @@ export default {
       var routeInstance = this.$route;
       this.createTitleDesc(routeInstance);
   },
-  watch: { 
+  watch: {
       '$route' (routeInstance) {
           this.createTitleDesc(routeInstance);
       }

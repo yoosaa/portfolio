@@ -21,7 +21,7 @@ export default {
       transition: {
         enter: 'animate__animated animate__fadeInRight',
         leave: 'animate__animated animate__fadeOutRight',
-        duration: 400,
+        duration: 300,
       },
     }
   }

@@ -3,7 +3,17 @@
       <section class="skill-section section animate" id="skill-section">
         <div class="inner">
           <div class="section-heading">
-            <h2 class="heading-primary noise" data-text="SKILL">SKILL</h2>
+            <h2>
+              <vue-typer
+              text='SKILL'
+              :repeat='0'
+              :pre-type-delay='600'
+              caret-animation='blink'
+              :type-delay='80'
+              class="heading-primary noise"
+              data-text="SKILL">
+              </vue-typer>
+            </h2>
           </div>
           <div class="section-lead">
             <p>
@@ -11,7 +21,18 @@
             </p>
           </div>
           <div class="font-opensans fz-30 mb-15 mt-48 font-center ">
-          <h3 class="sub-title noise" data-text="FrontEnd">FrontEnd</h3></div>
+            <h3>
+              <vue-typer
+              text='FrontEnd'
+              :repeat='0'
+              :pre-type-delay='600'
+              caret-animation='blink'
+              :type-delay='80'
+              class="heading-primary noise"
+              data-text="FrontEnd">
+              </vue-typer>
+            </h3>
+          </div>
           <div class="section-body skill">
             <div class="skill-list">
               <div class="skill-item">
@@ -63,7 +84,18 @@
 
 
           <div class="font-opensans fz-30 mb-15 mt-48 font-center ">
-          <h3 class="sub-title noise" data-text="BackEnd">BackEnd</h3></div>
+            <h3>
+              <vue-typer
+              text='BackEnd'
+              :repeat='0'
+              :pre-type-delay='600'
+              caret-animation='blink'
+              :type-delay='80'
+              class="heading-primary noise"
+              data-text="BackEnd">
+              </vue-typer>
+            </h3>
+          </div>
           <div class="section-body skill">
             <div class="skill-list">
               <div class="skill-item">
@@ -93,7 +125,18 @@
 
 
           <div class="font-opensans fz-30 mb-15 mt-48 font-center ">
-          <h3 class="sub-title noise" data-text="その他ツール等">その他ツール等</h3></div>
+            <h3>
+              <vue-typer
+              text='Tools'
+              :repeat='0'
+              :pre-type-delay='600'
+              caret-animation='blink'
+              :type-delay='80'
+              class="heading-primary noise"
+              data-text="Tools">
+              </vue-typer>
+            </h3>
+          </div>
           <div class="section-body skill">
             <div class="skill-list">
               <div class="skill-item">

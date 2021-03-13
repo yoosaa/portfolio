@@ -16,6 +16,7 @@
     overflow: hidden;
     clip: rect(0, 900px, 0, 0);
     animation: noise-anim 2s infinite linear alternate-reverse;
+    animation-delay: 2s;
 }
 
 .noise:before {
@@ -31,7 +32,8 @@
     background: #ffffffa8;
     overflow: hidden;
     clip: rect(0, 900px, 0, 0);
-    animation: noise-anim-2 3s infinite linear alternate-reverse;
+    animation: noise-anim-2 2s infinite linear alternate-reverse;
+    animation-delay: 2s;
 }
 
 @keyframes noise-anim {

@@ -3,7 +3,17 @@
       <section class="about-section section animate" id="about-section">
         <div class="inner">
           <div class="section-heading">
-          <h2 class="heading-primary noise" data-text="ABOUT">ABOUT</h2>
+          <h2>
+            <vue-typer
+              text='ABOUT'
+              :repeat='0'
+              :pre-type-delay='600'
+              caret-animation='blink'
+              :type-delay='80'
+              class="heading-primary noise"
+              data-text="ABOUT">
+            </vue-typer>
+          </h2>
           </div>
           <div class="section-lead">
             <p>

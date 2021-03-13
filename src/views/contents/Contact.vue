@@ -3,7 +3,17 @@
       <section class="contact-section section animate" id="contact-section">
         <div class="inner">
           <div class="section-heading">
-            <h2 class="heading-primary noise" data-text="CONTACT">CONTACT</h2>
+            <h2>
+              <vue-typer
+              text='CONTACT'
+              :repeat='0'
+              :pre-type-delay='600'
+              caret-animation='blink'
+              :type-delay='80'
+              class="heading-primary noise"
+              data-text="CONTACT">
+              </vue-typer>
+            </h2>
           </div>
           <div class="section-lead">
             <p>
