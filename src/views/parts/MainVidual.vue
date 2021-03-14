@@ -9,7 +9,7 @@
             caret-animation='blink'
             :type-delay='80'
             class="logo-title noise"
-            data-text="y-sano@hiyokkoEngineer">
+            data-text="y-s@hiyokko">
           </vue-typer>
         </div>
 
