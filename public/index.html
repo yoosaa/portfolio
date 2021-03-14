@@ -13,10 +13,8 @@
     <script>
         (function(locate) {
             let q = {};
-            console.log(locate);
             if (locate.search) {
                 locate.search.slice(1).split('&').forEach(element => {
-                    console.log(element);
                     let a = element.split('=');
                     q[a[0]] = a[1];
                 });
