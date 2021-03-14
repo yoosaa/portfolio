@@ -10,6 +10,20 @@
     <title>
         <%= htmlWebpackPlugin.options.title %>
     </title>
+    <script>
+        (function(locate) {
+            let q = {};
+            if (locate.search) {
+                locate.search.slice(1).split('&').forEach(element => {
+                    let a = element.split('=');
+                    q[a[0]] = a[1];
+                });
+                if (q.p !== undefined) {
+                    window.history.replaceState(null, null, locate.pathname.slice(0, -1) + (q.p || ''));
+                }
+            }
+        }(window.location))
+    </script>
 </head>
 
 <body>

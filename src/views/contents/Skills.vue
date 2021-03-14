@@ -28,7 +28,7 @@
               :pre-type-delay='600'
               caret-animation='blink'
               :type-delay='80'
-              class="heading-primary noise"
+              class="noise"
               data-text="FrontEnd">
               </vue-typer>
             </h3>
@@ -91,7 +91,7 @@
               :pre-type-delay='600'
               caret-animation='blink'
               :type-delay='80'
-              class="heading-primary noise"
+              class="noise"
               data-text="BackEnd">
               </vue-typer>
             </h3>
@@ -132,7 +132,7 @@
               :pre-type-delay='600'
               caret-animation='blink'
               :type-delay='80'
-              class="heading-primary noise"
+              class="noise"
               data-text="Tools">
               </vue-typer>
             </h3>
@@ -174,6 +174,37 @@
               </div>
             </div>
           </div>
+
+          <div class="font-opensans fz-30 mb-15 mt-48 font-center ">
+            <h3>
+              <vue-typer
+              text='Hobby'
+              :repeat='0'
+              :pre-type-delay='600'
+              caret-animation='blink'
+              :type-delay='80'
+              class="noise"
+              data-text="Hobby">
+              </vue-typer>
+            </h3>
+          </div>
+
+  <div class="section-body skill">
+            <div class="skill-list">
+              <div class="skill-item">
+                <div class="skill-image-wrapper">
+                  <img class="skill-image" src="@/assets/img/python.png" alt="">
+                </div>
+                <div class="skill-body">
+                  <h3 class="skill-title">Python</h3>
+                  <div class="skill-rating rating">
+                    <div class="">1年</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
       <!-- /.skill-section -->

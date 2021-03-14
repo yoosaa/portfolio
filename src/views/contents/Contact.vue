@@ -21,17 +21,8 @@
             </p>
           </div>
           <div class="section-body contact">
-            <!-- <ul class="contact-list">
-              <li class="contact-item">
-                <a class="contact-link" href="https://twitter.com/" target="_blank"><img class="contact-image"
-                    src="img/contact/icon_tw.png" alt=""></a>
-              </li>
-              <li class="contact-item">
-                <a class="contact-link" href="https://www.facebook.com/" target="_blank"><img class="contact-image"
-                    src="img/contact/icon_fb.png" alt=""></a>
-              </li>
-            </ul> -->
-            <div class="contact-text">my56sets@gmail.com</div>
+            <div class="contact-text">my56sets***</div>
+            <div class="contact-text">***の部分を@gmail.comに置き換えてください</div>
           </div>
         </div>
       </section>
