@@ -7,12 +7,12 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
     <title>404</title>
     <script>
-        let segmentCount = 1;
+        let segmentCount = 0;
         let locate = window.location;
-        let port = locate.port ? ':' + locate.port : ''
+        let port = locate.port ? ':' + locate.port : '';
         locate.replace(
-            `${locate.protocol}//${locate.hostname}${port}/?p=${locate.pathname.split('/').slice(0, 1 + segmentCount).join('/')}`
-        )
+            `${locate.protocol}//${locate.hostname}${port}/portfolio-s/?p=${locate.pathname.split('/').slice(0, 1 + segmentCount).join('/')}`
+        );
     </script>
 </head>
 
