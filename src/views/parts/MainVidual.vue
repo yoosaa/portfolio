@@ -3,13 +3,13 @@
       <h1 class="logo">
         <div>
           <vue-typer
-            text='y-s@hiyokko'
+            text='Yoshitaka Sano'
             :repeat='0'
             :pre-type-delay='600'
             caret-animation='blink'
             :type-delay='80'
             class="logo-title noise"
-            data-text="y-s@hiyokko">
+            data-text="Yoshitaka Sano">
           </vue-typer>
         </div>
 
