@@ -189,7 +189,7 @@
             </h3>
           </div>
 
-  <div class="section-body skill">
+          <div class="section-body skill">
             <div class="skill-list">
               <div class="skill-item">
                 <div class="skill-image-wrapper">
@@ -203,6 +203,31 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          <div class="section-heading mt-48">
+            <h2>
+              <vue-typer
+              text='Actual Results'
+              :repeat='0'
+              :pre-type-delay='600'
+              caret-animation='blink'
+              :type-delay='80'
+              class="heading-primary noise"
+              data-text="Actual Results">
+              </vue-typer>
+            </h2>
+          </div>
+
+          <div class="font-opensans fz-30 mb-15 font-center results">
+            <ul class="results-inner">
+              <li class="results-lists">
+                <a href="https://www.nhk.or.jp/senkyo/" class="results-lists__links" target="_blank">NHK選挙WEB</a>
+              </li>
+              <li class="results-lists">
+                <a href="https://www3.nhk.or.jp/news/special/athlete-words/" class="results-lists__links" target="_blank">アスリート×ことば</a>
+              </li>
+            </ul>
           </div>
 
         </div>
