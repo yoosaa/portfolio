@@ -26,18 +26,19 @@
       position: absolute;
       bottom: 0;
       left: 0;
+      font-family: 'Work Sans', sans-serif;
     }
   }
 }
 @media screen and (min-width: 768px) {
   .header {
     .logo {
-      padding-bottom: 10rem;
+      padding-bottom: 12vw;
       &-title {
-        font-size: 9.5rem;
+        font-size: 11vw;
       }
       &-subtitle {
-        font-size: 3rem;
+        font-size: 4vw;
       }
     }
   }

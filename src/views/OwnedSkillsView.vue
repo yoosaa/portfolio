@@ -82,10 +82,15 @@ export default {
 
 <style lang="scss">
 .skill-section{
-  padding-bottom: 200px;
+  padding-bottom: 100px!important;
   &-error {
     text-align: center;
     font-size: 24px;
+  }
+}
+@media screen and (min-width: 768px) {
+  .skill-section {
+    padding-bottom: 200px!important;
   }
 }
 </style>

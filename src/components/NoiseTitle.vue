@@ -28,6 +28,7 @@ export default {
     left: 0;
     font-size: 2rem;
     opacity: .2;
+    font-family: 'Work Sans', sans-serif;
   }
 }
 @media screen and (min-width: 768px) {
