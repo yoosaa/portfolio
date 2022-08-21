@@ -3,7 +3,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Index from '@/views/IndexView.vue'
 import AboutMe from '@/views/AboutMeView.vue'
 import OwnedSkills from '@/views/OwnedSkillsView.vue'
-import Contact from '@/views/ContactView.vue'
 
 const routes = [
   {
@@ -17,10 +16,6 @@ const routes = [
   {
     path: '/skills',
     component: OwnedSkills
-  },
-  {
-    path: '/contact',
-    component: Contact
   }
 ]
 

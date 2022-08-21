@@ -1,14 +1,6 @@
 <template>
   <section class="about-section section animate" id="about-section">
     <div class="inner">
-      <div class="section-heading">
-      <h2 class="heading-primary noise" data-text="ABOUT">ABOUT</h2>
-      </div>
-      <div class="section-lead">
-        <p>
-          初めまして！
-        </p>
-      </div>
       <div class="font-opensans fz-30 mb-15 mt-48 font-center">
         <h3 class="noise" data-text="Biography">Biography</h3>
       </div>
@@ -21,6 +13,7 @@
             <li>・WEBに目覚め、WEBスクールに通い、その後派遣にてメディア系ポータルサイトの更新を担当</li>
             <li>・SESにてスポーツクラブの会員サイトの更新、運用を担当（バックエンド）</li>
             <li>・派遣にてメディア系ポータルサイトの制作、運用を担当（フロントエンド）</li>
+            <li>・広告会社のフロントエンドエンジニアとして勤務</li>
           </ul>
         </div>
       </div>

@@ -1,0 +1,14 @@
+{
+  "frontend": {
+    "name": ["HTML5", "CSS3", "JavaScript", "Sass", "JQuery", "Vue.js"],
+    "series": [4, 4, 4, 3, 3, 1.5]
+  },
+  "backend": {
+    "name": ["PHP", "Oracle"],
+    "series": [0.5, 0.3]
+  },
+  "devtools": {
+    "name": ["Git", "Github", "Webpack", "Babel"],
+    "series": [2, 2, 2, 2]
+  }
+}

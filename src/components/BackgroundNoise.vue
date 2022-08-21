@@ -7,10 +7,9 @@
   position: fixed;
   top: 0;
   left: 0;
-  opacity: .5;
   width: 100vw;
   height: 100vh;
-  opacity: 0.3;
+  opacity: .1;
   background: url("../assets/img/sand.jpg");
   animation: noise_anim 1s steps(10) infinite;
 }

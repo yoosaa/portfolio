@@ -5,14 +5,16 @@
   >
     <GlobalNav />
     <TransitionCurtain />
-    <transition
-      name="router-transition"
-      :duration="transition.duration"
-      :enter-active-class="transition.enter"
-      :leave-active-class="transition.leave"
-    >
-      <router-view></router-view>
-    </transition>
+    <router-view v-slot="{ Component }">
+      <transition
+        name="router-transition"
+        :duration="transition.duration"
+        :enter-active-class="transition.enter"
+        :leave-active-class="transition.leave"
+      >
+        <component :is="Component" />
+      </transition>
+    </router-view>
   </main>
 </template>
 

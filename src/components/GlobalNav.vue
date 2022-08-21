@@ -2,24 +2,19 @@
   <nav class="gnav fixed">
     <ul class="gnav-list">
       <li class="gnav-item">
-        <router-link class="gnav-link" data-text="HOME"
+        <router-link class="gnav-link"
           to="/"
         >HOME</router-link>
       </li>
       <li class="gnav-item">
-        <router-link class="gnav-link" data-text="ABOUT"
+        <router-link class="gnav-link"
           to="/aboutme"
         >ABOUT ME</router-link>
       </li>
       <li class="gnav-item">
-        <router-link class="gnav-link" data-text="SKILL"
+        <router-link class="gnav-link"
           to="/skills"
         >SKILL</router-link>
-      </li>
-      <li class="gnav-item">
-        <router-link class="gnav-link" data-text="CONTACT"
-          to="/contact"
-        >CONTACT</router-link>
       </li>
     </ul>
   </nav>
