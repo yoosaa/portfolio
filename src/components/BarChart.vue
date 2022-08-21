@@ -21,7 +21,7 @@ export default {
       Highcharts.chart(targetElm, {
         chart: {
           type: 'bar',
-          height: (9 / 16 * 50) + '%',
+          height: (9 / 16 * 100) + '%',
           backgroundColor: 'rgba(0, 0, 0, 0)'
         },
         xAxis: {
@@ -33,7 +33,7 @@ export default {
         },
         yAxis: {
           min: 0,
-          max: 6,
+          max: 5,
           minRange: 0.5,
           labels: {
             style: { 'font-size': '10px' }

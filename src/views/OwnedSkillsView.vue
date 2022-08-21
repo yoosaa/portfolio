@@ -3,46 +3,38 @@
     <div class="inner"
       v-if="isDisplayChartArea"
     >
-      <div class="font-opensans fz-30 mb-15 mt-48 font-center">
-        <h3 class="noise" data-text="FrontEnd">FrontEnd</h3>
-      </div>
+      <NoiseTitle
+        titleText="FrontEnd"
+      />
       <div class="section-body skill">
         <Chart
           :chartData="chartData.frontend"
         />
       </div>
 
-      <div class="font-opensans fz-30 mb-15 mt-48 font-center ">
-        <h3 class="noise" data-text="BackEnd">BackEnd</h3>
-      </div>
+      <NoiseTitle
+        titleText="BackEnd"
+      />
       <div class="section-body skill">
         <Chart
           :chartData="chartData.backend"
         />
       </div>
 
-      <div class="font-opensans fz-30 mb-15 mt-48 font-center ">
-        <h3 class="noise" data-text="Tools">Tools</h3>
-      </div>
+      <NoiseTitle
+        titleText="Tools"
+      />
       <div class="section-body skill">
         <Chart
           :chartData="chartData.devtools"
         />
       </div>
 
-      <div class="section-heading mt-48">
-        <h2 class="heading-primary noise" data-text="Actual Results">Actual Results</h2>
-      </div>
-
+      <NoiseTitle
+        titleText="Actual Results"
+      />
       <div class="font-opensans fz-30 mb-15 font-center results">
-        <ul class="results-inner">
-          <li class="results-lists">
-            <a href="https://www.nhk.or.jp/senkyo/" class="results-lists__links" target="_blank">NHK選挙WEB</a>
-          </li>
-          <li class="results-lists">
-            <a href="https://www3.nhk.or.jp/news/special/athlete-words/" class="results-lists__links" target="_blank">アスリート×ことば</a>
-          </li>
-        </ul>
+        <Cards />
       </div>
 
     </div>
@@ -54,12 +46,16 @@
 
 <script>
 import Chart from '@/components/BarChart.vue'
+import Cards from '@/components/RecordCards.vue'
+import NoiseTitle from '@/components/NoiseTitle.vue'
 import { ref, computed } from 'vue'
 import axios from 'axios'
 
 export default {
   components: {
-    Chart
+    Chart,
+    Cards,
+    NoiseTitle
   },
   setup () {
     const chartData = ref({})

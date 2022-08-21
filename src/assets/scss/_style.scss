@@ -120,13 +120,8 @@ li {
 }
 
 .section {
-    padding: 100px 0;
+    padding: 40px 0;
 }
-
-
-/* .section:nth-of-type(odd) {
-    background-color: #f7f7f7;
-} */
 
 .inner {
     max-width: 1380px;
@@ -379,7 +374,6 @@ li {
 /*--------------------------------
  Skill
 ---------------------------------*/
-
 .skill-section .inner {
     max-width: 1000px;
 }
@@ -387,8 +381,6 @@ li {
 .skill-list {
     display: flex;
     flex-wrap: wrap;
-    /* justify-content: space-between; */
-    /* margin-bottom: -50px; */
 }
 
 .skill-item {
@@ -418,12 +410,14 @@ li {
 }
 
 .results-lists__links {
-    margin-top: 36px;
+    margin-top: 16px;
     position: relative;
     padding: 0.1em 0.3em;
+    font-size: 1rem;
+    font-weight: 500;
     display: inline-block;
     transition: .3s;
-    color: #00ACC1;
+    color: #333;
 }
 .results-lists__links::before,
 .results-lists__links::after {
@@ -587,7 +581,7 @@ li {
         padding-top: 56px;
     }
     .section {
-        padding: 50px 0;
+        padding: 0;
     }
     .section .inner {
         padding: 0 15px;

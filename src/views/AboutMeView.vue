@@ -1,9 +1,9 @@
 <template>
   <section class="about-section section animate" id="about-section">
     <div class="inner">
-      <div class="font-opensans fz-30 mb-15 mt-48 font-center">
-        <h3 class="noise" data-text="Biography">Biography</h3>
-      </div>
+      <NoiseTitle
+        titleText="Biography"
+      />
 
       <div class="section-body skill">
         <div class="section-lead align-left">
@@ -27,3 +27,13 @@
     </div>
   </section>
 </template>
+
+<script>
+import NoiseTitle from '@/components/NoiseTitle.vue'
+
+export default {
+  components: {
+    NoiseTitle
+  }
+}
+</script>

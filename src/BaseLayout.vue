@@ -49,6 +49,11 @@ export default {
   width: inherit;
   height: 100%;
   overflow: scroll;
-  padding: 0 50px;
+  padding: 16px;
+}
+@media screen and (min-width: 768px) {
+  .animate {
+    padding: 0 50px;
+  }
 }
 </style>

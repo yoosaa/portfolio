@@ -26,5 +26,6 @@
   top: 0;
   left: 0;
   z-index: 2;
+  font-weight: 600;
 }
 </style>
