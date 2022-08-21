@@ -1,20 +1,12 @@
-import Vue from 'vue'
-import router from '@/router/router'
+import { createApp } from 'vue'
+import router from './router'
 
-import VueHead from "vue-head"
+import BaseLayout from './BaseLayout.vue'
+
 import AnimateCss from 'animate.css'
-import VueTyperPlugin from 'vue-typer'
+import '@/assets/scss/global.scss'
 
-import Index from './views/Index.vue'
-
-
-Vue.config.productionTip = false
-
-Vue.use(VueHead)
-Vue.use(AnimateCss)
-Vue.use(VueTyperPlugin)
-
-new Vue({
-    router,
-    render: h => h(Index),
-}).$mount('#app')
+createApp(BaseLayout)
+  .use(router)
+  .use(AnimateCss)
+  .mount('#app')
