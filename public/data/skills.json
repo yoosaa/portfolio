@@ -1,14 +1,15 @@
 {
-  "frontend": {
-    "name": ["HTML5", "CSS3", "JavaScript", "Sass", "JQuery", "Vue.js"],
-    "series": [4, 4, 4, 3, 3, 1.5]
-  },
-  "backend": {
-    "name": ["PHP", "Oracle"],
-    "series": [0.5, 0.3]
-  },
-  "devtools": {
-    "name": ["Git", "Github", "Webpack", "Babel"],
-    "series": [2, 2, 2, 2]
-  }
+  "heading": "Skills",
+  "subheading": "学習中のスキル",
+  "quote": "「学び続けることが、最大のスキル」",
+  "skills": [
+		{ "name": "HTML/CSS", "years": 5 },
+		{ "name": "JavaScript", "years": 5 },
+		{ "name": "Git", "years": 4 },
+		{ "name": "React", "years": 0.5 },
+		{ "name": "Tailwind CSS", "years": 1 },
+		{ "name": "TypeScript", "years": 1 },
+		{ "name": "Vue", "years": 1 },
+		{ "name": "Svelte", "years": 1 }
+	]
 }

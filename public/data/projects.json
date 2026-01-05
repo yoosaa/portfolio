@@ -1,0 +1,25 @@
+{
+  "heading": "Projects",
+  "subheading": "これまでの制作物",
+  "demoLabel": "Demo",
+  "items": [
+    {
+      "title": "NHK選挙WEB",
+      "description": "人生で初めて制作～運用まで担当したポータルサイト",
+      "tags": ["HTML/CSS", "jQuery"],
+      "image": "🗒️",
+      "gradient": "from-blue-500 to-cyan-500",
+      "particleColor": "#3b82f6",
+      "demo": "https://news.web.nhk/senkyo/"
+    },
+    {
+      "title": "ポートフォリオサイト",
+      "description": "このサイト！モダンなデザインを意識して作成",
+      "tags": ["React", "Tailwind CSS", "Motion"],
+      "image": "💼",
+      "gradient": "from-purple-500 to-pink-500",
+      "particleColor": "#a855f7",
+      "demo": "https://portfolio-vert-six.vercel.app"
+    }
+  ]
+}
