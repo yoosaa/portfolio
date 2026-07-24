@@ -19,7 +19,7 @@ const projects = [
     summary:
       "顧客との接点を、あとから振り返れる形で残す業務ログ。フロントとAPIを分け、設計・テスト・公開まで一通り組み立てました。",
     tags: ["SvelteKit", "Hono", "Cloudflare D1", "Playwright"],
-    accent: "#5dc3b6",
+    accent: "#78998b",
     demo: null,
   },
   {
@@ -27,7 +27,7 @@ const projects = [
     summary:
       "小規模店舗の入荷・補充を迷わず共有するメモツール。Svelte 5とStorybookで、日常業務に馴染むUIを検証しました。",
     tags: ["Svelte 5", "Storybook", "Playwright", "Vercel"],
-    accent: "#d6a15f",
+    accent: "#bd8f67",
     demo: null,
   },
   {
@@ -35,7 +35,7 @@ const projects = [
     summary:
       "複数の選択肢を落ち着いて比較するための意思決定メモ。小さく作り、テストとCIを通して公開する一連の流れを実践しました。",
     tags: ["Next.js", "TypeScript", "Vitest", "GitHub Actions"],
-    accent: "#7792c9",
+    accent: "#879bb0",
     demo: null,
   },
 ] as const;
@@ -80,7 +80,11 @@ export default function App() {
   const isProjects = state.mode === "projects";
 
   return (
-    <main className="studio-shell">
+    <main
+      className="studio-shell"
+      data-mode={state.mode}
+      data-project-index={state.projectIndex}
+    >
       <div className="studio-grain" aria-hidden="true" />
 
       <header className="studio-header">
@@ -118,14 +122,18 @@ export default function App() {
             >
               <p className="studio-eyebrow">WELCOME TO MY SMALL STUDIO</p>
               <h1>
-                プロダクトを
+                小さくつくり、
                 <br />
-                <em>長く育てる。</em>
+                <em>ていねいに育てる。</em>
               </h1>
               <p className="studio-lead">
                 フロントエンドを軸に、設計・API・テストまで。
                 <br />
-                部屋の気になる場所を触ってみてください。
+                右の小さな開発室から、これまでの仕事をのぞいてみてください。
+              </p>
+              <p className="studio-invitation">
+                <span aria-hidden="true">↗</span>
+                光っているPCをクリック
               </p>
             </motion.div>
           ) : (
@@ -139,6 +147,7 @@ export default function App() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -18 }}
               transition={{ duration: 0.35 }}
+              aria-live="polite"
             >
               <button
                 className="project-back"
