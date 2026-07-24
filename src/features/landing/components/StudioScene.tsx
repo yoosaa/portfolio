@@ -33,10 +33,12 @@ type StudioSceneProps = {
 
 const ROOM_CAMERA_POSITION = new THREE.Vector3(10.2, 7.6, 13.2);
 const ROOM_LOOK_AT = new THREE.Vector3(0, 1.35, 0);
-const DISPLAY_CAMERA_POSITION = new THREE.Vector3(1.8, 2.2, 2.82);
-const DISPLAY_LOOK_AT = new THREE.Vector3(1.8, 2.2, 0.26);
+// The display plane is centred at (1.8, 2.2, 0.365) and faces +Z.
+// This places the camera directly in front of the screen instead of beside it.
+const DISPLAY_CAMERA_POSITION = new THREE.Vector3(1.8, 2.2, 1.35);
+const DISPLAY_LOOK_AT = new THREE.Vector3(1.8, 2.2, 0.365);
 const ROOM_FOV = 38;
-const DISPLAY_FOV = 27;
+const DISPLAY_FOV = 48;
 const CAMERA_POSITION_EPSILON = 0.025;
 const CAMERA_FOV_EPSILON = 0.08;
 const CAMERA_ANGLE_EPSILON = 0.006;
@@ -49,10 +51,20 @@ function CameraRig({
   const { camera } = useThree();
   const targetCamera = useMemo(() => new THREE.PerspectiveCamera(), []);
   const settledPhase = useRef<StudioPhase | null>(null);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
     settledPhase.current = null;
   }, [phase]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+
+    updatePreference();
+    mediaQuery.addEventListener("change", updatePreference);
+    return () => mediaQuery.removeEventListener("change", updatePreference);
+  }, []);
 
   // R3F camera transforms are intentionally updated inside its render loop.
   // eslint-disable-next-line react-hooks/immutability
@@ -68,20 +80,25 @@ function CameraRig({
     targetCamera.position.copy(targetPosition);
     targetCamera.lookAt(targetLookAt);
 
-    camera.position.lerp(targetPosition, 1 - Math.exp(-delta * 4.2));
-    camera.quaternion.slerp(
-      targetCamera.quaternion,
-      1 - Math.exp(-delta * 5.4)
-    );
-
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
-    // eslint-disable-next-line react-hooks/immutability
-    perspectiveCamera.fov = THREE.MathUtils.damp(
-      perspectiveCamera.fov,
-      targetFov,
-      6,
-      delta
-    );
+    if (prefersReducedMotion) {
+      camera.position.copy(targetPosition);
+      camera.quaternion.copy(targetCamera.quaternion);
+      // eslint-disable-next-line react-hooks/immutability
+      perspectiveCamera.fov = targetFov;
+    } else {
+      camera.position.lerp(targetPosition, 1 - Math.exp(-delta * 4.2));
+      camera.quaternion.slerp(
+        targetCamera.quaternion,
+        1 - Math.exp(-delta * 5.4)
+      );
+      perspectiveCamera.fov = THREE.MathUtils.damp(
+        perspectiveCamera.fov,
+        targetFov,
+        6,
+        delta
+      );
+    }
     perspectiveCamera.updateProjectionMatrix();
 
     const hasReachedTarget =

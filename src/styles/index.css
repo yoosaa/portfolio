@@ -159,6 +159,13 @@ a {
   box-shadow:
     0 26px 38px rgba(90, 93, 76, 0.15),
     inset 0 0 0 8px rgba(255, 255, 250, 0.28);
+  transition:
+    top 520ms ease,
+    right 520ms ease,
+    bottom 520ms ease,
+    left 520ms ease,
+    border-radius 520ms ease,
+    box-shadow 520ms ease;
 }
 
 .studio-canvas::after {
@@ -175,6 +182,24 @@ a {
   background:
     radial-gradient(circle at 56% 38%, rgba(176, 196, 168, 0.5), transparent 31%),
     #e8eadc;
+}
+
+.studio-shell[data-studio-phase="zooming-to-display"] .studio-canvas,
+.studio-shell[data-studio-phase="projects"] .studio-canvas,
+.studio-shell[data-studio-phase="returning-to-room"] .studio-canvas {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-color: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.studio-shell[data-studio-phase="zooming-to-display"] .studio-canvas::after,
+.studio-shell[data-studio-phase="projects"] .studio-canvas::after,
+.studio-shell[data-studio-phase="returning-to-room"] .studio-canvas::after {
+  border-color: transparent;
 }
 
 .studio-intro {
