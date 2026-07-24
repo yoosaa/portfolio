@@ -19,7 +19,7 @@ const projects = [
     summary:
       "顧客との接点を、あとから振り返れる形で残す業務ログ。フロントとAPIを分け、設計・テスト・公開まで一通り組み立てました。",
     tags: ["SvelteKit", "Hono", "Cloudflare D1", "Playwright"],
-    accent: "#78998b",
+    accent: "#5dc3b6",
     demo: null,
   },
   {
@@ -27,7 +27,7 @@ const projects = [
     summary:
       "小規模店舗の入荷・補充を迷わず共有するメモツール。Svelte 5とStorybookで、日常業務に馴染むUIを検証しました。",
     tags: ["Svelte 5", "Storybook", "Playwright", "Vercel"],
-    accent: "#bd8f67",
+    accent: "#d6a15f",
     demo: null,
   },
   {
@@ -35,56 +35,83 @@ const projects = [
     summary:
       "複数の選択肢を落ち着いて比較するための意思決定メモ。小さく作り、テストとCIを通して公開する一連の流れを実践しました。",
     tags: ["Next.js", "TypeScript", "Vitest", "GitHub Actions"],
-    accent: "#879bb0",
+    accent: "#7792c9",
     demo: null,
   },
 ] as const;
 
+type StudioPhase =
+  | "room"
+  | "zooming-to-display"
+  | "projects"
+  | "returning-to-room";
+
 type StudioState = {
-  mode: "overview" | "projects";
+  phase: StudioPhase;
   projectIndex: number;
+  isProjectScreenClosed: boolean;
 };
 
 type StudioEvent =
-  | { type: "OPEN_PROJECTS" }
-  | { type: "CLOSE_PROJECTS" }
+  | { type: "REQUEST_PROJECTS" }
+  | { type: "DISPLAY_REACHED" }
+  | { type: "RETURN_TO_ROOM" }
+  | { type: "PROJECTS_CLOSED" }
+  | { type: "ROOM_RESTORED" }
   | { type: "NEXT_PROJECT" }
   | { type: "PREVIOUS_PROJECT" };
 
 function reducer(state: StudioState, event: StudioEvent): StudioState {
   switch (event.type) {
-    case "OPEN_PROJECTS":
-      return { ...state, mode: "projects" };
-    case "CLOSE_PROJECTS":
-      return { ...state, mode: "overview" };
+    case "REQUEST_PROJECTS":
+      return state.phase === "room"
+        ? { ...state, phase: "zooming-to-display" }
+        : state;
+    case "DISPLAY_REACHED":
+      return state.phase === "zooming-to-display"
+        ? { ...state, phase: "projects", isProjectScreenClosed: false }
+        : state;
+    case "RETURN_TO_ROOM":
+      return state.phase === "projects"
+        ? { ...state, phase: "returning-to-room", isProjectScreenClosed: false }
+        : state;
+    case "PROJECTS_CLOSED":
+      return state.phase === "returning-to-room"
+        ? { ...state, isProjectScreenClosed: true }
+        : state;
+    case "ROOM_RESTORED":
+      return state.phase === "returning-to-room"
+        ? { ...state, phase: "room", isProjectScreenClosed: false }
+        : state;
     case "NEXT_PROJECT":
-      return {
-        ...state,
-        projectIndex: (state.projectIndex + 1) % projects.length,
-      };
+      return state.phase === "projects"
+        ? {
+            ...state,
+            projectIndex: (state.projectIndex + 1) % projects.length,
+          }
+        : state;
     case "PREVIOUS_PROJECT":
-      return {
-        ...state,
-        projectIndex:
-          (state.projectIndex - 1 + projects.length) % projects.length,
-      };
+      return state.phase === "projects"
+        ? {
+            ...state,
+            projectIndex:
+              (state.projectIndex - 1 + projects.length) % projects.length,
+          }
+        : state;
   }
 }
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, {
-    mode: "overview",
+    phase: "room",
     projectIndex: 0,
+    isProjectScreenClosed: false,
   });
   const project = projects[state.projectIndex];
-  const isProjects = state.mode === "projects";
+  const isProjects = state.phase === "projects";
 
   return (
-    <main
-      className="studio-shell"
-      data-mode={state.mode}
-      data-project-index={state.projectIndex}
-    >
+    <main className="studio-shell" data-studio-phase={state.phase}>
       <div className="studio-grain" aria-hidden="true" />
 
       <header className="studio-header">
@@ -104,14 +131,25 @@ export default function App() {
 
       <section className="studio-stage" aria-label="3D portfolio studio">
         <StudioScene
-          isProjects={isProjects}
+          phase={state.phase}
+          cameraPhase={
+            state.phase === "returning-to-room" &&
+            !state.isProjectScreenClosed
+              ? "projects"
+              : state.phase
+          }
           accent={project.accent}
           projectIndex={state.projectIndex}
-          onOpenProjects={() => dispatch({ type: "OPEN_PROJECTS" })}
+          onOpenProjects={() => dispatch({ type: "REQUEST_PROJECTS" })}
+          onDisplayReached={() => dispatch({ type: "DISPLAY_REACHED" })}
+          onRoomRestored={() => dispatch({ type: "ROOM_RESTORED" })}
         />
 
-        <AnimatePresence mode="wait">
-          {!isProjects ? (
+        <AnimatePresence
+          mode="wait"
+          onExitComplete={() => dispatch({ type: "PROJECTS_CLOSED" })}
+        >
+          {state.phase === "room" ? (
             <motion.div
               key="intro"
               className="studio-intro"
@@ -122,41 +160,54 @@ export default function App() {
             >
               <p className="studio-eyebrow">WELCOME TO MY SMALL STUDIO</p>
               <h1>
-                小さくつくり、
+                プロダクトを
                 <br />
-                <em>ていねいに育てる。</em>
+                <em>長く育てる。</em>
               </h1>
               <p className="studio-lead">
                 フロントエンドを軸に、設計・API・テストまで。
                 <br />
-                右の小さな開発室から、これまでの仕事をのぞいてみてください。
+                光っているPCから、つくったものを見られます。
               </p>
-              <p className="studio-invitation">
-                <span aria-hidden="true">↗</span>
-                光っているPCをクリック
-              </p>
-            </motion.div>
-          ) : (
-            <motion.article
-              key={project.title}
-              className="project-panel"
-              style={
-                { "--project-accent": project.accent } as React.CSSProperties
-              }
-              initial={{ opacity: 0, x: 28 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -18 }}
-              transition={{ duration: 0.35 }}
-              aria-live="polite"
-            >
               <button
-                className="project-back"
+                className="studio-project-cta"
                 type="button"
-                onClick={() => dispatch({ type: "CLOSE_PROJECTS" })}
+                onClick={() => dispatch({ type: "REQUEST_PROJECTS" })}
               >
-                <ArrowLeft size={16} />
-                部屋全体へ
+                デスクのProjectsを見る
+                <ArrowRight size={15} />
               </button>
+            </motion.div>
+          ) : isProjects ? (
+            <motion.section
+              key="projects"
+              className="projects-screen"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.28 }}
+            >
+              <div className="projects-screen-topbar">
+                <button
+                  className="project-back"
+                  type="button"
+                  onClick={() => dispatch({ type: "RETURN_TO_ROOM" })}
+                >
+                  <ArrowLeft size={16} />
+                  部屋全体へ
+                </button>
+                <span>SELECTED PROJECTS</span>
+              </div>
+              <motion.article
+                key={project.title}
+                className="projects-screen-content"
+                style={
+                  { "--project-accent": project.accent } as React.CSSProperties
+                }
+                initial={{ opacity: 0, x: 28 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.35 }}
+              >
 
               <p className="studio-eyebrow">
                 PROJECT {String(state.projectIndex + 1).padStart(2, "0")}
@@ -200,11 +251,12 @@ export default function App() {
                   作品リンクと詳しい設計意図は次の工程で接続します。
                 </p>
               )}
-            </motion.article>
-          )}
+              </motion.article>
+            </motion.section>
+          ) : null}
         </AnimatePresence>
 
-        {!isProjects ? (
+        {state.phase === "room" ? (
           <div className="studio-hint">
             <Rotate3D size={18} />
             <span>ドラッグして部屋を見る</span>

@@ -6,40 +6,99 @@ import {
   RoundedBox,
   SoftShadows,
 } from "@react-three/drei";
-import {
-  Canvas,
-  type ThreeEvent,
-  useFrame,
-  useThree,
-} from "@react-three/fiber";
-import { useMemo, useRef, useState } from "react";
+import { Canvas, type ThreeEvent, useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
+type StudioPhase =
+  | "room"
+  | "zooming-to-display"
+  | "projects"
+  | "returning-to-room";
+
 type StudioSceneProps = {
-  isProjects: boolean;
+  phase: StudioPhase;
+  cameraPhase: StudioPhase;
   accent: string;
   projectIndex: number;
   onOpenProjects: () => void;
+  onDisplayReached: () => void;
+  onRoomRestored: () => void;
 };
 
-function CameraRig({ isProjects }: { isProjects: boolean }) {
-  const { camera } = useThree();
-  const lookAt = useMemo(() => new THREE.Vector3(), []);
-  const target = useMemo(() => new THREE.Vector3(), []);
+const ROOM_CAMERA_POSITION = new THREE.Vector3(9.2, 7.1, 11.8);
+const ROOM_LOOK_AT = new THREE.Vector3(0, 1.35, 0);
+const DISPLAY_CAMERA_POSITION = new THREE.Vector3(1.8, 2.2, 2.82);
+const DISPLAY_LOOK_AT = new THREE.Vector3(1.8, 2.2, 0.26);
+const ROOM_FOV = 36;
+const DISPLAY_FOV = 27;
+const CAMERA_POSITION_EPSILON = 0.025;
+const CAMERA_FOV_EPSILON = 0.08;
+const CAMERA_ANGLE_EPSILON = 0.006;
 
+function CameraRig({
+  phase,
+  onDisplayReached,
+  onRoomRestored,
+}: Pick<
+  StudioSceneProps,
+  "phase" | "onDisplayReached" | "onRoomRestored"
+>) {
+  const { camera } = useThree();
+  const targetCamera = useMemo(() => new THREE.PerspectiveCamera(), []);
+  const settledPhase = useRef<StudioPhase | null>(null);
+
+  useEffect(() => {
+    settledPhase.current = null;
+  }, [phase]);
+
+  // R3F camera transforms are intentionally updated inside its render loop.
+  // eslint-disable-next-line react-hooks/immutability
   useFrame((_, delta) => {
-    target.set(
-      isProjects ? 4.45 : 10.2,
-      isProjects ? 3.7 : 7.6,
-      isProjects ? 7.1 : 13.2
+    const isDisplayView =
+      phase === "zooming-to-display" || phase === "projects";
+    const targetPosition = isDisplayView
+      ? DISPLAY_CAMERA_POSITION
+      : ROOM_CAMERA_POSITION;
+    const targetLookAt = isDisplayView ? DISPLAY_LOOK_AT : ROOM_LOOK_AT;
+    const targetFov = isDisplayView ? DISPLAY_FOV : ROOM_FOV;
+
+    targetCamera.position.copy(targetPosition);
+    targetCamera.lookAt(targetLookAt);
+
+    camera.position.lerp(targetPosition, 1 - Math.exp(-delta * 4.2));
+    camera.quaternion.slerp(
+      targetCamera.quaternion,
+      1 - Math.exp(-delta * 5.4)
     );
-    lookAt.set(
-      isProjects ? 1.6 : 0,
-      isProjects ? 1.55 : 1.35,
-      isProjects ? 0.3 : 0
+
+    const perspectiveCamera = camera as THREE.PerspectiveCamera;
+    // eslint-disable-next-line react-hooks/immutability
+    perspectiveCamera.fov = THREE.MathUtils.damp(
+      perspectiveCamera.fov,
+      targetFov,
+      6,
+      delta
     );
-    camera.position.lerp(target, 1 - Math.exp(-delta * 3.2));
-    camera.lookAt(lookAt);
+    perspectiveCamera.updateProjectionMatrix();
+
+    const hasReachedTarget =
+      camera.position.distanceTo(targetPosition) < CAMERA_POSITION_EPSILON &&
+      Math.abs(perspectiveCamera.fov - targetFov) < CAMERA_FOV_EPSILON &&
+      camera.quaternion.angleTo(targetCamera.quaternion) <
+        CAMERA_ANGLE_EPSILON;
+
+    if (!hasReachedTarget || settledPhase.current === phase) {
+      return;
+    }
+
+    settledPhase.current = phase;
+    if (phase === "zooming-to-display") {
+      onDisplayReached();
+    }
+    if (phase === "returning-to-room") {
+      onRoomRestored();
+    }
   });
 
   return null;
@@ -116,13 +175,13 @@ function Desk({
 
   return (
     <group position={[1.55, 0, 0.45]}>
-      <Box position={[0, 1.25, 0]} scale={[3.5, 0.22, 1.65]} color="#b18d6c" />
+      <Box position={[0, 1.25, 0]} scale={[3.5, 0.22, 1.65]} color="#77543b" />
       {[-1.45, 1.45].map((x) => (
         <Box
           key={x}
           position={[x, 0.55, 0]}
           scale={[0.18, 1.45, 1.35]}
-          color="#806852"
+          color="#4b3428"
         />
       ))}
 
@@ -135,12 +194,12 @@ function Desk({
         onPointerOver={(event) => handlePointer(event, true)}
         onPointerOut={(event) => handlePointer(event, false)}
       >
-        <Box position={[0, 0, 0]} scale={[1.8, 1.15, 0.16]} color="#748678" />
+        <Box position={[0, 0, 0]} scale={[1.8, 1.15, 0.16]} color="#17231f" />
         <mesh position={[0, 0, 0.095]}>
           <planeGeometry args={[1.55, 0.88]} />
           <meshStandardMaterial
             ref={screenMaterial}
-            color="#d9e2d3"
+            color="#183630"
             emissive={accent}
             emissiveIntensity={1.35}
             toneMapped={false}
@@ -149,15 +208,15 @@ function Desk({
         <Box
           position={[0, -0.78, 0]}
           scale={[0.16, 0.45, 0.16]}
-          color="#879589"
+          color="#24322d"
         />
-        <Box position={[0, -1.02, 0]} scale={[0.8, 0.1, 0.5]} color="#879589" />
+        <Box position={[0, -1.02, 0]} scale={[0.8, 0.1, 0.5]} color="#24322d" />
       </group>
 
       <Box
         position={[0.28, 1.48, 0.46]}
         scale={[1.45, 0.12, 0.58]}
-        color="#d6d2c2"
+        color="#27352f"
         rotation={[-0.04, 0, 0]}
       />
 
@@ -174,7 +233,7 @@ function Desk({
           </mesh>
           <mesh position={[0, -0.31, 0]} castShadow>
             <cylinderGeometry args={[0.2, 0.28, 0.12, 6]} />
-            <meshStandardMaterial color="#c8a77f" />
+            <meshStandardMaterial color="#d2b181" />
           </mesh>
         </group>
       </Float>
@@ -182,18 +241,18 @@ function Desk({
       <group position={[1.25, 1.55, 0.32]}>
         <mesh castShadow>
           <cylinderGeometry args={[0.23, 0.2, 0.42, 16]} />
-          <meshStandardMaterial color="#e0d4ba" roughness={0.82} />
+          <meshStandardMaterial color="#d7c3a2" roughness={0.82} />
         </mesh>
         <mesh position={[0.22, 0.02, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[0.13, 0.035, 8, 16, Math.PI * 1.65]} />
-          <meshStandardMaterial color="#e0d4ba" />
+          <meshStandardMaterial color="#d7c3a2" />
         </mesh>
       </group>
 
       <Box
         position={[-0.45, 1.48, 0.48]}
         scale={[0.7, 0.08, 0.48]}
-        color="#eee3cc"
+        color="#d8c7a4"
         rotation={[0, -0.2, 0]}
       />
     </group>
@@ -201,152 +260,370 @@ function Desk({
 }
 
 function Bookshelf() {
-  const bookColors = ["#b77966", "#c6a66f", "#7e9a86", "#8296a1", "#d2b992"];
+  const [active, setActive] = useState(false);
+  const shelf = useRef<THREE.Group>(null);
+  const books = useRef<THREE.Group>(null);
+
+  useFrame((state, delta) => {
+    if (shelf.current) {
+      shelf.current.position.z = THREE.MathUtils.damp(
+        shelf.current.position.z,
+        active ? 0.34 : 0,
+        6,
+        delta
+      );
+      shelf.current.rotation.y = THREE.MathUtils.damp(
+        shelf.current.rotation.y,
+        active ? -0.08 : 0,
+        6,
+        delta
+      );
+    }
+    if (books.current) {
+      books.current.position.y = THREE.MathUtils.damp(
+        books.current.position.y,
+        active ? Math.sin(state.clock.elapsedTime * 3.2) * 0.045 : 0,
+        8,
+        delta
+      );
+    }
+  });
+
+  const bookColors = ["#b55d4b", "#c6a45e", "#59796d", "#526b87", "#d0b88c"];
   return (
-    <group position={[-3.25, 0, -0.25]}>
-      <Box position={[0, 1.75, 0]} scale={[1.75, 3.55, 0.78]} color="#a58265" />
-      {[0.65, 1.75, 2.85].map((y) => (
+    <group
+      position={[-3.25, 0, -0.25]}
+      onClick={(event) => {
+        event.stopPropagation();
+        setActive((value) => !value);
+      }}
+      onPointerOver={() => (document.body.style.cursor = "pointer")}
+      onPointerOut={() => (document.body.style.cursor = "default")}
+    >
+      <group ref={shelf}>
         <Box
-          key={y}
-          position={[0, y, 0.44]}
-          scale={[1.55, 0.1, 0.65]}
-          color="#765d49"
+          position={[0, 1.75, 0]}
+          scale={[1.75, 3.55, 0.78]}
+          color="#604431"
         />
-      ))}
-      {Array.from({ length: 12 }, (_, index) => {
-        const row = Math.floor(index / 4);
-        const column = index % 4;
-        return (
+        {[0.65, 1.75, 2.85].map((y) => (
           <Box
-            key={index}
-            position={[-0.55 + column * 0.36, 0.9 + row * 1.1, 0.42]}
-            scale={[0.22, 0.72 - (index % 3) * 0.07, 0.42]}
-            color={bookColors[index % bookColors.length]}
-            rotation={[0, 0, ((index % 3) - 1) * 0.035]}
-            radius={0.03}
+            key={y}
+            position={[0, y, 0.44]}
+            scale={[1.55, 0.1, 0.65]}
+            color="#3e2d24"
           />
-        );
-      })}
+        ))}
+        <group ref={books}>
+          {Array.from({ length: 12 }, (_, index) => {
+            const row = Math.floor(index / 4);
+            const column = index % 4;
+            return (
+              <Box
+                key={index}
+                position={[-0.55 + column * 0.36, 0.9 + row * 1.1, 0.42]}
+                scale={[0.22, 0.72 - (index % 3) * 0.07, 0.42]}
+                color={bookColors[index % bookColors.length]}
+                rotation={[0, 0, ((index % 3) - 1) * 0.035]}
+                radius={0.03}
+              />
+            );
+          })}
+        </group>
+      </group>
     </group>
   );
 }
 
 function Corkboard() {
+  const [active, setActive] = useState(false);
+  const board = useRef<THREE.Group>(null);
+  const notes = useRef<THREE.Group>(null);
+
+  useFrame((state, delta) => {
+    if (board.current) {
+      board.current.position.z = THREE.MathUtils.damp(
+        board.current.position.z,
+        active ? 0.28 : 0,
+        7,
+        delta
+      );
+    }
+    if (notes.current) {
+      notes.current.rotation.z = THREE.MathUtils.damp(
+        notes.current.rotation.z,
+        active ? Math.sin(state.clock.elapsedTime * 4) * 0.025 : 0,
+        8,
+        delta
+      );
+    }
+  });
+
   return (
-    <group position={[-1.2, 2.7, -3.94]}>
-      <Box position={[0, 0, 0]} scale={[2.5, 1.55, 0.12]} color="#c39b6e" />
-      {[
-        [-0.72, 0.25, "#f6eedc", -0.08],
-        [0.05, -0.18, "#e2eadc", 0.04],
-        [0.75, 0.2, "#e3e5de", 0.09],
-      ].map(([x, y, color, rotate], index) => (
-        <Float
-          key={index}
-          speed={1 + index * 0.15}
-          floatIntensity={0.035}
-          rotationIntensity={0.02}
-        >
-          <mesh
-            position={[Number(x), Number(y), 0.09]}
-            rotation={[0, 0, Number(rotate)]}
-          >
-            <planeGeometry args={[0.62, 0.78]} />
-            <meshStandardMaterial color={String(color)} roughness={0.95} />
-          </mesh>
-        </Float>
-      ))}
+    <group
+      position={[-1.2, 2.7, -3.94]}
+      onClick={(event) => {
+        event.stopPropagation();
+        setActive((value) => !value);
+      }}
+      onPointerOver={() => (document.body.style.cursor = "pointer")}
+      onPointerOut={() => (document.body.style.cursor = "default")}
+    >
+      <group ref={board}>
+        <Box position={[0, 0, 0]} scale={[2.5, 1.55, 0.12]} color="#9b6f45" />
+        <group ref={notes}>
+          {[
+            [-0.72, 0.25, "#eee0c4", -0.08],
+            [0.05, -0.18, "#dfe7dc", 0.04],
+            [0.75, 0.2, "#d8dce6", 0.09],
+          ].map(([x, y, color, rotate], index) => (
+            <Float
+              key={index}
+              speed={1 + index * 0.15}
+              floatIntensity={0.035}
+              rotationIntensity={0.02}
+            >
+              <mesh
+                position={[Number(x), Number(y), 0.09]}
+                rotation={[0, 0, Number(rotate)]}
+              >
+                <planeGeometry args={[0.62, 0.78]} />
+                <meshStandardMaterial color={String(color)} roughness={0.95} />
+              </mesh>
+            </Float>
+          ))}
+        </group>
+      </group>
     </group>
   );
 }
 
 function Window() {
+  const [active, setActive] = useState(false);
+  const moon = useRef<THREE.Mesh>(null);
+  const glow = useRef<THREE.MeshStandardMaterial>(null);
+
+  useFrame((state, delta) => {
+    if (glow.current) {
+      glow.current.emissiveIntensity = THREE.MathUtils.damp(
+        glow.current.emissiveIntensity,
+        active ? 0.7 : 0.16,
+        6,
+        delta
+      );
+    }
+    if (moon.current) {
+      moon.current.position.x = THREE.MathUtils.damp(
+        moon.current.position.x,
+        active ? 0.48 + Math.sin(state.clock.elapsedTime * 0.8) * 0.12 : 0.48,
+        4,
+        delta
+      );
+      moon.current.position.y = THREE.MathUtils.damp(
+        moon.current.position.y,
+        active ? 0.4 : 0.24,
+        4,
+        delta
+      );
+    }
+  });
+
   return (
-    <group position={[3.15, 2.65, -3.92]}>
-      <Box position={[0, 0, 0]} scale={[2.05, 1.72, 0.14]} color="#91a18e" />
+    <group
+      position={[3.15, 2.65, -3.92]}
+      onClick={(event) => {
+        event.stopPropagation();
+        setActive((value) => !value);
+      }}
+      onPointerOver={() => (document.body.style.cursor = "pointer")}
+      onPointerOut={() => (document.body.style.cursor = "default")}
+    >
+      <Box position={[0, 0, 0]} scale={[2.05, 1.72, 0.14]} color="#2d5149" />
       <mesh position={[0, 0, 0.08]}>
         <planeGeometry args={[1.76, 1.44]} />
         <meshStandardMaterial
-          color="#d5e0d4"
-          emissive="#edf0d9"
-          emissiveIntensity={0.28}
+          ref={glow}
+          color="#9bc4c4"
+          emissive="#508e91"
+          emissiveIntensity={0.16}
         />
       </mesh>
-      <Box position={[0, 0, 0.13]} scale={[0.08, 1.5, 0.08]} color="#f0e7d4" />
-      <Box position={[0, 0, 0.13]} scale={[1.82, 0.08, 0.08]} color="#f0e7d4" />
+      <Box position={[0, 0, 0.13]} scale={[0.08, 1.5, 0.08]} color="#e2d5ba" />
+      <Box position={[0, 0, 0.13]} scale={[1.82, 0.08, 0.08]} color="#e2d5ba" />
+      <mesh ref={moon} position={[0.48, 0.24, 0.14]}>
+        <circleGeometry args={[0.16, 20]} />
+        <meshStandardMaterial
+          color="#fff0c8"
+          emissive="#fff0c8"
+          emissiveIntensity={0.45}
+        />
+      </mesh>
     </group>
   );
 }
 
 function Plant() {
+  const [active, setActive] = useState(false);
+  const leaves = useRef<THREE.Group>(null);
+
+  useFrame((state, delta) => {
+    if (leaves.current) {
+      leaves.current.rotation.z = THREE.MathUtils.damp(
+        leaves.current.rotation.z,
+        active ? Math.sin(state.clock.elapsedTime * 3.5) * 0.12 : 0,
+        6,
+        delta
+      );
+      leaves.current.scale.y = THREE.MathUtils.damp(
+        leaves.current.scale.y,
+        active ? 1.12 : 1,
+        6,
+        delta
+      );
+    }
+  });
+
   return (
-    <group position={[-3.1, 0.42, 2.8]}>
+    <group
+      position={[-3.1, 0.42, 2.8]}
+      onClick={(event) => {
+        event.stopPropagation();
+        setActive((value) => !value);
+      }}
+      onPointerOver={() => (document.body.style.cursor = "pointer")}
+      onPointerOut={() => (document.body.style.cursor = "default")}
+    >
       <mesh castShadow receiveShadow>
         <cylinderGeometry args={[0.4, 0.32, 0.65, 12]} />
-        <meshStandardMaterial color="#c58b68" roughness={0.9} />
+        <meshStandardMaterial color="#b6754e" roughness={0.9} />
       </mesh>
-      {[
-        [-0.22, 0.72, 0.05, -0.45],
-        [0.2, 0.82, 0, 0.4],
-        [0, 1.03, -0.04, 0],
-      ].map(([x, y, z, rotation], index) => (
-        <mesh
-          key={index}
-          position={[x, y, z]}
-          rotation={[0, 0, rotation]}
-          castShadow
-        >
-          <sphereGeometry args={[0.28, 8, 6]} />
-          <meshStandardMaterial color={index === 1 ? "#76917a" : "#8aa087"} />
-        </mesh>
-      ))}
+      <group ref={leaves}>
+        {[
+          [-0.22, 0.72, 0.05, -0.45],
+          [0.2, 0.82, 0, 0.4],
+          [0, 1.03, -0.04, 0],
+        ].map(([x, y, z, rotation], index) => (
+          <mesh
+            key={index}
+            position={[x, y, z]}
+            rotation={[0, 0, rotation]}
+            castShadow
+          >
+            <sphereGeometry args={[0.28, 8, 6]} />
+            <meshStandardMaterial color={index === 1 ? "#50765e" : "#63866b"} />
+          </mesh>
+        ))}
+      </group>
+    </group>
+  );
+}
+
+function DeskLamp() {
+  const [active, setActive] = useState(false);
+  const light = useRef<THREE.PointLight>(null);
+  const bulb = useRef<THREE.MeshStandardMaterial>(null);
+
+  useFrame((_, delta) => {
+    if (light.current) {
+      light.current.intensity = THREE.MathUtils.damp(
+        light.current.intensity,
+        active ? 7 : 0.6,
+        8,
+        delta
+      );
+    }
+    if (bulb.current) {
+      bulb.current.emissiveIntensity = THREE.MathUtils.damp(
+        bulb.current.emissiveIntensity,
+        active ? 3 : 0.35,
+        8,
+        delta
+      );
+    }
+  });
+
+  return (
+    <group
+      position={[3.05, 1.65, 1.05]}
+      onClick={(event) => {
+        event.stopPropagation();
+        setActive((value) => !value);
+      }}
+      onPointerOver={() => (document.body.style.cursor = "pointer")}
+      onPointerOut={() => (document.body.style.cursor = "default")}
+    >
+      <Box position={[0, 0, 0]} scale={[0.52, 0.08, 0.36]} color="#47352b" />
+      <Box position={[0, 0.38, 0]} scale={[0.07, 0.72, 0.07]} color="#5f4635" />
+      <mesh position={[0.17, 0.7, 0]} rotation={[0, 0, -0.55]}>
+        <coneGeometry args={[0.29, 0.32, 16, 1, true]} />
+        <meshStandardMaterial color="#d6a15f" side={THREE.DoubleSide} />
+      </mesh>
+      <mesh position={[0.17, 0.62, 0]}>
+        <sphereGeometry args={[0.09, 12, 8]} />
+        <meshStandardMaterial
+          ref={bulb}
+          color="#ffe9bb"
+          emissive="#ffce76"
+          emissiveIntensity={0.35}
+          toneMapped={false}
+        />
+      </mesh>
+      <pointLight
+        ref={light}
+        position={[0.17, 0.55, 0.32]}
+        color="#ffd590"
+        intensity={0.6}
+        distance={3.2}
+      />
     </group>
   );
 }
 
 function Room({
-  isProjects,
+  phase,
   accent,
   projectIndex,
   onOpenProjects,
 }: StudioSceneProps) {
   return (
     <group>
-      <Box position={[0, -0.18, 0]} scale={[8.8, 0.3, 8.2]} color="#c8b494" />
+      <Box position={[0, -0.18, 0]} scale={[8.8, 0.3, 8.2]} color="#8a684d" />
       <Box
         position={[0, 2.25, -4.05]}
         scale={[8.8, 4.8, 0.18]}
-        color="#eee7d7"
+        color="#ded3bc"
       />
       <Box
         position={[-4.3, 2.25, 0]}
         scale={[0.18, 4.8, 8.2]}
-        color="#e4dfcc"
+        color="#d4c7ad"
       />
 
       <Desk
         accent={accent}
         projectIndex={projectIndex}
-        active={isProjects}
+        active={phase === "projects"}
         onOpen={onOpenProjects}
       />
       <Bookshelf />
       <Corkboard />
       <Window />
       <Plant />
+      <DeskLamp />
 
       <mesh position={[0.3, 4.4, 0.5]}>
         <sphereGeometry args={[0.13, 12, 8]} />
         <meshStandardMaterial
-          color="#f3dba9"
-          emissive="#f7dfad"
-          emissiveIntensity={1.3}
+          color="#f6d8a1"
+          emissive="#ffd99a"
+          emissiveIntensity={2}
           toneMapped={false}
         />
       </mesh>
       <pointLight
         position={[0.3, 4.2, 0.5]}
-        color="#f3dcb2"
-        intensity={13}
+        color="#ffd9a3"
+        intensity={22}
         distance={8}
         decay={2}
         castShadow
@@ -356,22 +633,28 @@ function Room({
 }
 
 export function StudioScene(props: StudioSceneProps) {
+  const roomIsInteractive = props.phase === "room";
+
   return (
-    <div className="studio-canvas" aria-hidden="true">
+    <div
+      className="studio-canvas"
+      aria-hidden="true"
+      data-camera-phase={props.cameraPhase}
+      style={{ pointerEvents: roomIsInteractive ? "auto" : "none" }}
+    >
       <Canvas
         shadows
         dpr={[1, 1.6]}
-        camera={{ position: [10.2, 7.6, 13.2], fov: 38, near: 0.1, far: 100 }}
+        camera={{ position: [9.2, 7.1, 11.8], fov: 36, near: 0.1, far: 100 }}
         gl={{ antialias: true, alpha: true }}
       >
-        <color attach="background" args={["#e8eadc"]} />
-        <fog attach="fog" args={["#e8eadc", 17, 31]} />
-        <hemisphereLight args={["#f5f1df", "#b6ad93", 1.3]} />
-        <ambientLight intensity={1.55} color="#f5efdc" />
+        <color attach="background" args={["#12201c"]} />
+        <fog attach="fog" args={["#12201c", 15, 28]} />
+        <ambientLight intensity={1.2} color="#e8dfca" />
         <directionalLight
           position={[5, 9, 6]}
-          intensity={2.6}
-          color="#fff0cf"
+          intensity={3.2}
+          color="#ffe7bd"
           castShadow
           shadow-mapSize={[1024, 1024]}
           shadow-camera-far={25}
@@ -381,14 +664,18 @@ export function StudioScene(props: StudioSceneProps) {
           shadow-camera-bottom={-8}
         />
         <SoftShadows size={18} samples={12} focus={0.4} />
-        <CameraRig isProjects={props.isProjects} />
+        <CameraRig
+          phase={props.cameraPhase}
+          onDisplayReached={props.onDisplayReached}
+          onRoomRestored={props.onRoomRestored}
+        />
         <PresentationControls
           global
-          enabled={!props.isProjects}
+          enabled={roomIsInteractive}
           cursor
           snap
           speed={0.9}
-          zoom={0.82}
+          zoom={0.85}
           rotation={[0, -0.08, 0]}
           polar={[-0.08, 0.18]}
           azimuth={[-0.4, 0.35]}
