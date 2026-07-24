@@ -1,5 +1,8 @@
 import { motion } from 'motion/react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { createRng, hashStringToSeed } from '../../../lib/random';
+
+const DEFAULT_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899'];
 
 interface ParticleBackgroundProps {
   density?: number;
@@ -10,7 +13,7 @@ interface ParticleBackgroundProps {
 
 export function ParticleBackground({ 
   density = 50, 
-  colors = ['#3b82f6', '#8b5cf6', '#ec4899'],
+  colors = DEFAULT_COLORS,
   speed = 2,
   interactive = true 
 }: ParticleBackgroundProps) {
@@ -34,35 +37,39 @@ export function ParticleBackground({
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [interactive]);
 
-  // パーティクル生成
-  const particles: { id: number; x: number; y: number; influence: number; color: string; delay: number; size: number }[] = [];
-  const particleCount = density;
+  const baseParticles = useMemo(() => {
+    const rng = createRng(
+      hashStringToSeed(`${density}:${colors.join(',')}:${speed}`),
+    );
 
-  for (let i = 0; i < particleCount; i++) {
-    const x = Math.random() * 100;
-    const y = Math.random() * 100;
-    
-    // マウスとの距離計算
-    const distance = interactive 
-      ? Math.sqrt(Math.pow(x - mousePosition.x, 2) + Math.pow(y - mousePosition.y, 2))
+    return Array.from({ length: density }, (_, index) => ({
+      id: index,
+      x: rng() * 100,
+      y: rng() * 100,
+      color: colors[
+        Math.floor((index / Math.max(density, 1)) * colors.length) %
+          colors.length
+      ],
+      delay: index * 0.01,
+      duration: speed + rng(),
+      size: 2 + rng() * 3,
+    }));
+  }, [colors, density, speed]);
+
+  const particles = baseParticles.map((particle) => {
+    const distance = interactive
+      ? Math.hypot(
+          particle.x - mousePosition.x,
+          particle.y - mousePosition.y,
+        )
       : 50;
-    
     const maxDistance = 30;
-    const influence = Math.max(0, maxDistance - distance) / maxDistance;
-    
-    const colorIndex = Math.floor((i / particleCount) * colors.length);
-    const color = colors[colorIndex % colors.length];
 
-    particles.push({
-      id: i,
-      x,
-      y,
-      influence,
-      color,
-      delay: i * 0.01,
-      size: 2 + Math.random() * 3,
-    });
-  }
+    return {
+      ...particle,
+      influence: Math.max(0, maxDistance - distance) / maxDistance,
+    };
+  });
 
   return (
     <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -83,7 +90,7 @@ export function ParticleBackground({
             scale: [1, 1 + particle.influence * 0.5, 1],
           }}
           transition={{
-            duration: speed + Math.random(),
+            duration: particle.duration,
             delay: particle.delay,
             repeat: Infinity,
             ease: "easeInOut",
