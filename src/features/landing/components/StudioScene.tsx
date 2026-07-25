@@ -4,7 +4,6 @@ import {
   Float,
   PresentationControls,
   RoundedBox,
-  SoftShadows,
 } from "@react-three/drei";
 import {
   Canvas,
@@ -42,6 +41,31 @@ const DISPLAY_FOV = 48;
 const CAMERA_POSITION_EPSILON = 0.025;
 const CAMERA_FOV_EPSILON = 0.08;
 const CAMERA_ANGLE_EPSILON = 0.006;
+const CAMERA_TRANSITION_DURATION = 1.68;
+
+function easeDisplayTransition(progress: number) {
+  if (progress <= 0 || progress >= 1) {
+    return progress <= 0 ? 0 : 1;
+  }
+
+  const sampleCurve = (time: number, point1: number, point2: number) =>
+    3 * (1 - time) * (1 - time) * time * point1 +
+    3 * (1 - time) * time * time * point2 +
+    time * time * time;
+  let lower = 0;
+  let upper = 1;
+
+  for (let index = 0; index < 14; index += 1) {
+    const time = (lower + upper) / 2;
+    if (sampleCurve(time, 0.16, 0.3) < progress) {
+      lower = time;
+    } else {
+      upper = time;
+    }
+  }
+
+  return sampleCurve((lower + upper) / 2, 1, 1);
+}
 
 function CameraRig({
   phase,
@@ -51,6 +75,16 @@ function CameraRig({
   const { camera } = useThree();
   const targetCamera = useMemo(() => new THREE.PerspectiveCamera(), []);
   const settledPhase = useRef<StudioPhase | null>(null);
+  const transition = useRef<
+    | {
+        phase: StudioPhase;
+        startedAt: number;
+        position: THREE.Vector3;
+        quaternion: THREE.Quaternion;
+        fov: number;
+      }
+    | null
+  >(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -68,7 +102,7 @@ function CameraRig({
 
   // R3F camera transforms are intentionally updated inside its render loop.
   // eslint-disable-next-line react-hooks/immutability
-  useFrame((_, delta) => {
+  useFrame((state) => {
     const isDisplayView =
       phase === "zooming-to-display" || phase === "projects";
     const targetPosition = isDisplayView
@@ -81,24 +115,38 @@ function CameraRig({
     targetCamera.lookAt(targetLookAt);
 
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
-    if (prefersReducedMotion) {
-      camera.position.copy(targetPosition);
-      camera.quaternion.copy(targetCamera.quaternion);
-      // eslint-disable-next-line react-hooks/immutability
-      perspectiveCamera.fov = targetFov;
-    } else {
-      camera.position.lerp(targetPosition, 1 - Math.exp(-delta * 4.2));
-      camera.quaternion.slerp(
-        targetCamera.quaternion,
-        1 - Math.exp(-delta * 5.4)
-      );
-      perspectiveCamera.fov = THREE.MathUtils.damp(
-        perspectiveCamera.fov,
-        targetFov,
-        6,
-        delta
-      );
+    if (!transition.current || transition.current.phase !== phase) {
+      transition.current = {
+        phase,
+        startedAt: state.clock.elapsedTime,
+        position: camera.position.clone(),
+        quaternion: camera.quaternion.clone(),
+        fov: perspectiveCamera.fov,
+      };
     }
+
+    const elapsed = state.clock.elapsedTime - transition.current.startedAt;
+    const progress = prefersReducedMotion
+      ? 1
+      : Math.min(elapsed / CAMERA_TRANSITION_DURATION, 1);
+    const easedProgress = easeDisplayTransition(progress);
+
+    camera.position.lerpVectors(
+      transition.current.position,
+      targetPosition,
+      easedProgress
+    );
+    camera.quaternion.slerpQuaternions(
+      transition.current.quaternion,
+      targetCamera.quaternion,
+      easedProgress
+    );
+    // eslint-disable-next-line react-hooks/immutability
+    perspectiveCamera.fov = THREE.MathUtils.lerp(
+      transition.current.fov,
+      targetFov,
+      easedProgress
+    );
     perspectiveCamera.updateProjectionMatrix();
 
     const hasReachedTarget =
@@ -658,50 +706,54 @@ export function StudioScene(props: StudioSceneProps) {
       className="studio-canvas"
       aria-hidden="true"
       data-camera-phase={props.cameraPhase}
-      style={{ pointerEvents: roomIsInteractive ? "auto" : "none" }}
+      style={{ pointerEvents: "none" }}
     >
-      <Canvas
-        shadows
-        dpr={[1, 1.6]}
-        camera={{ position: [10.2, 7.6, 13.2], fov: 38, near: 0.1, far: 100 }}
-        gl={{ antialias: true, alpha: true }}
+      <div
+        className="studio-view"
+        style={{ pointerEvents: roomIsInteractive ? "auto" : "none" }}
       >
-        <color attach="background" args={["#e8eadc"]} />
-        <fog attach="fog" args={["#e8eadc", 17, 31]} />
-        <hemisphereLight args={["#f5f1df", "#b6ad93", 1.3]} />
-        <ambientLight intensity={1.55} color="#f5efdc" />
-        <directionalLight
-          position={[5, 9, 6]}
-          intensity={2.6}
-          color="#fff0cf"
-          castShadow
-          shadow-mapSize={[1024, 1024]}
-          shadow-camera-far={25}
-          shadow-camera-left={-8}
-          shadow-camera-right={8}
-          shadow-camera-top={8}
-          shadow-camera-bottom={-8}
-        />
-        <SoftShadows size={18} samples={12} focus={0.4} />
-        <CameraRig
-          phase={props.cameraPhase}
-          onDisplayReached={props.onDisplayReached}
-          onRoomRestored={props.onRoomRestored}
-        />
-        <PresentationControls
-          global
-          enabled={roomIsInteractive}
-          cursor
-          snap
-          speed={0.9}
-          zoom={0.82}
-          rotation={[0, -0.08, 0]}
-          polar={[-0.08, 0.18]}
-          azimuth={[-0.4, 0.35]}
+        <Canvas
+          shadows
+          dpr={[1, 1.6]}
+          camera={{ position: [10.2, 7.6, 13.2], fov: 38, near: 0.1, far: 100 }}
+          gl={{ antialias: true, alpha: true }}
+          onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
         >
-          <Room {...props} />
-        </PresentationControls>
-      </Canvas>
+          <fog attach="fog" args={["#e8eadc", 17, 31]} />
+          <hemisphereLight args={["#f5f1df", "#b6ad93", 1.3]} />
+          <ambientLight intensity={1.55} color="#f5efdc" />
+          <directionalLight
+            position={[5, 9, 6]}
+            intensity={2.6}
+            color="#fff0cf"
+            castShadow
+            shadow-mapSize={[1024, 1024]}
+            shadow-camera-far={25}
+            shadow-camera-left={-8}
+            shadow-camera-right={8}
+            shadow-camera-top={8}
+            shadow-camera-bottom={-8}
+          />
+          <CameraRig
+            phase={props.cameraPhase}
+            onDisplayReached={props.onDisplayReached}
+            onRoomRestored={props.onRoomRestored}
+          />
+          <PresentationControls
+            global
+            enabled={roomIsInteractive}
+            cursor
+            snap
+            speed={0.9}
+            zoom={0.82}
+            rotation={[0, -0.08, 0]}
+            polar={[-0.08, 0.18]}
+            azimuth={[-0.4, 0.35]}
+          >
+            <Room {...props} />
+          </PresentationControls>
+        </Canvas>
+      </div>
     </div>
   );
 }

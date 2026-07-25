@@ -133,8 +133,7 @@ export default function App() {
         <StudioScene
           phase={state.phase}
           cameraPhase={
-            state.phase === "returning-to-room" &&
-            !state.isProjectScreenClosed
+            state.phase === "returning-to-room" && !state.isProjectScreenClosed
               ? "projects"
               : state.phase
           }
@@ -161,12 +160,10 @@ export default function App() {
               <p className="studio-eyebrow">WELCOME TO MY SMALL STUDIO</p>
               <h1>
                 小さくつくり、
-                <br />
                 <em>ていねいに育てる。</em>
               </h1>
               <p className="studio-lead">
                 フロントエンドを軸に、設計・API・テストまで。
-                <br />
                 右の小さな開発室から、これまでの仕事をのぞいてみてください。
               </p>
               <p className="studio-invitation">
@@ -213,49 +210,48 @@ export default function App() {
                 transition={{ duration: 0.35 }}
                 aria-live="polite"
               >
-
-              <p className="studio-eyebrow">
-                PROJECT {String(state.projectIndex + 1).padStart(2, "0")}
-              </p>
-              <h2>{project.title}</h2>
-              <p className="project-summary">{project.summary}</p>
-
-              <ul className="project-tags" aria-label="使用技術">
-                {project.tags.map((tag) => (
-                  <li key={tag}>{tag}</li>
-                ))}
-              </ul>
-
-              <div className="project-actions">
-                <button
-                  type="button"
-                  aria-label="前のプロジェクト"
-                  onClick={() => dispatch({ type: "PREVIOUS_PROJECT" })}
-                >
-                  <ArrowLeft size={18} />
-                </button>
-                <span>
-                  {state.projectIndex + 1} / {projects.length}
-                </span>
-                <button
-                  type="button"
-                  aria-label="次のプロジェクト"
-                  onClick={() => dispatch({ type: "NEXT_PROJECT" })}
-                >
-                  <ArrowRight size={18} />
-                </button>
-              </div>
-
-              {project.demo ? (
-                <a href={project.demo} target="_blank" rel="noreferrer">
-                  View project
-                  <ExternalLink size={16} />
-                </a>
-              ) : (
-                <p className="project-note">
-                  作品リンクと詳しい設計意図は次の工程で接続します。
+                <p className="studio-eyebrow">
+                  PROJECT {String(state.projectIndex + 1).padStart(2, "0")}
                 </p>
-              )}
+                <h2>{project.title}</h2>
+                <p className="project-summary">{project.summary}</p>
+
+                <ul className="project-tags" aria-label="使用技術">
+                  {project.tags.map((tag) => (
+                    <li key={tag}>{tag}</li>
+                  ))}
+                </ul>
+
+                <div className="project-actions">
+                  <button
+                    type="button"
+                    aria-label="前のプロジェクト"
+                    onClick={() => dispatch({ type: "PREVIOUS_PROJECT" })}
+                  >
+                    <ArrowLeft size={18} />
+                  </button>
+                  <span>
+                    {state.projectIndex + 1} / {projects.length}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="次のプロジェクト"
+                    onClick={() => dispatch({ type: "NEXT_PROJECT" })}
+                  >
+                    <ArrowRight size={18} />
+                  </button>
+                </div>
+
+                {project.demo ? (
+                  <a href={project.demo} target="_blank" rel="noreferrer">
+                    View project
+                    <ExternalLink size={16} />
+                  </a>
+                ) : (
+                  <p className="project-note">
+                    作品リンクと詳しい設計意図は次の工程で接続します。
+                  </p>
+                )}
               </motion.article>
             </motion.section>
           ) : null}
