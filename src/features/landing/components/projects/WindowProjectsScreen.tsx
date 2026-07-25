@@ -1,13 +1,14 @@
 import type { ComponentProps } from "react";
 import { motion } from "motion/react";
+import { windowProjects } from "../../data/projects";
 import { ProjectsScreen } from "./ProjectsScreen";
 
-type WindowProjectsScreenProps = ComponentProps<typeof ProjectsScreen>;
+type WindowProjectsScreenProps = Omit<ComponentProps<typeof ProjectsScreen>, "projects">;
 
 export function WindowProjectsScreen(props: WindowProjectsScreenProps) {
   return (
     <>
-      <ProjectsScreen {...props} entry="from-depth" />
+      <ProjectsScreen {...props} projects={windowProjects} entry="from-depth" />
       <div className="window-projects-shutters" aria-hidden="true">
         <motion.div
           className="window-projects-shutter window-projects-shutter-left"

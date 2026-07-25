@@ -1,4 +1,4 @@
-import { projects } from "../data/projects";
+import { getProjectsForPhase } from "../data/projects";
 
 export type StudioPhase =
   | "room"
@@ -130,7 +130,10 @@ export function studioReducer(
       return ["projects", "bookshelf-projects", "corkboard-projects", "window-projects"].includes(
         state.phase
       )
-        ? { ...state, projectIndex: (state.projectIndex + 1) % projects.length }
+        ? {
+            ...state,
+            projectIndex: (state.projectIndex + 1) % getProjectsForPhase(state.phase).length,
+          }
         : state;
     case "PREVIOUS_PROJECT":
       return ["projects", "bookshelf-projects", "corkboard-projects", "window-projects"].includes(
@@ -138,7 +141,9 @@ export function studioReducer(
       )
         ? {
             ...state,
-            projectIndex: (state.projectIndex - 1 + projects.length) % projects.length,
+            projectIndex:
+              (state.projectIndex - 1 + getProjectsForPhase(state.phase).length) %
+              getProjectsForPhase(state.phase).length,
           }
         : state;
   }

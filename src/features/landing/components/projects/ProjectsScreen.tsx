@@ -4,9 +4,8 @@ import type { CSSProperties } from "react";
 import type { Project } from "../../data/projects";
 
 type ProjectsScreenProps = {
-  project: Project;
+  projects: readonly Project[];
   projectIndex: number;
-  projectCount: number;
   onReturnToRoom: () => void;
   onPreviousProject: () => void;
   onNextProject: () => void;
@@ -14,14 +13,14 @@ type ProjectsScreenProps = {
 };
 
 export function ProjectsScreen({
-  project,
+  projects,
   projectIndex,
-  projectCount,
   onReturnToRoom,
   onPreviousProject,
   onNextProject,
   entry = "fade",
 }: ProjectsScreenProps) {
+  const project = projects[projectIndex];
   const entryOffset = {
     x: entry === "from-right" ? 96 : 0,
     y: entry === "from-bottom" ? 72 : 0,
@@ -69,7 +68,7 @@ export function ProjectsScreen({
             <ArrowLeft size={18} />
           </button>
           <span>
-            {projectIndex + 1} / {projectCount}
+            {projectIndex + 1} / {projects.length}
           </span>
           <button type="button" aria-label="次のプロジェクト" onClick={onNextProject}>
             <ArrowRight size={18} />

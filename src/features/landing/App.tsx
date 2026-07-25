@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import dynamic from "next/dynamic";
 import { useReducer } from "react";
-import { projects } from "./data/projects";
+import { deskProjects, getProjectsForPhase } from "./data/projects";
 import { LandingHeader } from "./components/layout/LandingHeader";
 import { StudioFooter } from "./components/layout/StudioFooter";
 import { StudioHint } from "./components/layout/StudioHint";
@@ -24,7 +24,8 @@ const StudioScene = dynamic(
 
 export default function App() {
   const [state, dispatch] = useReducer(studioReducer, initialStudioState);
-  const project = projects[state.projectIndex];
+  const activeProjects = getProjectsForPhase(state.phase);
+  const project = activeProjects[state.projectIndex];
   const isProjects = state.phase === "projects";
   const isBookshelfProjects = state.phase === "bookshelf-projects";
   const isCorkboardProjects = state.phase === "corkboard-projects";
@@ -92,9 +93,8 @@ export default function App() {
           ) : isProjects ? (
             <ProjectsScreen
               key="projects"
-              project={project}
+              projects={deskProjects}
               projectIndex={state.projectIndex}
-              projectCount={projects.length}
               onReturnToRoom={() => dispatch({ type: "RETURN_TO_ROOM" })}
               onPreviousProject={() => dispatch({ type: "PREVIOUS_PROJECT" })}
               onNextProject={() => dispatch({ type: "NEXT_PROJECT" })}
@@ -102,9 +102,7 @@ export default function App() {
           ) : isBookshelfProjects ? (
             <BookshelfProjectsScreen
               key="bookshelf-projects"
-              project={project}
               projectIndex={state.projectIndex}
-              projectCount={projects.length}
               onReturnToRoom={() => dispatch({ type: "RETURN_FROM_BOOKSHELF" })}
               onPreviousProject={() => dispatch({ type: "PREVIOUS_PROJECT" })}
               onNextProject={() => dispatch({ type: "NEXT_PROJECT" })}
@@ -112,9 +110,7 @@ export default function App() {
           ) : isCorkboardProjects ? (
             <CorkboardProjectsScreen
               key="corkboard-projects"
-              project={project}
               projectIndex={state.projectIndex}
-              projectCount={projects.length}
               onReturnToRoom={() => dispatch({ type: "RETURN_FROM_CORKBOARD" })}
               onPreviousProject={() => dispatch({ type: "PREVIOUS_PROJECT" })}
               onNextProject={() => dispatch({ type: "NEXT_PROJECT" })}
@@ -122,9 +118,7 @@ export default function App() {
           ) : isWindowProjects ? (
             <WindowProjectsScreen
               key="window-projects"
-              project={project}
               projectIndex={state.projectIndex}
-              projectCount={projects.length}
               onReturnToRoom={() => dispatch({ type: "RETURN_FROM_WINDOW" })}
               onPreviousProject={() => dispatch({ type: "PREVIOUS_PROJECT" })}
               onNextProject={() => dispatch({ type: "NEXT_PROJECT" })}
