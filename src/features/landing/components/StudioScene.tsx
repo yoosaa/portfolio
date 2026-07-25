@@ -167,48 +167,19 @@ function Desk({
   );
 }
 
-function Bookshelf() {
-  const [active, setActive] = useState(false);
-  const shelf = useRef<THREE.Group>(null);
-  const books = useRef<THREE.Group>(null);
-
-  useFrame((state, delta) => {
-    if (shelf.current) {
-      shelf.current.position.z = THREE.MathUtils.damp(
-        shelf.current.position.z,
-        active ? 0.34 : 0,
-        6,
-        delta
-      );
-      shelf.current.rotation.y = THREE.MathUtils.damp(
-        shelf.current.rotation.y,
-        active ? -0.08 : 0,
-        6,
-        delta
-      );
-    }
-    if (books.current) {
-      books.current.position.y = THREE.MathUtils.damp(
-        books.current.position.y,
-        active ? Math.sin(state.clock.elapsedTime * 3.2) * 0.045 : 0,
-        8,
-        delta
-      );
-    }
-  });
-
+function Bookshelf({ onOpen }: { onOpen: () => void }) {
   const bookColors = ["#c78976", "#d3b56f", "#89a28a", "#91a5b7", "#dac79b"];
   return (
     <group
       position={[-3.25, 0, -0.25]}
       onClick={(event) => {
         event.stopPropagation();
-        setActive((value) => !value);
+        onOpen();
       }}
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
     >
-      <group ref={shelf}>
+      <group>
         <Box
           position={[0, 1.75, 0]}
           scale={[1.75, 3.55, 0.78]}
@@ -222,7 +193,7 @@ function Bookshelf() {
             color="#765d49"
           />
         ))}
-        <group ref={books}>
+        <group>
           {Array.from({ length: 12 }, (_, index) => {
             const row = Math.floor(index / 4);
             const column = index % 4;
@@ -243,43 +214,20 @@ function Bookshelf() {
   );
 }
 
-function Corkboard() {
-  const [active, setActive] = useState(false);
-  const board = useRef<THREE.Group>(null);
-  const notes = useRef<THREE.Group>(null);
-
-  useFrame((state, delta) => {
-    if (board.current) {
-      board.current.position.z = THREE.MathUtils.damp(
-        board.current.position.z,
-        active ? 0.28 : 0,
-        7,
-        delta
-      );
-    }
-    if (notes.current) {
-      notes.current.rotation.z = THREE.MathUtils.damp(
-        notes.current.rotation.z,
-        active ? Math.sin(state.clock.elapsedTime * 4) * 0.025 : 0,
-        8,
-        delta
-      );
-    }
-  });
-
+function Corkboard({ onOpen }: { onOpen: () => void }) {
   return (
     <group
       position={[-1.2, 2.7, -3.94]}
       onClick={(event) => {
         event.stopPropagation();
-        setActive((value) => !value);
+        onOpen();
       }}
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
     >
-      <group ref={board}>
+      <group>
         <Box position={[0, 0, 0]} scale={[2.5, 1.55, 0.12]} color="#c9a575" />
-        <group ref={notes}>
+        <group>
           {[
             [-0.72, 0.25, "#eee0c4", -0.08],
             [0.05, -0.18, "#dfe7dc", 0.04],
@@ -306,42 +254,13 @@ function Corkboard() {
   );
 }
 
-function Window() {
-  const [active, setActive] = useState(false);
-  const moon = useRef<THREE.Mesh>(null);
-  const glow = useRef<THREE.MeshStandardMaterial>(null);
-
-  useFrame((state, delta) => {
-    if (glow.current) {
-      glow.current.emissiveIntensity = THREE.MathUtils.damp(
-        glow.current.emissiveIntensity,
-        active ? 0.7 : 0.16,
-        6,
-        delta
-      );
-    }
-    if (moon.current) {
-      moon.current.position.x = THREE.MathUtils.damp(
-        moon.current.position.x,
-        active ? 0.48 + Math.sin(state.clock.elapsedTime * 0.8) * 0.12 : 0.48,
-        4,
-        delta
-      );
-      moon.current.position.y = THREE.MathUtils.damp(
-        moon.current.position.y,
-        active ? 0.4 : 0.24,
-        4,
-        delta
-      );
-    }
-  });
-
+function Window({ onOpen }: { onOpen: () => void }) {
   return (
     <group
       position={[3.15, 2.65, -3.92]}
       onClick={(event) => {
         event.stopPropagation();
-        setActive((value) => !value);
+        onOpen();
       }}
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
@@ -350,7 +269,6 @@ function Window() {
       <mesh position={[0, 0, 0.08]}>
         <planeGeometry args={[1.76, 1.44]} />
         <meshStandardMaterial
-          ref={glow}
           color="#d5e0d4"
           emissive="#edf0d9"
           emissiveIntensity={0.16}
@@ -358,7 +276,7 @@ function Window() {
       </mesh>
       <Box position={[0, 0, 0.13]} scale={[0.08, 1.5, 0.08]} color="#eee5ce" />
       <Box position={[0, 0, 0.13]} scale={[1.82, 0.08, 0.08]} color="#eee5ce" />
-      <mesh ref={moon} position={[0.48, 0.24, 0.14]}>
+      <mesh position={[0.48, 0.24, 0.14]}>
         <circleGeometry args={[0.16, 20]} />
         <meshStandardMaterial
           color="#f5efd5"
@@ -492,9 +410,15 @@ function Room({
   accent,
   projectIndex,
   onOpenProjects,
+  onOpenBookshelf,
+  onOpenCorkboard,
+  onOpenWindow,
 }: Pick<
   StudioSceneProps,
   "phase" | "accent" | "projectIndex" | "onOpenProjects"
+  | "onOpenBookshelf"
+  | "onOpenCorkboard"
+  | "onOpenWindow"
 >) {
   return (
     <group>
@@ -516,9 +440,9 @@ function Room({
         active={phase === "projects"}
         onOpen={onOpenProjects}
       />
-      <Bookshelf />
-      <Corkboard />
-      <Window />
+      <Bookshelf onOpen={onOpenBookshelf} />
+      <Corkboard onOpen={onOpenCorkboard} />
+      <Window onOpen={onOpenWindow} />
       <Plant />
       <DeskLamp />
 
@@ -549,7 +473,13 @@ export function StudioScene({
   accent,
   projectIndex,
   onOpenProjects,
+  onOpenBookshelf,
+  onOpenCorkboard,
+  onOpenWindow,
   onDisplayReached,
+  onBookshelfReached,
+  onCorkboardReached,
+  onWindowReached,
   onRoomRestored,
 }: StudioSceneProps) {
   const roomIsInteractive = phase === "room";
@@ -598,6 +528,9 @@ export function StudioScene({
           <CameraRig
             phase={cameraPhase}
             onDisplayReached={onDisplayReached}
+            onBookshelfReached={onBookshelfReached}
+            onCorkboardReached={onCorkboardReached}
+            onWindowReached={onWindowReached}
             onRoomRestored={onRoomRestored}
           />
           <PresentationControls
@@ -616,6 +549,9 @@ export function StudioScene({
               accent={accent}
               projectIndex={projectIndex}
               onOpenProjects={onOpenProjects}
+              onOpenBookshelf={onOpenBookshelf}
+              onOpenCorkboard={onOpenCorkboard}
+              onOpenWindow={onOpenWindow}
             />
           </PresentationControls>
         </Canvas>

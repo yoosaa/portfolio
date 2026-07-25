@@ -2,6 +2,12 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import {
+  BOOKSHELF_CAMERA_POSITION,
+  BOOKSHELF_FOV,
+  BOOKSHELF_LOOK_AT,
+  CORKBOARD_CAMERA_POSITION,
+  CORKBOARD_FOV,
+  CORKBOARD_LOOK_AT,
   CAMERA_ANGLE_EPSILON,
   CAMERA_FOV_EPSILON,
   CAMERA_POSITION_EPSILON,
@@ -12,12 +18,18 @@ import {
   ROOM_CAMERA_POSITION,
   ROOM_FOV,
   ROOM_LOOK_AT,
+  WINDOW_CAMERA_POSITION,
+  WINDOW_FOV,
+  WINDOW_LOOK_AT,
 } from "../../model/scene-config";
 import type { StudioPhase } from "../../model/studio-state";
 
 type CameraRigProps = {
   phase: StudioPhase;
   onDisplayReached: () => void;
+  onBookshelfReached: () => void;
+  onCorkboardReached: () => void;
+  onWindowReached: () => void;
   onRoomRestored: () => void;
 };
 
@@ -48,6 +60,9 @@ function easeDisplayTransition(progress: number) {
 export function CameraRig({
   phase,
   onDisplayReached,
+  onBookshelfReached,
+  onCorkboardReached,
+  onWindowReached,
   onRoomRestored,
 }: CameraRigProps) {
   const { camera } = useThree();
@@ -79,11 +94,38 @@ export function CameraRig({
   // eslint-disable-next-line react-hooks/immutability
   useFrame((state) => {
     const isDisplayView = phase === "zooming-to-display" || phase === "projects";
+    const isBookshelfView =
+      phase === "zooming-to-bookshelf" || phase === "bookshelf-projects";
+    const isCorkboardView =
+      phase === "zooming-to-corkboard" || phase === "corkboard-projects";
+    const isWindowView = phase === "zooming-to-window" || phase === "window-projects";
     const targetPosition = isDisplayView
       ? DISPLAY_CAMERA_POSITION
-      : ROOM_CAMERA_POSITION;
-    const targetLookAt = isDisplayView ? DISPLAY_LOOK_AT : ROOM_LOOK_AT;
-    const targetFov = isDisplayView ? DISPLAY_FOV : ROOM_FOV;
+      : isBookshelfView
+        ? BOOKSHELF_CAMERA_POSITION
+        : isCorkboardView
+          ? CORKBOARD_CAMERA_POSITION
+          : isWindowView
+            ? WINDOW_CAMERA_POSITION
+        : ROOM_CAMERA_POSITION;
+    const targetLookAt = isDisplayView
+      ? DISPLAY_LOOK_AT
+      : isBookshelfView
+        ? BOOKSHELF_LOOK_AT
+        : isCorkboardView
+          ? CORKBOARD_LOOK_AT
+          : isWindowView
+            ? WINDOW_LOOK_AT
+        : ROOM_LOOK_AT;
+    const targetFov = isDisplayView
+      ? DISPLAY_FOV
+      : isBookshelfView
+        ? BOOKSHELF_FOV
+        : isCorkboardView
+          ? CORKBOARD_FOV
+          : isWindowView
+            ? WINDOW_FOV
+        : ROOM_FOV;
 
     targetCamera.position.copy(targetPosition);
     targetCamera.lookAt(targetLookAt);
@@ -132,7 +174,23 @@ export function CameraRig({
     if (phase === "zooming-to-display") {
       onDisplayReached();
     }
-    if (phase === "returning-to-room") {
+    if (phase === "zooming-to-bookshelf") {
+      onBookshelfReached();
+    }
+    if (phase === "zooming-to-corkboard") {
+      onCorkboardReached();
+    }
+    if (phase === "zooming-to-window") {
+      onWindowReached();
+    }
+    if (
+      [
+        "returning-to-room",
+        "returning-from-bookshelf",
+        "returning-from-corkboard",
+        "returning-from-window",
+      ].includes(phase)
+    ) {
       onRoomRestored();
     }
   });

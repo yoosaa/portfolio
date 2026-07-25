@@ -6,6 +6,12 @@ export type StudioSceneProps = {
   accent: string;
   projectIndex: number;
   onOpenProjects: () => void;
+  onOpenBookshelf: () => void;
+  onOpenCorkboard: () => void;
+  onOpenWindow: () => void;
   onDisplayReached: () => void;
+  onBookshelfReached: () => void;
+  onCorkboardReached: () => void;
+  onWindowReached: () => void;
   onRoomRestored: () => void;
 };

@@ -10,6 +10,7 @@ type ProjectsScreenProps = {
   onReturnToRoom: () => void;
   onPreviousProject: () => void;
   onNextProject: () => void;
+  entry?: "fade" | "from-right" | "from-bottom" | "from-depth";
 };
 
 export function ProjectsScreen({
@@ -19,14 +20,21 @@ export function ProjectsScreen({
   onReturnToRoom,
   onPreviousProject,
   onNextProject,
+  entry = "fade",
 }: ProjectsScreenProps) {
+  const entryOffset = {
+    x: entry === "from-right" ? 96 : 0,
+    y: entry === "from-bottom" ? 72 : 0,
+    scale: entry === "from-depth" ? 0.78 : 1,
+  };
+
   return (
     <motion.section
       className="projects-screen"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, ...entryOffset }}
+      animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.28 }}
+      transition={{ duration: entry === "fade" ? 0.28 : 0.48 }}
     >
       <div className="projects-screen-topbar">
         <button className="project-back" type="button" onClick={onReturnToRoom}>
