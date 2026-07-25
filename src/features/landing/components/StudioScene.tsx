@@ -1,17 +1,20 @@
 "use client";
 
-import {
-  Float,
-  PresentationControls,
-  RoundedBox,
-} from "@react-three/drei";
+import { Float, PresentationControls, RoundedBox } from "@react-three/drei";
 import {
   Canvas,
   type ThreeEvent,
   useFrame,
   useThree,
 } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  type RefObject,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import * as THREE from "three";
 
 type StudioPhase =
@@ -75,16 +78,13 @@ function CameraRig({
   const { camera } = useThree();
   const targetCamera = useMemo(() => new THREE.PerspectiveCamera(), []);
   const settledPhase = useRef<StudioPhase | null>(null);
-  const transition = useRef<
-    | {
-        phase: StudioPhase;
-        startedAt: number;
-        position: THREE.Vector3;
-        quaternion: THREE.Quaternion;
-        fov: number;
-      }
-    | null
-  >(null);
+  const transition = useRef<{
+    phase: StudioPhase;
+    startedAt: number;
+    position: THREE.Vector3;
+    quaternion: THREE.Quaternion;
+    fov: number;
+  } | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -166,6 +166,58 @@ function CameraRig({
       onRoomRestored();
     }
   });
+
+  return null;
+}
+
+function CanvasResizeSync({
+  viewRef,
+}: {
+  viewRef: RefObject<HTMLDivElement | null>;
+}) {
+  const setSize = useThree((state) => state.setSize);
+  const pendingSize = useRef<{
+    width: number;
+    height: number;
+    top: number;
+    left: number;
+  } | null>(null);
+
+  useLayoutEffect(() => {
+    const view = viewRef.current;
+    if (!view) {
+      return;
+    }
+
+    const measureSize = () => {
+      const rect = view.getBoundingClientRect();
+
+      // ここでは R3F を更新せず、次の描画フレーム用に記録する。
+      pendingSize.current = {
+        width: view.clientWidth,
+        height: view.clientHeight,
+        top: rect.top + view.clientTop,
+        left: rect.left + view.clientLeft,
+      };
+    };
+
+    const observer = new ResizeObserver(measureSize);
+    observer.observe(view);
+    measureSize();
+
+    return () => observer.disconnect();
+  }, [viewRef]);
+
+  // priority -1: 通常のシーン描画より前に実行する。
+  useFrame(() => {
+    const nextSize = pendingSize.current;
+    if (!nextSize) {
+      return;
+    }
+
+    pendingSize.current = null;
+    setSize(nextSize.width, nextSize.height, nextSize.top, nextSize.left);
+  }, -1);
 
   return null;
 }
@@ -700,6 +752,7 @@ function Room({
 
 export function StudioScene(props: StudioSceneProps) {
   const roomIsInteractive = props.phase === "room";
+  const viewRef = useRef<HTMLDivElement>(null!);
 
   return (
     <div
@@ -709,6 +762,7 @@ export function StudioScene(props: StudioSceneProps) {
       style={{ pointerEvents: "none" }}
     >
       <div
+        ref={viewRef}
         className="studio-view"
         style={{ pointerEvents: roomIsInteractive ? "auto" : "none" }}
       >
@@ -734,6 +788,7 @@ export function StudioScene(props: StudioSceneProps) {
             shadow-camera-top={8}
             shadow-camera-bottom={-8}
           />
+          <CanvasResizeSync viewRef={viewRef} />
           <CameraRig
             phase={props.cameraPhase}
             onDisplayReached={props.onDisplayReached}
