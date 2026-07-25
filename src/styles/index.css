@@ -1,4 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Zen+Maru+Gothic:wght@400;500;700&display=swap");
+
 :root {
+  --studio-font-body: "Zen Maru Gothic", "Hiragino Maru Gothic ProN",
+    "Yu Gothic", sans-serif;
+  --studio-font-display: "Kiwi Maru", "Hiragino Maru Gothic ProN", serif;
   --studio-paper: #f4f0e4;
   --studio-ink: #465148;
   --studio-ink-strong: #344139;
@@ -37,8 +42,7 @@ a {
       transparent 30%
     ),
     linear-gradient(135deg, #f7f3e9 0%, #efecdf 54%, #e5e7d9 100%);
-  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic",
-    system-ui, sans-serif;
+  font-family: var(--studio-font-body);
 }
 
 .studio-shell::before {
@@ -95,7 +99,7 @@ a {
 }
 
 .studio-brand strong {
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--studio-font-display);
   font-size: 15px;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -200,7 +204,7 @@ a {
   position: absolute;
   z-index: 8;
   bottom: 10%;
-  left: clamp(24px, 7vw, 104px);
+  left: clamp(24px, 4vw, 104px);
   width: min(500px, 35vw);
   pointer-events: none;
 }
@@ -216,7 +220,7 @@ a {
 .studio-intro h1 {
   margin: 0;
   color: var(--studio-ink-strong);
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--studio-font-display);
   font-size: clamp(42px, 5.35vw, 78px);
   font-weight: 400;
   line-height: 1.1;
@@ -296,8 +300,8 @@ a {
 .studio-hint {
   position: absolute;
   z-index: 8;
-  right: clamp(34px, 8vw, 128px);
-  bottom: clamp(26px, 4vh, 42px);
+  bottom: clamp(26px, 11vh, 100px);
+  right: clamp(26px, 0vw, 228px);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -349,8 +353,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 25px clamp(24px, 5vw, 80px);
-  border-bottom: 1px solid var(--studio-line);
+  padding: 5vh clamp(24px, 5vw, 80px);
   color: #738175;
   font-size: 10px;
   font-weight: 700;
@@ -383,7 +386,7 @@ a {
 .projects-screen h2 {
   margin: 0 0 24px;
   color: var(--project-accent);
-  font-family: Georgia, "Yu Mincho", serif;
+  font-family: var(--studio-font-display);
   font-size: clamp(54px, 8vw, 112px);
   font-weight: 400;
   line-height: 0.94;
