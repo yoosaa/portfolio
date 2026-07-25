@@ -1,0 +1,141 @@
+import { useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, useState } from "react";
+import * as THREE from "three";
+import {
+  CAMERA_ANGLE_EPSILON,
+  CAMERA_FOV_EPSILON,
+  CAMERA_POSITION_EPSILON,
+  CAMERA_TRANSITION_DURATION,
+  DISPLAY_CAMERA_POSITION,
+  DISPLAY_FOV,
+  DISPLAY_LOOK_AT,
+  ROOM_CAMERA_POSITION,
+  ROOM_FOV,
+  ROOM_LOOK_AT,
+} from "../../model/scene-config";
+import type { StudioPhase } from "../../model/studio-state";
+
+type CameraRigProps = {
+  phase: StudioPhase;
+  onDisplayReached: () => void;
+  onRoomRestored: () => void;
+};
+
+function easeDisplayTransition(progress: number) {
+  if (progress <= 0 || progress >= 1) {
+    return progress <= 0 ? 0 : 1;
+  }
+
+  const sampleCurve = (time: number, point1: number, point2: number) =>
+    3 * (1 - time) * (1 - time) * time * point1 +
+    3 * (1 - time) * time * time * point2 +
+    time * time * time;
+  let lower = 0;
+  let upper = 1;
+
+  for (let index = 0; index < 14; index += 1) {
+    const time = (lower + upper) / 2;
+    if (sampleCurve(time, 0.16, 0.3) < progress) {
+      lower = time;
+    } else {
+      upper = time;
+    }
+  }
+
+  return sampleCurve((lower + upper) / 2, 1, 1);
+}
+
+export function CameraRig({
+  phase,
+  onDisplayReached,
+  onRoomRestored,
+}: CameraRigProps) {
+  const { camera } = useThree();
+  const targetCamera = useMemo(() => new THREE.PerspectiveCamera(), []);
+  const settledPhase = useRef<StudioPhase | null>(null);
+  const transition = useRef<{
+    phase: StudioPhase;
+    startedAt: number;
+    position: THREE.Vector3;
+    quaternion: THREE.Quaternion;
+    fov: number;
+  } | null>(null);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    settledPhase.current = null;
+  }, [phase]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+
+    updatePreference();
+    mediaQuery.addEventListener("change", updatePreference);
+    return () => mediaQuery.removeEventListener("change", updatePreference);
+  }, []);
+
+  // R3F camera transforms are intentionally updated inside its render loop.
+  // eslint-disable-next-line react-hooks/immutability
+  useFrame((state) => {
+    const isDisplayView = phase === "zooming-to-display" || phase === "projects";
+    const targetPosition = isDisplayView
+      ? DISPLAY_CAMERA_POSITION
+      : ROOM_CAMERA_POSITION;
+    const targetLookAt = isDisplayView ? DISPLAY_LOOK_AT : ROOM_LOOK_AT;
+    const targetFov = isDisplayView ? DISPLAY_FOV : ROOM_FOV;
+
+    targetCamera.position.copy(targetPosition);
+    targetCamera.lookAt(targetLookAt);
+
+    const perspectiveCamera = camera as THREE.PerspectiveCamera;
+    if (!transition.current || transition.current.phase !== phase) {
+      transition.current = {
+        phase,
+        startedAt: state.clock.elapsedTime,
+        position: camera.position.clone(),
+        quaternion: camera.quaternion.clone(),
+        fov: perspectiveCamera.fov,
+      };
+    }
+
+    const elapsed = state.clock.elapsedTime - transition.current.startedAt;
+    const progress = prefersReducedMotion
+      ? 1
+      : Math.min(elapsed / CAMERA_TRANSITION_DURATION, 1);
+    const easedProgress = easeDisplayTransition(progress);
+
+    camera.position.lerpVectors(transition.current.position, targetPosition, easedProgress);
+    camera.quaternion.slerpQuaternions(
+      transition.current.quaternion,
+      targetCamera.quaternion,
+      easedProgress
+    );
+    // eslint-disable-next-line react-hooks/immutability
+    perspectiveCamera.fov = THREE.MathUtils.lerp(
+      transition.current.fov,
+      targetFov,
+      easedProgress
+    );
+    perspectiveCamera.updateProjectionMatrix();
+
+    const hasReachedTarget =
+      camera.position.distanceTo(targetPosition) < CAMERA_POSITION_EPSILON &&
+      Math.abs(perspectiveCamera.fov - targetFov) < CAMERA_FOV_EPSILON &&
+      camera.quaternion.angleTo(targetCamera.quaternion) < CAMERA_ANGLE_EPSILON;
+
+    if (!hasReachedTarget || settledPhase.current === phase) {
+      return;
+    }
+
+    settledPhase.current = phase;
+    if (phase === "zooming-to-display") {
+      onDisplayReached();
+    }
+    if (phase === "returning-to-room") {
+      onRoomRestored();
+    }
+  });
+
+  return null;
+}

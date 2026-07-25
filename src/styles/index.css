@@ -1,14 +1,10 @@
 :root {
   --studio-paper: #f4f0e4;
-  --studio-paper-deep: #e9e5d7;
   --studio-ink: #465148;
   --studio-ink-strong: #344139;
-  --studio-sage: #8fa28e;
-  --studio-sage-soft: #dce4d8;
   --studio-clay: #b97e65;
   --studio-muted: #7f867b;
   --studio-line: rgba(75, 91, 78, 0.18);
-  --studio-shadow: rgba(84, 80, 65, 0.14);
 }
 
 html {
@@ -91,20 +87,6 @@ a {
   gap: 12px;
   color: inherit;
   text-decoration: none;
-}
-
-.studio-brand-mark {
-  display: grid;
-  width: 39px;
-  height: 39px;
-  place-items: center;
-  border: 1px solid rgba(70, 81, 72, 0.26);
-  border-radius: 50%;
-  background: rgba(255, 253, 246, 0.72);
-  box-shadow: 0 4px 12px rgba(77, 82, 70, 0.08);
-  font-family: Georgia, serif;
-  font-size: 12px;
-  letter-spacing: 0.08em;
 }
 
 .studio-brand strong,
@@ -220,7 +202,6 @@ a {
   bottom: 10%;
   left: clamp(24px, 7vw, 104px);
   width: min(500px, 35vw);
-  transform: translateY(-45%);
   pointer-events: none;
 }
 

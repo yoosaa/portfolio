@@ -1,226 +1,16 @@
 "use client";
 
 import { Float, PresentationControls, RoundedBox } from "@react-three/drei";
+import { Canvas, type ThreeEvent, useFrame } from "@react-three/fiber";
 import {
-  Canvas,
-  type ThreeEvent,
-  useFrame,
-  useThree,
-} from "@react-three/fiber";
-import {
-  type RefObject,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import * as THREE from "three";
-
-type StudioPhase =
-  | "room"
-  | "zooming-to-display"
-  | "projects"
-  | "returning-to-room";
-
-type StudioSceneProps = {
-  phase: StudioPhase;
-  cameraPhase: StudioPhase;
-  accent: string;
-  projectIndex: number;
-  onOpenProjects: () => void;
-  onDisplayReached: () => void;
-  onRoomRestored: () => void;
-};
-
-const ROOM_CAMERA_POSITION = new THREE.Vector3(10.2, 7.6, 13.2);
-const ROOM_LOOK_AT = new THREE.Vector3(0, 1.35, 0);
-// The display plane is centred at (1.8, 2.2, 0.365) and faces +Z.
-// This places the camera directly in front of the screen instead of beside it.
-const DISPLAY_CAMERA_POSITION = new THREE.Vector3(1.8, 2.2, 1.35);
-const DISPLAY_LOOK_AT = new THREE.Vector3(1.8, 2.2, 0.365);
-const ROOM_FOV = 38;
-const DISPLAY_FOV = 48;
-const CAMERA_POSITION_EPSILON = 0.025;
-const CAMERA_FOV_EPSILON = 0.08;
-const CAMERA_ANGLE_EPSILON = 0.006;
-const CAMERA_TRANSITION_DURATION = 1.68;
-
-function easeDisplayTransition(progress: number) {
-  if (progress <= 0 || progress >= 1) {
-    return progress <= 0 ? 0 : 1;
-  }
-
-  const sampleCurve = (time: number, point1: number, point2: number) =>
-    3 * (1 - time) * (1 - time) * time * point1 +
-    3 * (1 - time) * time * time * point2 +
-    time * time * time;
-  let lower = 0;
-  let upper = 1;
-
-  for (let index = 0; index < 14; index += 1) {
-    const time = (lower + upper) / 2;
-    if (sampleCurve(time, 0.16, 0.3) < progress) {
-      lower = time;
-    } else {
-      upper = time;
-    }
-  }
-
-  return sampleCurve((lower + upper) / 2, 1, 1);
-}
-
-function CameraRig({
-  phase,
-  onDisplayReached,
-  onRoomRestored,
-}: Pick<StudioSceneProps, "phase" | "onDisplayReached" | "onRoomRestored">) {
-  const { camera } = useThree();
-  const targetCamera = useMemo(() => new THREE.PerspectiveCamera(), []);
-  const settledPhase = useRef<StudioPhase | null>(null);
-  const transition = useRef<{
-    phase: StudioPhase;
-    startedAt: number;
-    position: THREE.Vector3;
-    quaternion: THREE.Quaternion;
-    fov: number;
-  } | null>(null);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    settledPhase.current = null;
-  }, [phase]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
-
-    updatePreference();
-    mediaQuery.addEventListener("change", updatePreference);
-    return () => mediaQuery.removeEventListener("change", updatePreference);
-  }, []);
-
-  // R3F camera transforms are intentionally updated inside its render loop.
-  // eslint-disable-next-line react-hooks/immutability
-  useFrame((state) => {
-    const isDisplayView =
-      phase === "zooming-to-display" || phase === "projects";
-    const targetPosition = isDisplayView
-      ? DISPLAY_CAMERA_POSITION
-      : ROOM_CAMERA_POSITION;
-    const targetLookAt = isDisplayView ? DISPLAY_LOOK_AT : ROOM_LOOK_AT;
-    const targetFov = isDisplayView ? DISPLAY_FOV : ROOM_FOV;
-
-    targetCamera.position.copy(targetPosition);
-    targetCamera.lookAt(targetLookAt);
-
-    const perspectiveCamera = camera as THREE.PerspectiveCamera;
-    if (!transition.current || transition.current.phase !== phase) {
-      transition.current = {
-        phase,
-        startedAt: state.clock.elapsedTime,
-        position: camera.position.clone(),
-        quaternion: camera.quaternion.clone(),
-        fov: perspectiveCamera.fov,
-      };
-    }
-
-    const elapsed = state.clock.elapsedTime - transition.current.startedAt;
-    const progress = prefersReducedMotion
-      ? 1
-      : Math.min(elapsed / CAMERA_TRANSITION_DURATION, 1);
-    const easedProgress = easeDisplayTransition(progress);
-
-    camera.position.lerpVectors(
-      transition.current.position,
-      targetPosition,
-      easedProgress
-    );
-    camera.quaternion.slerpQuaternions(
-      transition.current.quaternion,
-      targetCamera.quaternion,
-      easedProgress
-    );
-    // eslint-disable-next-line react-hooks/immutability
-    perspectiveCamera.fov = THREE.MathUtils.lerp(
-      transition.current.fov,
-      targetFov,
-      easedProgress
-    );
-    perspectiveCamera.updateProjectionMatrix();
-
-    const hasReachedTarget =
-      camera.position.distanceTo(targetPosition) < CAMERA_POSITION_EPSILON &&
-      Math.abs(perspectiveCamera.fov - targetFov) < CAMERA_FOV_EPSILON &&
-      camera.quaternion.angleTo(targetCamera.quaternion) < CAMERA_ANGLE_EPSILON;
-
-    if (!hasReachedTarget || settledPhase.current === phase) {
-      return;
-    }
-
-    settledPhase.current = phase;
-    if (phase === "zooming-to-display") {
-      onDisplayReached();
-    }
-    if (phase === "returning-to-room") {
-      onRoomRestored();
-    }
-  });
-
-  return null;
-}
-
-function CanvasResizeSync({
-  viewRef,
-}: {
-  viewRef: RefObject<HTMLDivElement | null>;
-}) {
-  const setSize = useThree((state) => state.setSize);
-  const pendingSize = useRef<{
-    width: number;
-    height: number;
-    top: number;
-    left: number;
-  } | null>(null);
-
-  useLayoutEffect(() => {
-    const view = viewRef.current;
-    if (!view) {
-      return;
-    }
-
-    const measureSize = () => {
-      const rect = view.getBoundingClientRect();
-
-      // ここでは R3F を更新せず、次の描画フレーム用に記録する。
-      pendingSize.current = {
-        width: view.clientWidth,
-        height: view.clientHeight,
-        top: rect.top + view.clientTop,
-        left: rect.left + view.clientLeft,
-      };
-    };
-
-    const observer = new ResizeObserver(measureSize);
-    observer.observe(view);
-    measureSize();
-
-    return () => observer.disconnect();
-  }, [viewRef]);
-
-  // priority -1: 通常のシーン描画より前に実行する。
-  useFrame(() => {
-    const nextSize = pendingSize.current;
-    if (!nextSize) {
-      return;
-    }
-
-    pendingSize.current = null;
-    setSize(nextSize.width, nextSize.height, nextSize.top, nextSize.left);
-  }, -1);
-
-  return null;
-}
+import { ROOM_CAMERA_POSITION, ROOM_FOV } from "../model/scene-config";
+import type { StudioSceneProps } from "../model/studio-scene";
+import { CameraRig } from "./studio/CameraRig";
+import { CanvasResizeSync } from "./studio/CanvasResizeSync";
 
 function Box({
   position,
@@ -702,7 +492,10 @@ function Room({
   accent,
   projectIndex,
   onOpenProjects,
-}: StudioSceneProps) {
+}: Pick<
+  StudioSceneProps,
+  "phase" | "accent" | "projectIndex" | "onOpenProjects"
+>) {
   return (
     <group>
       <Box position={[0, -0.18, 0]} scale={[8.8, 0.3, 8.2]} color="#c8b494" />
@@ -750,15 +543,23 @@ function Room({
   );
 }
 
-export function StudioScene(props: StudioSceneProps) {
-  const roomIsInteractive = props.phase === "room";
+export function StudioScene({
+  phase,
+  cameraPhase,
+  accent,
+  projectIndex,
+  onOpenProjects,
+  onDisplayReached,
+  onRoomRestored,
+}: StudioSceneProps) {
+  const roomIsInteractive = phase === "room";
   const viewRef = useRef<HTMLDivElement>(null!);
 
   return (
     <div
       className="studio-canvas"
       aria-hidden="true"
-      data-camera-phase={props.cameraPhase}
+      data-camera-phase={cameraPhase}
       style={{ pointerEvents: "none" }}
     >
       <div
@@ -769,7 +570,12 @@ export function StudioScene(props: StudioSceneProps) {
         <Canvas
           shadows
           dpr={[1, 1.6]}
-          camera={{ position: [10.2, 7.6, 13.2], fov: 38, near: 0.1, far: 100 }}
+          camera={{
+            position: ROOM_CAMERA_POSITION.toArray(),
+            fov: ROOM_FOV,
+            near: 0.1,
+            far: 100,
+          }}
           gl={{ antialias: true, alpha: true }}
           onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
         >
@@ -790,9 +596,9 @@ export function StudioScene(props: StudioSceneProps) {
           />
           <CanvasResizeSync viewRef={viewRef} />
           <CameraRig
-            phase={props.cameraPhase}
-            onDisplayReached={props.onDisplayReached}
-            onRoomRestored={props.onRoomRestored}
+            phase={cameraPhase}
+            onDisplayReached={onDisplayReached}
+            onRoomRestored={onRoomRestored}
           />
           <PresentationControls
             global
@@ -805,7 +611,12 @@ export function StudioScene(props: StudioSceneProps) {
             polar={[-0.08, 0.18]}
             azimuth={[-0.4, 0.35]}
           >
-            <Room {...props} />
+            <Room
+              phase={phase}
+              accent={accent}
+              projectIndex={projectIndex}
+              onOpenProjects={onOpenProjects}
+            />
           </PresentationControls>
         </Canvas>
       </div>
