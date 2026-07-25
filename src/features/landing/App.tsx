@@ -116,7 +116,6 @@ export default function App() {
 
       <header className="studio-header">
         <a className="studio-brand" href="#" aria-label="トップへ">
-          <span className="studio-brand-mark">YS</span>
           <span>
             <strong>Yoshitaka Sano</strong>
             <small>Frontend Engineer</small>
@@ -157,14 +156,11 @@ export default function App() {
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.45 }}
             >
-              <p className="studio-eyebrow">WELCOME TO MY SMALL STUDIO</p>
               <h1>
-                小さくつくり、
-                <em>ていねいに育てる。</em>
+                <em>WELCOME</em> TO MY SMALL STUDIO
               </h1>
               <p className="studio-lead">
-                フロントエンドを軸に、設計・API・テストまで。
-                右の小さな開発室から、これまでの仕事をのぞいてみてください。
+                右の小さな開発室から、色々のぞいてみてください。
               </p>
               <p className="studio-invitation">
                 <span aria-hidden="true">↗</span>
@@ -268,7 +264,6 @@ export default function App() {
       </section>
 
       <footer className="studio-footer">
-        <span>YOMIURILAND-MAE · KANAGAWA</span>
         <span>DESIGNED &amp; BUILT WITH CARE</span>
       </footer>
     </main>
