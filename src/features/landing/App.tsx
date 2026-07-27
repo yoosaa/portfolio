@@ -4,13 +4,13 @@ import { AnimatePresence, motion } from "motion/react";
 import dynamic from "next/dynamic";
 import { useReducer } from "react";
 import { deskProjects, getProjectsForPhase } from "./data/projects";
+import { AboutScreen } from "./components/about/AboutScreen";
 import { LandingHeader } from "./components/layout/LandingHeader";
 import { StudioFooter } from "./components/layout/StudioFooter";
 import { StudioHint } from "./components/layout/StudioHint";
 import { StudioIntro } from "./components/layout/StudioIntro";
 import { ProjectsScreen } from "./components/projects/ProjectsScreen";
 import { BookshelfProjectsScreen } from "./components/projects/BookshelfProjectsScreen";
-import { CorkboardProjectsScreen } from "./components/projects/CorkboardProjectsScreen";
 import { WindowProjectsScreen } from "./components/projects/WindowProjectsScreen";
 import { initialStudioState, studioReducer } from "./model/studio-state";
 
@@ -28,18 +28,18 @@ export default function App() {
   const project = activeProjects[state.projectIndex];
   const isProjects = state.phase === "projects";
   const isBookshelfProjects = state.phase === "bookshelf-projects";
-  const isCorkboardProjects = state.phase === "corkboard-projects";
+  const isAbout = state.phase === "corkboard-projects";
   const isWindowProjects = state.phase === "window-projects";
   const cameraPhase =
     state.phase === "returning-to-room" && !state.isProjectScreenClosed
       ? "projects"
       : state.phase === "returning-from-bookshelf" && !state.isProjectScreenClosed
         ? "bookshelf-projects"
-      : state.phase === "returning-from-corkboard" && !state.isProjectScreenClosed
-        ? "corkboard-projects"
-      : state.phase === "returning-from-window" && !state.isProjectScreenClosed
-        ? "window-projects"
-      : state.phase;
+        : state.phase === "returning-from-corkboard" && !state.isProjectScreenClosed
+          ? "corkboard-projects"
+          : state.phase === "returning-from-window" && !state.isProjectScreenClosed
+            ? "window-projects"
+            : state.phase;
 
   return (
     <main className="studio-shell">
@@ -74,7 +74,7 @@ export default function App() {
                     ? "CORKBOARD_PROJECTS_CLOSED"
                     : state.phase === "returning-from-window"
                       ? "WINDOW_PROJECTS_CLOSED"
-                  : "PROJECTS_CLOSED",
+                      : "PROJECTS_CLOSED",
             })
           }
         >
@@ -107,13 +107,10 @@ export default function App() {
               onPreviousProject={() => dispatch({ type: "PREVIOUS_PROJECT" })}
               onNextProject={() => dispatch({ type: "NEXT_PROJECT" })}
             />
-          ) : isCorkboardProjects ? (
-            <CorkboardProjectsScreen
-              key="corkboard-projects"
-              projectIndex={state.projectIndex}
+          ) : isAbout ? (
+            <AboutScreen
+              key="about"
               onReturnToRoom={() => dispatch({ type: "RETURN_FROM_CORKBOARD" })}
-              onPreviousProject={() => dispatch({ type: "PREVIOUS_PROJECT" })}
-              onNextProject={() => dispatch({ type: "NEXT_PROJECT" })}
             />
           ) : isWindowProjects ? (
             <WindowProjectsScreen
