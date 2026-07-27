@@ -42,18 +42,15 @@ function Box({
 
 function Desk({
   accent,
-  projectIndex,
   active,
   onOpen,
 }: {
   accent: string;
-  projectIndex: number;
   active: boolean;
   onOpen: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const screenMaterial = useRef<THREE.MeshStandardMaterial>(null);
-  const model = useRef<THREE.Group>(null);
 
   useFrame((state, delta) => {
     if (screenMaterial.current) {
@@ -62,14 +59,6 @@ function Desk({
         screenMaterial.current.emissiveIntensity,
         glow,
         7,
-        delta
-      );
-    }
-    if (model.current) {
-      model.current.rotation.y = THREE.MathUtils.damp(
-        model.current.rotation.y,
-        projectIndex * 0.8 + state.clock.elapsedTime * 0.12,
-        6,
         delta
       );
     }
@@ -94,32 +83,57 @@ function Desk({
       ))}
 
       <group
-        position={[0.25, 2.2, -0.18]}
-        onClick={(event) => {
-          event.stopPropagation();
-          onOpen();
-        }}
-        onPointerOver={(event) => handlePointer(event, true)}
-        onPointerOut={(event) => handlePointer(event, false)}
-      >
-        <Box position={[0, 0, 0]} scale={[1.8, 1.15, 0.16]} color="#748678" />
-        <mesh position={[0, 0, 0.095]}>
-          <planeGeometry args={[1.55, 0.88]} />
-          <meshStandardMaterial
-            ref={screenMaterial}
-            color="#d9e2d3"
-            emissive={accent}
-            emissiveIntensity={1.35}
-            toneMapped={false}
-          />
-        </mesh>
-        <Box
-          position={[0, -0.78, 0]}
-          scale={[0.16, 0.45, 0.16]}
-          color="#879589"
-        />
-        <Box position={[0, -1.02, 0]} scale={[0.8, 0.1, 0.5]} color="#879589" />
-      </group>
+  position={[0.25, 2.15, -0.3]}
+  onClick={(event) => {
+    event.stopPropagation();
+    onOpen();
+  }}
+  onPointerOver={(event) => handlePointer(event, true)}
+  onPointerOut={(event) => handlePointer(event, false)}
+>
+  {/* モニター背面 */}
+  <Box
+    position={[0, 0, 0]}
+    scale={[1.72, 1.05, 0.1]}
+    color="#66756b"
+    radius={0.04}
+  />
+
+  {/* 画面 */}
+  <mesh position={[0, 0, 0.06]}>
+    <planeGeometry args={[1.5, 0.82]} />
+    <meshStandardMaterial
+      ref={screenMaterial}
+      color="#d9e2d3"
+      emissive={accent}
+      emissiveIntensity={1.35}
+      toneMapped={false}
+    />
+  </mesh>
+
+  {/* 下部ベゼル */}
+  <Box
+    position={[0, -0.48, 0.055]}
+    scale={[1.58, 0.08, 0.05]}
+    color="#5d6962"
+    radius={0.02}
+  />
+
+  {/* スタンド */}
+  <Box
+    position={[0, -0.72, -0.015]}
+    scale={[0.12, 0.38, 0.12]}
+    color="#77837c"
+    radius={0.025}
+  />
+
+  <Box
+    position={[0, -0.93, 0.04]}
+    scale={[0.68, 0.08, 0.42]}
+    color="#77837c"
+    radius={0.025}
+  />
+</group>
 
       <Box
         position={[0.28, 1.48, 0.46]}
@@ -127,24 +141,6 @@ function Desk({
         color="#d6d2c2"
         rotation={[-0.04, 0, 0]}
       />
-
-      <Float speed={1.6} rotationIntensity={0.25} floatIntensity={0.18}>
-        <group ref={model} position={[-0.85, 1.72, 0.28]}>
-          <mesh castShadow>
-            <icosahedronGeometry args={[0.28, 0]} />
-            <meshStandardMaterial
-              color={accent}
-              emissive={accent}
-              emissiveIntensity={0.3}
-              roughness={0.55}
-            />
-          </mesh>
-          <mesh position={[0, -0.31, 0]} castShadow>
-            <cylinderGeometry args={[0.2, 0.28, 0.12, 6]} />
-            <meshStandardMaterial color="#eee3cc" />
-          </mesh>
-        </group>
-      </Float>
 
       <group position={[1.25, 1.55, 0.32]}>
         <mesh castShadow>
@@ -499,7 +495,6 @@ function Room({
 
       <Desk
         accent={accent}
-        projectIndex={projectIndex}
         active={phase === "projects"}
         onOpen={onOpenProjects}
       />
