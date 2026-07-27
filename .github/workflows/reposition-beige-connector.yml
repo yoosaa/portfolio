@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - feature
-    paths:
-      - .github/workflows/reposition-beige-connector.yml
 
 permissions:
   contents: write
