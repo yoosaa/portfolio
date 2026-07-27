@@ -682,14 +682,42 @@ function Room({
         scale={[2.5, 0.14, 1.8]}
         color="#d8b98d"
       />
+
       <SolidBox
-        position={[-0.35, -0.01, -0.55]}
-        scale={[1.3, 0.1, 1]}
-        color="#dfc9a8"
+        position={[2.7, 0.11, 2.55]}
+        scale={[2.25, 0.26, 1.25]}
+        color="#d8c3a2"
+      />
+      <Box
+        position={[2.7, 0.275, 2.55]}
+        scale={[1.75, 0.07, 0.82]}
+        color="#d8b98d"
+        radius={0.045}
       />
 
-      <MiniStairs position={[-1.61, 0, -1.14]} />
       <MiniStairs position={[2.68, 0, -1.14]} />
+
+      <Box
+        position={[1.45, -0.22, 3.42]}
+        scale={[1.65, 0.42, 0.84]}
+        color="#d8c5a5"
+        radius={0.08}
+      />
+      <SolidBox
+        position={[1.45, 0.18, 2.94]}
+        scale={[1.2, 0.24, 0.38]}
+        color="#d7c2a2"
+      />
+      <SolidBox
+        position={[1.45, 0.11, 3.22]}
+        scale={[1.2, 0.18, 0.38]}
+        color="#d7c2a2"
+      />
+      <SolidBox
+        position={[1.45, 0.045, 3.5]}
+        scale={[1.2, 0.1, 0.38]}
+        color="#d7c2a2"
+      />
 
       <SolidBox
         position={[-2.55, 1.89, -3.91]}
