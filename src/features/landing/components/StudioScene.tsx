@@ -23,6 +23,37 @@ function Box({ position, scale, color, rotation, radius = 0.06 }: {
   );
 }
 
+function MiniStairs({
+  position,
+  rotation = [0, 0, 0],
+}: {
+  position: [number, number, number];
+  rotation?: [number, number, number];
+}) {
+  const steps: Array<{
+    position: [number, number, number];
+    scale: [number, number, number];
+  }> = [
+    { position: [0, 0.32, -0.46], scale: [1.02, 0.18, 0.48] },
+    { position: [0, 0.21, 0], scale: [1.02, 0.18, 0.48] },
+    { position: [0, 0.1, 0.46], scale: [1.02, 0.18, 0.48] },
+  ];
+
+  return (
+    <group position={position} rotation={rotation}>
+      {steps.map((step, index) => (
+        <Box
+          key={index}
+          position={step.position}
+          scale={step.scale}
+          color="#d8c3a2"
+          radius={0.045}
+        />
+      ))}
+    </group>
+  );
+}
+
 function Desk({ accent, active, onOpen }: { accent: string; active: boolean; onOpen: () => void }) {
   const [hovered, setHovered] = useState(false);
   const screenMaterial = useRef<THREE.MeshStandardMaterial>(null);
@@ -107,7 +138,7 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
   const shelfLevels = [0.82, 1.72, 2.62];
   return (
     <group
-      position={[-3.05, 0, -3.58]}
+      position={[-3.05, 0.45, -3.58]}
       onClick={(event) => { event.stopPropagation(); onOpen(); }}
       onPointerOver={() => { document.body.style.cursor = "pointer"; }}
       onPointerOut={() => { document.body.style.cursor = "default"; }}
@@ -274,15 +305,31 @@ function Room({ phase, accent, projectIndex, onOpenProjects, onOpenBookshelf, on
   void projectIndex;
   return (
     <group>
-      <Box position={[0, -0.18, -0.35]} scale={[8.5, 0.3, 7.5]} color="#c8b494" />
+      <Box position={[0, -0.2, -0.35]} scale={[8.5, 0.34, 7.5]} color="#d8c5a5" radius={0.12} />
+
+      <Box position={[1.35, 0.01, 0.65]} scale={[4.15, 0.08, 2.55]} color="#6176bd" radius={0.12} />
+
+      <Box position={[-2.55, 0.18, -2.67]} scale={[3.0, 0.42, 2.35]} color="#d8c3a2" radius={0.1} />
+      <Box position={[-2.55, 0.42, -2.62]} scale={[2.7, 0.06, 1.95]} color="#7da28b" radius={0.1} />
+
+      <Box position={[2.68, 0.12, -2.68]} scale={[2.25, 0.3, 2.15]} color="#d8c3a2" radius={0.1} />
+      <Box position={[2.68, 0.3, -2.61]} scale={[1.92, 0.06, 1.72]} color="#d97d68" radius={0.1} />
+
+      <Box position={[-2.75, 0.01, 2.35]} scale={[2.35, 0.08, 1.58]} color="#d8b98d" radius={0.12} />
+
+      <MiniStairs position={[-1.05, 0, -1.25]} />
+      <MiniStairs position={[2.68, 0, -1.25]} />
+
       <Box position={[0, 2.0, -4.05]} scale={[8.5, 4.3, 0.18]} color="#eee7d7" />
       <Box position={[-4.3, 2.0, -0.35]} scale={[0.18, 4.3, 7.5]} color="#e4dfcc" />
+
       <Desk accent={accent} active={phase === "projects"} onOpen={onOpenProjects} />
       <Bookshelf onOpen={onOpenBookshelf} />
       <Corkboard onOpen={onOpenCorkboard} />
       <Window onOpen={onOpenWindow} />
       <Plant />
       <DeskLamp />
+
       <mesh position={[0.3, 4.0, 0.5]}>
         <sphereGeometry args={[0.13, 12, 8]} />
         <meshStandardMaterial color="#fff2cf" emissive="#f8dfa9" emissiveIntensity={2} toneMapped={false} />
