@@ -50,15 +50,17 @@ function SolidBox({ position, scale, color, rotation }: BoxProps) {
 function MiniStairs({
   position,
   rotation = [0, 0, 0],
+  bottomStepOffsetX = 0,
 }: {
   position: [number, number, number];
   rotation?: [number, number, number];
+  bottomStepOffsetX?: number;
 }) {
   const steps: Array<{
     position: [number, number, number];
     scale: [number, number, number];
   }> = [
-    { position: [0, 0.075, 0.54], scale: [1.18, 0.15, 0.48] },
+    { position: [bottomStepOffsetX, 0.075, 0.54], scale: [1.18, 0.15, 0.48] },
     { position: [0, 0.2, 0.18], scale: [1.18, 0.15, 0.48] },
     { position: [0, 0.325, -0.18], scale: [1.18, 0.15, 0.48] },
     { position: [0, 0.45, -0.54], scale: [1.18, 0.15, 0.48] },
@@ -692,7 +694,7 @@ function Room({
         color="#dfc9a8"
       />
 
-      <MiniStairs position={[-1.61, 0, -1.14]} />
+      <MiniStairs position={[-1.61, 0, -1.14]} bottomStepOffsetX={0.22} />
       <MiniStairs position={[2.68, 0, -1.14]} />
 
       <SolidBox
