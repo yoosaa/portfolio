@@ -168,48 +168,102 @@ function Desk({
 }
 
 function Bookshelf({ onOpen }: { onOpen: () => void }) {
-  const bookColors = ["#c78976", "#d3b56f", "#89a28a", "#91a5b7", "#dac79b"];
+  const bookColors = [
+    "#c78976",
+    "#d3b56f",
+    "#89a28a",
+    "#91a5b7",
+    "#dac79b",
+  ];
+
+  const shelfLevels = [0.82, 1.72, 2.62];
+
   return (
     <group
-      position={[-3.25, 0, -0.25]}
+      // 背面を奥の壁へ寄せる
+      position={[-3.05, 0, -3.58]}
       onClick={(event) => {
         event.stopPropagation();
         onOpen();
       }}
-      onPointerOver={() => (document.body.style.cursor = "pointer")}
-      onPointerOut={() => (document.body.style.cursor = "default")}
+      onPointerOver={() => {
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = "default";
+      }}
     >
-      <group>
+      {/* 背板 */}
+      <Box
+        position={[0, 1.8, -0.35]}
+        scale={[1.68, 3.42, 0.07]}
+        color="#ad8968"
+        radius={0.02}
+      />
+
+      {/* 左右の側板 */}
+      <Box
+        position={[-0.86, 1.8, 0]}
+        scale={[0.12, 3.55, 0.76]}
+        color="#987354"
+        radius={0.025}
+      />
+      <Box
+        position={[0.86, 1.8, 0]}
+        scale={[0.12, 3.55, 0.76]}
+        color="#987354"
+        radius={0.025}
+      />
+
+      {/* 天板・底板 */}
+      <Box
+        position={[0, 3.52, 0]}
+        scale={[1.84, 0.12, 0.76]}
+        color="#8c694e"
+        radius={0.025}
+      />
+      <Box
+        position={[0, 0.08, 0]}
+        scale={[1.84, 0.16, 0.76]}
+        color="#8c694e"
+        radius={0.025}
+      />
+
+      {/* 棚板 */}
+      {shelfLevels.map((y) => (
         <Box
-          position={[0, 1.75, 0]}
-          scale={[1.75, 3.55, 0.78]}
-          color="#a58265"
+          key={y}
+          position={[0, y, 0]}
+          scale={[1.68, 0.1, 0.7]}
+          color="#765944"
+          radius={0.02}
         />
-        {[0.65, 1.75, 2.85].map((y) => (
+      ))}
+
+      {/* 本 */}
+      {Array.from({ length: 15 }, (_, index) => {
+        const row = Math.floor(index / 5);
+        const column = index % 5;
+
+        const height = 0.54 + ((index * 7) % 5) * 0.055;
+        const width = 0.16 + ((index * 3) % 4) * 0.018;
+        const shelfY = shelfLevels[row];
+
+        return (
           <Box
-            key={y}
-            position={[0, y, 0.44]}
-            scale={[1.55, 0.1, 0.65]}
-            color="#765d49"
+            key={index}
+            position={[
+              -0.6 + column * 0.3,
+              shelfY + height / 2 + 0.06,
+              0.02,
+            ]}
+            scale={[width, height, 0.4]}
+            color={bookColors[index % bookColors.length]}
+            rotation={[0, 0, ((index % 3) - 1) * 0.025]}
+            radius={0.018}
           />
-        ))}
-        <group>
-          {Array.from({ length: 12 }, (_, index) => {
-            const row = Math.floor(index / 4);
-            const column = index % 4;
-            return (
-              <Box
-                key={index}
-                position={[-0.55 + column * 0.36, 0.9 + row * 1.1, 0.42]}
-                scale={[0.22, 0.72 - (index % 3) * 0.07, 0.42]}
-                color={bookColors[index % bookColors.length]}
-                rotation={[0, 0, ((index % 3) - 1) * 0.035]}
-                radius={0.03}
-              />
-            );
-          })}
-        </group>
-      </group>
+        );
+      })}
     </group>
   );
 }
