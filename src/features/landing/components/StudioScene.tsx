@@ -144,7 +144,7 @@ function Desk({
         ))}
       </group>
 
-      <group position={[1.28, 1.55, 0.13]}>
+      <group position={[1.45, 1.55, 0.55]}>
         <mesh castShadow receiveShadow>
           <cylinderGeometry args={[0.2, 0.18, 0.38, 20]} />
           <meshStandardMaterial color="#dfd3b8" roughness={0.86} />
@@ -153,7 +153,7 @@ function Desk({
           <torusGeometry args={[0.12, 0.03, 10, 20, Math.PI * 1.65]} />
           <meshStandardMaterial color="#dfd3b8" roughness={0.86} />
         </mesh>
-        <mesh position={[0, 0.195, 0]}>
+        <mesh position={[0, 0.195, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <circleGeometry args={[0.155, 20]} />
           <meshStandardMaterial color="#765441" roughness={0.95} />
         </mesh>
@@ -172,7 +172,10 @@ function Desk({
           color="#a66f5e"
           radius={0.008}
         />
-        <mesh position={[0.08, 0.075, 0.03]} rotation={[0, 0, -0.14]}>
+        <mesh
+          position={[0.08, 0.075, 0.03]}
+          rotation={[0, -0.35, Math.PI / 2]}
+        >
           <cylinderGeometry args={[0.018, 0.018, 0.5, 10]} />
           <meshStandardMaterial color="#6d7f78" roughness={0.7} />
         </mesh>
@@ -440,7 +443,7 @@ function DeskLamp() {
 
   return (
     <group
-      position={[3.05, 1.65, 1.05]}
+      position={[2.95, 1.4, 0.45]}
       onClick={(event) => {
         event.stopPropagation();
         setActive((value) => !value);
