@@ -15,7 +15,7 @@ export function StudioIntro({ onOpenProjects }: StudioIntroProps) {
         右の小さな開発室から、色々のぞいてみてください。
       </p>
       <button className="studio-project-cta" type="button" onClick={onOpenProjects}>
-        デスクのProjectsを見る
+        制作物を見る
         <ArrowRight size={15} />
       </button>
     </div>
