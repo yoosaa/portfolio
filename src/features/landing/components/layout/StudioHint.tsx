@@ -6,7 +6,7 @@ export function StudioHint() {
       <Rotate3D size={18} />
       <span>ドラッグして部屋を見る</span>
       <span className="studio-hint-divider" />
-      <span>光っているPCを選ぶ</span>
+      <span>気になる場所をクリック</span>
     </div>
   );
 }
