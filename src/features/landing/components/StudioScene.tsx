@@ -112,15 +112,16 @@ function Desk({
           color="#5d6962"
           radius={0.02}
         />
+
         <Box
-          position={[0, -0.72, -0.015]}
-          scale={[0.12, 0.38, 0.12]}
+          position={[0, -0.62, -0.015]}
+          scale={[0.14, 0.28, 0.12]}
           color="#77837c"
           radius={0.025}
         />
         <Box
-          position={[0, -0.93, 0.04]}
-          scale={[0.68, 0.08, 0.42]}
+          position={[0, -0.75, 0.1]}
+          scale={[0.82, 0.08, 0.46]}
           color="#77837c"
           radius={0.025}
         />
@@ -149,8 +150,8 @@ function Desk({
           <cylinderGeometry args={[0.2, 0.18, 0.38, 20]} />
           <meshStandardMaterial color="#dfd3b8" roughness={0.86} />
         </mesh>
-        <mesh position={[0.2, 0.015, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.12, 0.03, 10, 20, Math.PI * 1.65]} />
+        <mesh position={[0.21, 0.015, 0]} rotation={[0, Math.PI / 2, 0]}>
+          <torusGeometry args={[0.13, 0.03, 10, 20]} />
           <meshStandardMaterial color="#dfd3b8" roughness={0.86} />
         </mesh>
         <mesh position={[0, 0.195, 0]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -192,7 +193,6 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
     "#91a5b7",
     "#dac79b",
   ];
-
   const shelfLevels = [0.82, 1.72, 2.62];
 
   return (
@@ -215,7 +215,6 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
         color="#ad8968"
         radius={0.02}
       />
-
       <Box
         position={[-0.86, 1.8, 0]}
         scale={[0.12, 3.55, 0.76]}
@@ -228,7 +227,6 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
         color="#987354"
         radius={0.025}
       />
-
       <Box
         position={[0, 3.52, 0]}
         scale={[1.84, 0.12, 0.76]}
