@@ -40,7 +40,7 @@ export function ProjectsScreen({
           <ArrowLeft size={16} />
           部屋全体へ
         </button>
-        <span>SELECTED PROJECTS</span>
+        <span>SELECTED WORKS</span>
       </div>
       <motion.article
         key={project.title}
@@ -52,7 +52,7 @@ export function ProjectsScreen({
         aria-live="polite"
       >
         <p className="studio-eyebrow">
-          PROJECT {String(projectIndex + 1).padStart(2, "0")}
+          個人で設計・開発したWebアプリケーション
         </p>
         <h2>{project.title}</h2>
         <p className="project-summary">{project.summary}</p>
@@ -64,20 +64,20 @@ export function ProjectsScreen({
         </ul>
 
         <div className="project-actions">
-          <button type="button" aria-label="前のプロジェクト" onClick={onPreviousProject}>
+          <button type="button" aria-label="前の制作物" onClick={onPreviousProject}>
             <ArrowLeft size={18} />
           </button>
           <span>
             {projectIndex + 1} / {projects.length}
           </span>
-          <button type="button" aria-label="次のプロジェクト" onClick={onNextProject}>
+          <button type="button" aria-label="次の制作物" onClick={onNextProject}>
             <ArrowRight size={18} />
           </button>
         </div>
 
         {project.demo ? (
           <a href={project.demo} target="_blank" rel="noreferrer">
-            View project
+            Open app
             <ExternalLink size={16} />
           </a>
         ) : (
