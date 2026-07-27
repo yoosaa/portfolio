@@ -274,20 +274,20 @@ function Room({ phase, accent, projectIndex, onOpenProjects, onOpenBookshelf, on
   void projectIndex;
   return (
     <group>
-      <Box position={[0, -0.18, 0]} scale={[8.8, 0.3, 8.2]} color="#c8b494" />
-      <Box position={[0, 2.25, -4.05]} scale={[8.8, 4.8, 0.18]} color="#eee7d7" />
-      <Box position={[-4.3, 2.25, 0]} scale={[0.18, 4.8, 8.2]} color="#e4dfcc" />
+      <Box position={[0, -0.18, -0.35]} scale={[8.5, 0.3, 7.5]} color="#c8b494" />
+      <Box position={[0, 2.0, -4.05]} scale={[8.5, 4.3, 0.18]} color="#eee7d7" />
+      <Box position={[-4.3, 2.0, -0.35]} scale={[0.18, 4.3, 7.5]} color="#e4dfcc" />
       <Desk accent={accent} active={phase === "projects"} onOpen={onOpenProjects} />
       <Bookshelf onOpen={onOpenBookshelf} />
       <Corkboard onOpen={onOpenCorkboard} />
       <Window onOpen={onOpenWindow} />
       <Plant />
       <DeskLamp />
-      <mesh position={[0.3, 4.4, 0.5]}>
+      <mesh position={[0.3, 4.0, 0.5]}>
         <sphereGeometry args={[0.13, 12, 8]} />
         <meshStandardMaterial color="#fff2cf" emissive="#f8dfa9" emissiveIntensity={2} toneMapped={false} />
       </mesh>
-      <pointLight position={[0.3, 4.2, 0.5]} color="#f7dfa9" intensity={16} distance={8} decay={2} castShadow />
+      <pointLight position={[0.3, 3.8, 0.5]} color="#f7dfa9" intensity={16} distance={8} decay={2} castShadow />
     </group>
   );
 }
