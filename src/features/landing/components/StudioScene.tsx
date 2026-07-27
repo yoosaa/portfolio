@@ -1,6 +1,11 @@
 "use client";
 
-import { Float, PresentationControls, RoundedBox } from "@react-three/drei";
+import {
+  ContactShadows,
+  Float,
+  PresentationControls,
+  RoundedBox,
+} from "@react-three/drei";
 import { Canvas, type ThreeEvent, useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import * as THREE from "three";
@@ -32,7 +37,11 @@ function Box({
       castShadow
       receiveShadow
     >
-      <meshStandardMaterial color={color} roughness={0.78} />
+      <meshStandardMaterial
+        color={color}
+        roughness={0.92}
+        metalness={0.015}
+      />
     </RoundedBox>
   );
 }
@@ -63,6 +72,57 @@ function MiniStairs({
           color="#d8c3a2"
           radius={0.055}
         />
+      ))}
+    </group>
+  );
+}
+
+function DeskChair() {
+  const casters: Array<[number, number, number]> = [
+    [-0.34, 0.08, -0.28],
+    [0.34, 0.08, -0.28],
+    [-0.34, 0.08, 0.28],
+    [0.34, 0.08, 0.28],
+  ];
+
+  return (
+    <group position={[0.25, 0.1, 1.95]} rotation={[0, -0.08, 0]}>
+      <Box
+        position={[0, 0.62, 0]}
+        scale={[0.82, 0.18, 0.72]}
+        color="#344267"
+        radius={0.13}
+      />
+      <Box
+        position={[0, 1.08, 0.3]}
+        scale={[0.74, 0.72, 0.17]}
+        rotation={[-0.08, 0, 0]}
+        color="#40517c"
+        radius={0.13}
+      />
+      <Box
+        position={[0, 0.34, 0]}
+        scale={[0.1, 0.5, 0.1]}
+        color="#77777a"
+        radius={0.035}
+      />
+      <Box
+        position={[0, 0.16, 0]}
+        scale={[0.72, 0.07, 0.08]}
+        color="#77777a"
+        radius={0.025}
+      />
+      <Box
+        position={[0, 0.16, 0]}
+        scale={[0.08, 0.07, 0.64]}
+        color="#77777a"
+        radius={0.025}
+      />
+      {casters.map((position, index) => (
+        <mesh key={index} position={position} castShadow>
+          <sphereGeometry args={[0.085, 10, 8]} />
+          <meshStandardMaterial color="#555760" roughness={0.9} />
+        </mesh>
       ))}
     </group>
   );
@@ -182,11 +242,11 @@ function Desk({
       <group position={[1.45, 1.55, 0.55]}>
         <mesh castShadow receiveShadow>
           <cylinderGeometry args={[0.2, 0.18, 0.38, 20]} />
-          <meshStandardMaterial color="#dfd3b8" roughness={0.86} />
+          <meshStandardMaterial color="#dfd3b8" roughness={0.9} />
         </mesh>
         <mesh position={[0.21, 0.015, 0]}>
           <torusGeometry args={[0.13, 0.03, 10, 20]} />
-          <meshStandardMaterial color="#dfd3b8" roughness={0.86} />
+          <meshStandardMaterial color="#dfd3b8" roughness={0.9} />
         </mesh>
         <mesh position={[0, 0.195, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <circleGeometry args={[0.155, 20]} />
@@ -212,7 +272,7 @@ function Desk({
           rotation={[0, -0.35, Math.PI / 2]}
         >
           <cylinderGeometry args={[0.018, 0.018, 0.5, 10]} />
-          <meshStandardMaterial color="#6d7f78" roughness={0.7} />
+          <meshStandardMaterial color="#6d7f78" roughness={0.8} />
         </mesh>
       </group>
     </group>
@@ -366,7 +426,8 @@ function Window({ onOpen }: { onOpen: () => void }) {
         <meshStandardMaterial
           color="#d5e0d4"
           emissive="#edf0d9"
-          emissiveIntensity={0.16}
+          emissiveIntensity={0.12}
+          roughness={0.72}
         />
       </mesh>
       <Box
@@ -418,7 +479,7 @@ function Plant() {
     >
       <mesh castShadow receiveShadow>
         <cylinderGeometry args={[0.4, 0.32, 0.65, 12]} />
-        <meshStandardMaterial color="#c98f62" roughness={0.9} />
+        <meshStandardMaterial color="#c98f62" roughness={0.94} />
       </mesh>
       <group ref={leaves}>
         {[
@@ -435,6 +496,7 @@ function Plant() {
             <sphereGeometry args={[0.28, 8, 6]} />
             <meshStandardMaterial
               color={index === 1 ? "#789878" : "#91a98b"}
+              roughness={0.96}
             />
           </mesh>
         ))}
@@ -452,7 +514,7 @@ function DeskLamp() {
     if (light.current) {
       light.current.intensity = THREE.MathUtils.damp(
         light.current.intensity,
-        active ? 7 : 0.6,
+        active ? 6 : 0.45,
         8,
         delta
       );
@@ -460,7 +522,7 @@ function DeskLamp() {
     if (bulb.current) {
       bulb.current.emissiveIntensity = THREE.MathUtils.damp(
         bulb.current.emissiveIntensity,
-        active ? 3 : 0.35,
+        active ? 2.8 : 0.3,
         8,
         delta
       );
@@ -491,7 +553,11 @@ function DeskLamp() {
       />
       <mesh position={[0.17, 0.7, 0]} rotation={[0, 0, -0.55]}>
         <coneGeometry args={[0.29, 0.32, 16, 1, true]} />
-        <meshStandardMaterial color="#d8b477" side={THREE.DoubleSide} />
+        <meshStandardMaterial
+          color="#d8b477"
+          roughness={0.92}
+          side={THREE.DoubleSide}
+        />
       </mesh>
       <mesh position={[0.17, 0.62, 0]}>
         <sphereGeometry args={[0.09, 12, 8]} />
@@ -499,7 +565,7 @@ function DeskLamp() {
           ref={bulb}
           color="#fff4ce"
           emissive="#f7d693"
-          emissiveIntensity={0.35}
+          emissiveIntensity={0.3}
           toneMapped={false}
         />
       </mesh>
@@ -507,7 +573,7 @@ function DeskLamp() {
         ref={light}
         position={[0.17, 0.55, 0.32]}
         color="#f5d9a8"
-        intensity={0.6}
+        intensity={0.45}
         distance={3.2}
       />
     </group>
@@ -549,6 +615,12 @@ function Room({
         color="#6176bd"
         radius={0.16}
       />
+      <Box
+        position={[0.12, 0.105, 1.72]}
+        scale={[2.35, 0.055, 1.55]}
+        color="#c7c4bc"
+        radius={0.22}
+      />
 
       <Box
         position={[-2.55, 0.18, -2.67]}
@@ -587,16 +659,34 @@ function Room({
       <MiniStairs position={[2.68, 0, -1.25]} />
 
       <Box
-        position={[0, 2, -4.05]}
-        scale={[8.5, 4.3, 0.18]}
-        color="#eee7d7"
-        radius={0.08}
+        position={[-2.63, 2.02, -4.05]}
+        scale={[3.25, 4.34, 0.2]}
+        color="#b3bba4"
+        radius={0.1}
       />
       <Box
-        position={[-4.3, 2, -0.35]}
-        scale={[0.18, 4.3, 7.5]}
-        color="#e4dfcc"
-        radius={0.08}
+        position={[0.05, 1.64, -4.03]}
+        scale={[1.38, 3.55, 0.22]}
+        color="#eadbc4"
+        radius={0.1}
+      />
+      <Box
+        position={[2.67, 1.9, -4.05]}
+        scale={[3.25, 4.08, 0.2]}
+        color="#d8a08c"
+        radius={0.1}
+      />
+      <Box
+        position={[-4.3, 2.02, -2.7]}
+        scale={[0.2, 4.34, 2.62]}
+        color="#aab59e"
+        radius={0.1}
+      />
+      <Box
+        position={[-4.3, 1.78, 0.82]}
+        scale={[0.2, 3.82, 4.18]}
+        color="#dbc29e"
+        radius={0.1}
       />
 
       <Desk
@@ -604,26 +694,18 @@ function Room({
         active={phase === "projects"}
         onOpen={onOpenProjects}
       />
+      <DeskChair />
       <Bookshelf onOpen={onOpenBookshelf} />
       <Corkboard onOpen={onOpenCorkboard} />
       <Window onOpen={onOpenWindow} />
       <Plant />
       <DeskLamp />
 
-      <mesh position={[0.3, 4, 0.5]}>
-        <sphereGeometry args={[0.13, 12, 8]} />
-        <meshStandardMaterial
-          color="#fff2cf"
-          emissive="#f8dfa9"
-          emissiveIntensity={2}
-          toneMapped={false}
-        />
-      </mesh>
       <pointLight
-        position={[0.3, 3.8, 0.5]}
-        color="#f7dfa9"
-        intensity={16}
-        distance={8}
+        position={[0.4, 4.7, 3.2]}
+        color="#f4dfb7"
+        intensity={7.5}
+        distance={10}
         decay={2}
         castShadow
       />
@@ -673,12 +755,12 @@ export function StudioScene({
           gl={{ antialias: true, alpha: true }}
           onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
         >
-          <fog attach="fog" args={["#e8eadc", 17, 31]} />
-          <hemisphereLight args={["#f5f1df", "#b6ad93", 1.3]} />
-          <ambientLight intensity={1.55} color="#f5efdc" />
+          <fog attach="fog" args={["#e8e3d5", 18, 31]} />
+          <hemisphereLight args={["#f7f0dd", "#aaa48f", 1.05]} />
+          <ambientLight intensity={1.15} color="#f5ecd8" />
           <directionalLight
             position={[5, 9, 6]}
-            intensity={2.6}
+            intensity={2.05}
             color="#fff0cf"
             castShadow
             shadow-mapSize={[1024, 1024]}
@@ -687,6 +769,15 @@ export function StudioScene({
             shadow-camera-right={8}
             shadow-camera-top={8}
             shadow-camera-bottom={-8}
+          />
+          <ContactShadows
+            position={[0, -0.01, 0]}
+            opacity={0.27}
+            scale={11}
+            blur={2.7}
+            far={5.5}
+            resolution={512}
+            frames={1}
           />
           <CanvasResizeSync viewRef={viewRef} />
           <CameraRig
