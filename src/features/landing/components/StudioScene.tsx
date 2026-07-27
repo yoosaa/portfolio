@@ -150,7 +150,7 @@ function Desk({
           <cylinderGeometry args={[0.2, 0.18, 0.38, 20]} />
           <meshStandardMaterial color="#dfd3b8" roughness={0.86} />
         </mesh>
-        <mesh position={[0.21, 0.015, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <mesh position={[0.2, 0.02, 0]} rotation={[0, Math.PI / 2, 0]}>
           <torusGeometry args={[0.13, 0.03, 10, 20]} />
           <meshStandardMaterial color="#dfd3b8" roughness={0.86} />
         </mesh>
