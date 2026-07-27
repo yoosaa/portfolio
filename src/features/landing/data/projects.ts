@@ -9,13 +9,13 @@ export type Project = {
 
 export const deskProjects = [
   {
-    title: "Clientnote",
+    title: "Totonote",
     summary:
-      "顧客との接点を、あとから振り返れる形で残す業務ログ。フロントとAPIを分け、設計・テスト・公開まで一通り組み立てました。",
-    tags: ["SvelteKit", "Hono", "Cloudflare D1", "Playwright"],
-    accent: "#78998b",
-    demo: "https://clientnote.pages.dev",
-    source: null,
+      "小規模店舗・個人事業向けの予約受付メモと来店準備管理ツール。予約から事前準備、来店後の記録までをひとつの流れとして整理しました。",
+    tags: ["Next.js", "TypeScript", "Vitest", "Playwright"],
+    accent: "#b98278",
+    demo: "https://totonote-pink.vercel.app",
+    source: "https://github.com/yoosaa/totonote",
   },
   {
     title: "Restocknote",
