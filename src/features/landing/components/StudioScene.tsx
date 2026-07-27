@@ -14,19 +14,15 @@ import type { StudioSceneProps } from "../model/studio-scene";
 import { CameraRig } from "./studio/CameraRig";
 import { CanvasResizeSync } from "./studio/CanvasResizeSync";
 
-function Box({
-  position,
-  scale,
-  color,
-  rotation,
-  radius = 0.06,
-}: {
+type BoxProps = {
   position: [number, number, number];
   scale: [number, number, number];
   color: string;
   rotation?: [number, number, number];
   radius?: number;
-}) {
+};
+
+function Box({ position, scale, color, rotation, radius = 0.06 }: BoxProps) {
   return (
     <RoundedBox
       position={position}
@@ -42,6 +38,15 @@ function Box({
   );
 }
 
+function SolidBox({ position, scale, color, rotation }: BoxProps) {
+  return (
+    <mesh position={position} scale={scale} rotation={rotation} castShadow receiveShadow>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshStandardMaterial color={color} roughness={0.93} metalness={0.01} />
+    </mesh>
+  );
+}
+
 function MiniStairs({
   position,
   rotation = [0, 0, 0],
@@ -53,21 +58,20 @@ function MiniStairs({
     position: [number, number, number];
     scale: [number, number, number];
   }> = [
-    { position: [0, 0.39, -0.54], scale: [1.18, 0.2, 0.46] },
-    { position: [0, 0.28, -0.18], scale: [1.18, 0.2, 0.46] },
-    { position: [0, 0.17, 0.18], scale: [1.18, 0.2, 0.46] },
-    { position: [0, 0.06, 0.54], scale: [1.18, 0.2, 0.46] },
+    { position: [0, 0.075, 0.54], scale: [1.18, 0.15, 0.48] },
+    { position: [0, 0.2, 0.18], scale: [1.18, 0.15, 0.48] },
+    { position: [0, 0.325, -0.18], scale: [1.18, 0.15, 0.48] },
+    { position: [0, 0.45, -0.54], scale: [1.18, 0.15, 0.48] },
   ];
 
   return (
     <group position={position} rotation={rotation}>
       {steps.map((step, index) => (
-        <Box
+        <SolidBox
           key={index}
           position={step.position}
           scale={step.scale}
           color="#d7c2a2"
-          radius={0.08}
         />
       ))}
     </group>
@@ -76,25 +80,45 @@ function MiniStairs({
 
 function DeskChair() {
   const casters: Array<[number, number, number]> = [
-    [-0.36, 0.08, -0.3],
-    [0.36, 0.08, -0.3],
-    [-0.36, 0.08, 0.3],
-    [0.36, 0.08, 0.3],
+    [-0.42, 0.08, 0],
+    [0.42, 0.08, 0],
+    [0, 0.08, -0.38],
+    [0, 0.08, 0.38],
   ];
 
   return (
-    <group position={[0.08, 0.1, 1.72]} rotation={[0, -0.06, 0]}>
-      <Box position={[0, 0.64, 0]} scale={[0.9, 0.2, 0.76]} color="#344267" radius={0.16} />
+    <group position={[1.4, 0.1, 1.78]} rotation={[0, 0.03, 0]}>
+      <Box
+        position={[0, 0.64, 0]}
+        scale={[0.9, 0.2, 0.76]}
+        color="#344267"
+        radius={0.14}
+      />
       <Box
         position={[0, 1.1, 0.31]}
         scale={[0.8, 0.74, 0.2]}
         rotation={[-0.08, 0, 0]}
         color="#40517c"
-        radius={0.16}
+        radius={0.14}
       />
-      <Box position={[0, 0.35, 0]} scale={[0.12, 0.52, 0.12]} color="#74757b" radius={0.05} />
-      <Box position={[0, 0.16, 0]} scale={[0.76, 0.08, 0.1]} color="#74757b" radius={0.035} />
-      <Box position={[0, 0.16, 0]} scale={[0.1, 0.08, 0.68]} color="#74757b" radius={0.035} />
+      <Box
+        position={[0, 0.35, 0]}
+        scale={[0.12, 0.52, 0.12]}
+        color="#74757b"
+        radius={0.04}
+      />
+      <Box
+        position={[0, 0.16, 0]}
+        scale={[0.84, 0.08, 0.1]}
+        color="#74757b"
+        radius={0.025}
+      />
+      <Box
+        position={[0, 0.16, 0]}
+        scale={[0.1, 0.08, 0.76]}
+        color="#74757b"
+        radius={0.025}
+      />
       {casters.map((position, index) => (
         <mesh key={index} position={position} castShadow>
           <sphereGeometry args={[0.09, 10, 8]} />
@@ -105,7 +129,15 @@ function DeskChair() {
   );
 }
 
-function Desk({ accent, active, onOpen }: { accent: string; active: boolean; onOpen: () => void }) {
+function Desk({
+  accent,
+  active,
+  onOpen,
+}: {
+  accent: string;
+  active: boolean;
+  onOpen: () => void;
+}) {
   const [hovered, setHovered] = useState(false);
   const screenMaterial = useRef<THREE.MeshStandardMaterial>(null);
 
@@ -129,11 +161,36 @@ function Desk({ accent, active, onOpen }: { accent: string; active: boolean; onO
 
   return (
     <group position={[1.25, 0, 0.45]}>
-      <Box position={[0, 1.22, 0]} scale={[3.42, 0.3, 1.58]} color="#6176bd" radius={0.15} />
-      <Box position={[-1.4, 0.55, 0]} scale={[0.25, 1.35, 1.2]} color="#4f5f86" radius={0.08} />
-      <Box position={[1.34, 0.59, 0]} scale={[0.66, 1.16, 1.22]} color="#53668f" radius={0.12} />
-      <Box position={[1.34, 0.75, 0.62]} scale={[0.48, 0.1, 0.05]} color="#7e8cb1" radius={0.025} />
-      <Box position={[1.34, 0.39, 0.62]} scale={[0.48, 0.1, 0.05]} color="#7e8cb1" radius={0.025} />
+      <Box
+        position={[0, 1.22, 0]}
+        scale={[3.42, 0.3, 1.58]}
+        color="#6176bd"
+        radius={0.12}
+      />
+      <Box
+        position={[-1.4, 0.55, 0]}
+        scale={[0.25, 1.35, 1.2]}
+        color="#4f5f86"
+        radius={0.06}
+      />
+      <Box
+        position={[1.34, 0.59, 0]}
+        scale={[0.66, 1.16, 1.22]}
+        color="#53668f"
+        radius={0.08}
+      />
+      <Box
+        position={[1.34, 0.75, 0.62]}
+        scale={[0.48, 0.1, 0.05]}
+        color="#7e8cb1"
+        radius={0.015}
+      />
+      <Box
+        position={[1.34, 0.39, 0.62]}
+        scale={[0.48, 0.1, 0.05]}
+        color="#7e8cb1"
+        radius={0.015}
+      />
 
       <group
         position={[0.15, 2.08, -0.25]}
@@ -144,7 +201,12 @@ function Desk({ accent, active, onOpen }: { accent: string; active: boolean; onO
         onPointerOver={(event) => handlePointer(event, true)}
         onPointerOut={(event) => handlePointer(event, false)}
       >
-        <Box position={[0, 0, 0]} scale={[1.82, 1.1, 0.16]} color="#607069" radius={0.07} />
+        <Box
+          position={[0, 0, 0]}
+          scale={[1.82, 1.1, 0.16]}
+          color="#607069"
+          radius={0.055}
+        />
         <mesh position={[0, 0, 0.09]}>
           <planeGeometry args={[1.56, 0.84]} />
           <meshStandardMaterial
@@ -155,15 +217,41 @@ function Desk({ accent, active, onOpen }: { accent: string; active: boolean; onO
             toneMapped={false}
           />
         </mesh>
-        <Box position={[0, -0.52, 0.08]} scale={[1.62, 0.09, 0.07]} color="#536159" radius={0.025} />
-        <Box position={[0, -0.67, -0.01]} scale={[0.18, 0.3, 0.16]} color="#77837c" radius={0.04} />
-        <Box position={[0, -0.82, 0.1]} scale={[0.88, 0.1, 0.5]} color="#77837c" radius={0.04} />
+        <Box
+          position={[0, -0.52, 0.08]}
+          scale={[1.62, 0.09, 0.07]}
+          color="#536159"
+          radius={0.018}
+        />
+        <Box
+          position={[0, -0.67, -0.01]}
+          scale={[0.18, 0.3, 0.16]}
+          color="#77837c"
+          radius={0.03}
+        />
+        <Box
+          position={[0, -0.82, 0.1]}
+          scale={[0.88, 0.1, 0.5]}
+          color="#77837c"
+          radius={0.03}
+        />
       </group>
 
       <group position={[0.08, 1.43, 0.45]} rotation={[-0.035, 0, 0]}>
-        <Box position={[0, 0, 0]} scale={[1.28, 0.1, 0.52]} color="#d4d0c3" radius={0.045} />
+        <Box
+          position={[0, 0, 0]}
+          scale={[1.28, 0.1, 0.52]}
+          color="#d4d0c3"
+          radius={0.035}
+        />
         {[-0.42, -0.21, 0, 0.21, 0.42].map((x) => (
-          <Box key={x} position={[x, 0.06, -0.04]} scale={[0.14, 0.03, 0.29]} color="#eee9dc" radius={0.012} />
+          <Box
+            key={x}
+            position={[x, 0.06, -0.04]}
+            scale={[0.14, 0.03, 0.29]}
+            color="#eee9dc"
+            radius={0.008}
+          />
         ))}
       </group>
 
@@ -183,8 +271,18 @@ function Desk({ accent, active, onOpen }: { accent: string; active: boolean; onO
       </group>
 
       <group position={[-0.95, 1.43, 0.38]} rotation={[0, -0.15, 0]}>
-        <Box position={[0, 0, 0]} scale={[0.7, 0.09, 0.52]} color="#d8c6a5" radius={0.04} />
-        <Box position={[-0.29, 0.05, 0]} scale={[0.04, 0.03, 0.45]} color="#a66f5e" radius={0.01} />
+        <Box
+          position={[0, 0, 0]}
+          scale={[0.7, 0.09, 0.52]}
+          color="#d8c6a5"
+          radius={0.03}
+        />
+        <Box
+          position={[-0.29, 0.05, 0]}
+          scale={[0.04, 0.03, 0.45]}
+          color="#a66f5e"
+          radius={0.008}
+        />
         <mesh position={[0.09, 0.08, 0.03]} rotation={[0, -0.35, Math.PI / 2]}>
           <cylinderGeometry args={[0.02, 0.02, 0.54, 10]} />
           <meshStandardMaterial color="#6d7f78" roughness={0.82} />
@@ -212,13 +310,44 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
         document.body.style.cursor = "default";
       }}
     >
-      <Box position={[0, 1.55, -0.36]} scale={[2.02, 2.98, 0.12]} color="#70927f" radius={0.07} />
-      <Box position={[-1.02, 1.55, 0]} scale={[0.2, 3.12, 0.84]} color="#5f806f" radius={0.07} />
-      <Box position={[1.02, 1.55, 0]} scale={[0.2, 3.12, 0.84]} color="#5f806f" radius={0.07} />
-      <Box position={[0, 3.06, 0]} scale={[2.22, 0.2, 0.84]} color="#557463" radius={0.07} />
-      <Box position={[0, 0.08, 0]} scale={[2.22, 0.2, 0.84]} color="#557463" radius={0.07} />
+      <Box
+        position={[0, 1.55, -0.36]}
+        scale={[2.02, 2.98, 0.12]}
+        color="#70927f"
+        radius={0.05}
+      />
+      <Box
+        position={[-1.02, 1.55, 0]}
+        scale={[0.2, 3.12, 0.84]}
+        color="#5f806f"
+        radius={0.05}
+      />
+      <Box
+        position={[1.02, 1.55, 0]}
+        scale={[0.2, 3.12, 0.84]}
+        color="#5f806f"
+        radius={0.05}
+      />
+      <Box
+        position={[0, 3.06, 0]}
+        scale={[2.22, 0.2, 0.84]}
+        color="#557463"
+        radius={0.05}
+      />
+      <Box
+        position={[0, 0.08, 0]}
+        scale={[2.22, 0.2, 0.84]}
+        color="#557463"
+        radius={0.05}
+      />
       {shelfLevels.map((y) => (
-        <Box key={y} position={[0, y, 0]} scale={[2.02, 0.14, 0.78]} color="#4f6c5d" radius={0.04} />
+        <Box
+          key={y}
+          position={[0, y, 0]}
+          scale={[2.02, 0.14, 0.78]}
+          color="#4f6c5d"
+          radius={0.025}
+        />
       ))}
       {Array.from({ length: 12 }, (_, index) => {
         const row = Math.floor(index / 4);
@@ -234,7 +363,7 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
             scale={[width, height, 0.46]}
             color={bookColors[index % bookColors.length]}
             rotation={[0, 0, ((index % 3) - 1) * 0.03]}
-            radius={0.025}
+            radius={0.018}
           />
         );
       })}
@@ -244,9 +373,17 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
       </mesh>
       <group position={[0.58, 3.5, 0]}>
         {[-0.18, 0, 0.18].map((x, index) => (
-          <mesh key={x} position={[x, 0.16 + index * 0.05, 0]} rotation={[0, 0, (index - 1) * 0.45]} castShadow>
+          <mesh
+            key={x}
+            position={[x, 0.16 + index * 0.05, 0]}
+            rotation={[0, 0, (index - 1) * 0.45]}
+            castShadow
+          >
             <sphereGeometry args={[0.2, 8, 6]} />
-            <meshStandardMaterial color={index === 1 ? "#759174" : "#89a187"} roughness={0.96} />
+            <meshStandardMaterial
+              color={index === 1 ? "#759174" : "#89a187"}
+              roughness={0.96}
+            />
           </mesh>
         ))}
       </group>
@@ -257,7 +394,7 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
 function Corkboard({ onOpen }: { onOpen: () => void }) {
   return (
     <group
-      position={[2.7, 2.65, -3.93]}
+      position={[2.7, 2.65, -3.78]}
       onClick={(event) => {
         event.stopPropagation();
         onOpen();
@@ -265,15 +402,33 @@ function Corkboard({ onOpen }: { onOpen: () => void }) {
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
     >
-      <Box position={[0, 0, 0]} scale={[2.08, 1.58, 0.16]} color="#b96d5d" radius={0.12} />
-      <Box position={[0, 0, 0.1]} scale={[1.78, 1.28, 0.09]} color="#d99072" radius={0.08} />
+      <Box
+        position={[0, 0, 0]}
+        scale={[2.08, 1.58, 0.16]}
+        color="#b96d5d"
+        radius={0.08}
+      />
+      <Box
+        position={[0, 0, 0.1]}
+        scale={[1.78, 1.28, 0.09]}
+        color="#d99072"
+        radius={0.05}
+      />
       {[
         [-0.5, 0.2, "#eee0c4", -0.08],
         [0, -0.18, "#dfe7dc", 0.04],
         [0.5, 0.18, "#d8dce6", 0.09],
       ].map(([x, y, color, rotate], index) => (
-        <Float key={index} speed={1 + index * 0.15} floatIntensity={0.025} rotationIntensity={0.018}>
-          <mesh position={[Number(x), Number(y), 0.17]} rotation={[0, 0, Number(rotate)]}>
+        <Float
+          key={index}
+          speed={1 + index * 0.15}
+          floatIntensity={0.025}
+          rotationIntensity={0.018}
+        >
+          <mesh
+            position={[Number(x), Number(y), 0.17]}
+            rotation={[0, 0, Number(rotate)]}
+          >
             <planeGeometry args={[0.48, 0.62]} />
             <meshStandardMaterial color={String(color)} roughness={0.96} />
           </mesh>
@@ -286,7 +441,7 @@ function Corkboard({ onOpen }: { onOpen: () => void }) {
 function Window({ onOpen }: { onOpen: () => void }) {
   return (
     <group
-      position={[-4.04, 2.48, 0.55]}
+      position={[-3.98, 2.55, 0.55]}
       rotation={[0, Math.PI / 2, 0]}
       onClick={(event) => {
         event.stopPropagation();
@@ -295,14 +450,39 @@ function Window({ onOpen }: { onOpen: () => void }) {
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
     >
-      <Box position={[0, 0, 0]} scale={[2.1, 1.78, 0.18]} color="#d5c09f" radius={0.07} />
+      <Box
+        position={[0, 0, 0]}
+        scale={[2.1, 1.78, 0.18]}
+        color="#d5c09f"
+        radius={0.05}
+      />
       <mesh position={[0, 0, 0.1]}>
         <planeGeometry args={[1.78, 1.44]} />
-        <meshStandardMaterial color="#d5e0d4" emissive="#edf0d9" emissiveIntensity={0.12} roughness={0.72} />
+        <meshStandardMaterial
+          color="#d5e0d4"
+          emissive="#edf0d9"
+          emissiveIntensity={0.12}
+          roughness={0.72}
+        />
       </mesh>
-      <Box position={[0, 0, 0.15]} scale={[0.09, 1.52, 0.09]} color="#eee5ce" radius={0.025} />
-      <Box position={[0, 0, 0.15]} scale={[1.84, 0.09, 0.09]} color="#eee5ce" radius={0.025} />
-      <Box position={[0, -0.96, 0.05]} scale={[2.28, 0.2, 0.34]} color="#c8aa7f" radius={0.07} />
+      <Box
+        position={[0, 0, 0.15]}
+        scale={[0.09, 1.52, 0.09]}
+        color="#eee5ce"
+        radius={0.018}
+      />
+      <Box
+        position={[0, 0, 0.15]}
+        scale={[1.84, 0.09, 0.09]}
+        color="#eee5ce"
+        radius={0.018}
+      />
+      <Box
+        position={[0, -0.96, 0.05]}
+        scale={[2.28, 0.2, 0.34]}
+        color="#c8aa7f"
+        radius={0.045}
+      />
     </group>
   );
 }
@@ -319,7 +499,12 @@ function Plant() {
         6,
         delta
       );
-      leaves.current.scale.y = THREE.MathUtils.damp(leaves.current.scale.y, active ? 1.12 : 1, 6, delta);
+      leaves.current.scale.y = THREE.MathUtils.damp(
+        leaves.current.scale.y,
+        active ? 1.12 : 1,
+        6,
+        delta
+      );
     }
   });
 
@@ -344,9 +529,17 @@ function Plant() {
           [-0.08, 1.06, -0.04, -0.12],
           [0.14, 1.2, 0.02, 0.2],
         ].map(([x, y, z, rotation], index) => (
-          <mesh key={index} position={[x, y, z]} rotation={[0, 0, rotation]} castShadow>
+          <mesh
+            key={index}
+            position={[x, y, z]}
+            rotation={[0, 0, rotation]}
+            castShadow
+          >
             <sphereGeometry args={[0.31, 9, 7]} />
-            <meshStandardMaterial color={index % 2 === 1 ? "#789878" : "#91a98b"} roughness={0.96} />
+            <meshStandardMaterial
+              color={index % 2 === 1 ? "#789878" : "#91a98b"}
+              roughness={0.96}
+            />
           </mesh>
         ))}
       </group>
@@ -361,7 +554,12 @@ function DeskLamp() {
 
   useFrame((_, delta) => {
     if (light.current) {
-      light.current.intensity = THREE.MathUtils.damp(light.current.intensity, active ? 6 : 0.45, 8, delta);
+      light.current.intensity = THREE.MathUtils.damp(
+        light.current.intensity,
+        active ? 6 : 0.45,
+        8,
+        delta
+      );
     }
     if (bulb.current) {
       bulb.current.emissiveIntensity = THREE.MathUtils.damp(
@@ -383,8 +581,18 @@ function DeskLamp() {
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
     >
-      <Box position={[0, 0, 0]} scale={[0.56, 0.1, 0.4]} color="#4f5f86" radius={0.07} />
-      <Box position={[0, 0.4, 0]} scale={[0.09, 0.76, 0.09]} color="#5e72b4" radius={0.035} />
+      <Box
+        position={[0, 0, 0]}
+        scale={[0.56, 0.1, 0.4]}
+        color="#4f5f86"
+        radius={0.05}
+      />
+      <Box
+        position={[0, 0.4, 0]}
+        scale={[0.09, 0.76, 0.09]}
+        color="#5e72b4"
+        radius={0.025}
+      />
       <mesh position={[0.18, 0.75, 0]} rotation={[0, 0, -0.55]}>
         <coneGeometry args={[0.31, 0.35, 16, 1, true]} />
         <meshStandardMaterial color="#d8b477" roughness={0.92} side={THREE.DoubleSide} />
@@ -399,7 +607,13 @@ function DeskLamp() {
           toneMapped={false}
         />
       </mesh>
-      <pointLight ref={light} position={[0.18, 0.58, 0.32]} color="#f5d9a8" intensity={0.45} distance={3.2} />
+      <pointLight
+        ref={light}
+        position={[0.18, 0.58, 0.32]}
+        color="#f5d9a8"
+        intensity={0.45}
+        distance={3.2}
+      />
     </group>
   );
 }
@@ -426,31 +640,97 @@ function Room({
 
   return (
     <group>
-      <Box position={[0, -0.22, -0.35]} scale={[8.2, 0.42, 7.15]} color="#d8c5a5" radius={0.2} />
+      <Box
+        position={[0, -0.22, -0.35]}
+        scale={[8.2, 0.42, 7.15]}
+        color="#d8c5a5"
+        radius={0.08}
+      />
 
-      <Box position={[1.2, 0.02, 0.5]} scale={[4.25, 0.14, 2.65]} color="#6176bd" radius={0.24} />
-      <Box position={[0.02, 0.125, 1.62]} scale={[2.45, 0.06, 1.52]} color="#c7c4bc" radius={0.28} />
+      <SolidBox
+        position={[1.2, 0.02, 0.5]}
+        scale={[4.3, 0.14, 2.7]}
+        color="#6176bd"
+      />
+      <Box
+        position={[1.25, 0.125, 1.65]}
+        scale={[2.5, 0.06, 1.5]}
+        color="#c7c4bc"
+        radius={0.045}
+      />
 
-      <Box position={[-2.5, 0.2, -2.62]} scale={[3.1, 0.46, 2.45]} color="#d8c3a2" radius={0.18} />
-      <Box position={[-2.5, 0.49, -2.58]} scale={[2.8, 0.12, 2.05]} color="#7da28b" radius={0.22} />
+      <SolidBox
+        position={[-2.5, 0.2, -2.58]}
+        scale={[3.2, 0.46, 2.7]}
+        color="#d8c3a2"
+      />
+      <SolidBox
+        position={[-2.5, 0.49, -2.58]}
+        scale={[2.96, 0.12, 2.3]}
+        color="#7da28b"
+      />
 
-      <Box position={[2.7, 0.2, -2.62]} scale={[2.45, 0.46, 2.25]} color="#d8c3a2" radius={0.18} />
-      <Box position={[2.7, 0.49, -2.58]} scale={[2.1, 0.12, 1.9]} color="#d97d68" radius={0.22} />
+      <SolidBox
+        position={[2.68, 0.2, -2.58]}
+        scale={[2.5, 0.46, 2.3]}
+        color="#d8c3a2"
+      />
+      <SolidBox
+        position={[2.68, 0.49, -2.58]}
+        scale={[2.18, 0.12, 1.96]}
+        color="#d97d68"
+      />
 
-      <Box position={[-2.8, 0.02, 2.35]} scale={[2.4, 0.14, 1.7]} color="#d8b98d" radius={0.22} />
-      <Box position={[-0.95, -0.01, -0.35]} scale={[1.45, 0.1, 1.4]} color="#dfc9a8" radius={0.2} />
+      <SolidBox
+        position={[-2.8, 0.02, 2.35]}
+        scale={[2.5, 0.14, 1.8]}
+        color="#d8b98d"
+      />
+      <SolidBox
+        position={[-0.95, -0.01, -0.35]}
+        scale={[1.55, 0.1, 1.5]}
+        color="#dfc9a8"
+      />
 
-      <MiniStairs position={[-0.82, 0, -1.15]} />
-      <MiniStairs position={[2.7, 0, -1.15]} />
+      <MiniStairs position={[-0.8, 0, -1.14]} />
+      <MiniStairs position={[2.68, 0, -1.14]} />
 
-      <Box position={[-2.55, 1.92, -4.0]} scale={[3.35, 4.06, 0.26]} color="#b3bba4" radius={0.14} />
-      <Box position={[0.04, 1.48, -3.98]} scale={[1.48, 3.18, 0.28]} color="#eadbc4" radius={0.14} />
-      <Box position={[2.66, 1.8, -4.0]} scale={[3.35, 3.82, 0.26]} color="#d8a08c" radius={0.14} />
-      <Box position={[-4.15, 1.92, -2.68]} scale={[0.26, 4.06, 2.75]} color="#aab59e" radius={0.14} />
-      <Box position={[-4.15, 1.62, 0.76]} scale={[0.26, 3.46, 4.12]} color="#dbc29e" radius={0.14} />
+      <SolidBox
+        position={[-2.55, 1.89, -3.91]}
+        scale={[3.2, 3.8, 0.24]}
+        color="#b3bba4"
+      />
+      <SolidBox
+        position={[0, 1.89, -3.91]}
+        scale={[2, 3.8, 0.24]}
+        color="#eadbc4"
+      />
+      <SolidBox
+        position={[2.55, 1.89, -3.91]}
+        scale={[3.2, 3.8, 0.24]}
+        color="#d8a08c"
+      />
+      <SolidBox
+        position={[-4.09, 1.89, -2.45]}
+        scale={[0.24, 3.8, 2.96]}
+        color="#aab59e"
+      />
+      <SolidBox
+        position={[-4.09, 1.89, 1.1]}
+        scale={[0.24, 3.8, 4.2]}
+        color="#dbc29e"
+      />
 
-      <Box position={[-2.54, 0.47, -3.84]} scale={[3.05, 0.18, 0.34]} color="#91a18d" radius={0.07} />
-      <Box position={[2.68, 0.47, -3.84]} scale={[2.3, 0.18, 0.34]} color="#c98672" radius={0.07} />
+      <SolidBox
+        position={[-2.55, 0.48, -3.74]}
+        scale={[3.08, 0.18, 0.36]}
+        color="#91a18d"
+      />
+      <SolidBox
+        position={[2.68, 0.48, -3.74]}
+        scale={[2.34, 0.18, 0.36]}
+        color="#c98672"
+      />
 
       <Desk accent={accent} active={phase === "projects"} onOpen={onOpenProjects} />
       <DeskChair />
@@ -460,7 +740,14 @@ function Room({
       <Plant />
       <DeskLamp />
 
-      <pointLight position={[0.4, 4.7, 3.2]} color="#f4dfb7" intensity={7.1} distance={10} decay={2} castShadow />
+      <pointLight
+        position={[0.4, 4.7, 3.2]}
+        color="#f4dfb7"
+        intensity={7.1}
+        distance={10}
+        decay={2}
+        castShadow
+      />
     </group>
   );
 }
@@ -484,12 +771,26 @@ export function StudioScene({
   const viewRef = useRef<HTMLDivElement>(null!);
 
   return (
-    <div className="studio-canvas" aria-hidden="true" data-camera-phase={cameraPhase} style={{ pointerEvents: "none" }}>
-      <div ref={viewRef} className="studio-view" style={{ pointerEvents: roomIsInteractive ? "auto" : "none" }}>
+    <div
+      className="studio-canvas"
+      aria-hidden="true"
+      data-camera-phase={cameraPhase}
+      style={{ pointerEvents: "none" }}
+    >
+      <div
+        ref={viewRef}
+        className="studio-view"
+        style={{ pointerEvents: roomIsInteractive ? "auto" : "none" }}
+      >
         <Canvas
           shadows
           dpr={[1, 1.6]}
-          camera={{ position: ROOM_CAMERA_POSITION.toArray(), fov: ROOM_FOV, near: 0.1, far: 100 }}
+          camera={{
+            position: ROOM_CAMERA_POSITION.toArray(),
+            fov: ROOM_FOV,
+            near: 0.1,
+            far: 100,
+          }}
           gl={{ antialias: true, alpha: true }}
           onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
         >
@@ -498,7 +799,7 @@ export function StudioScene({
           <ambientLight intensity={1.1} color="#f5ecd8" />
           <directionalLight
             position={[5, 9, 6]}
-            intensity={2.0}
+            intensity={2}
             color="#fff0cf"
             castShadow
             shadow-mapSize={[1024, 1024]}
@@ -508,7 +809,15 @@ export function StudioScene({
             shadow-camera-top={8}
             shadow-camera-bottom={-8}
           />
-          <ContactShadows position={[0, -0.02, 0]} opacity={0.31} scale={11} blur={2.5} far={5.5} resolution={512} frames={1} />
+          <ContactShadows
+            position={[0, -0.02, 0]}
+            opacity={0.31}
+            scale={11}
+            blur={2.5}
+            far={5.5}
+            resolution={512}
+            frames={1}
+          />
           <CanvasResizeSync viewRef={viewRef} />
           <CameraRig
             phase={cameraPhase}
