@@ -182,10 +182,6 @@ function Window({ onOpen }: { onOpen: () => void }) {
       </mesh>
       <Box position={[0, 0, 0.13]} scale={[0.08, 1.5, 0.08]} color="#eee5ce" />
       <Box position={[0, 0, 0.13]} scale={[1.82, 0.08, 0.08]} color="#eee5ce" />
-      <mesh position={[0.48, 0.24, 0.14]}>
-        <circleGeometry args={[0.16, 20]} />
-        <meshStandardMaterial color="#f5efd5" emissive="#f5efd5" emissiveIntensity={0.45} />
-      </mesh>
     </group>
   );
 }
