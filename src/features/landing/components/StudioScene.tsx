@@ -271,7 +271,8 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
 function Corkboard({ onOpen }: { onOpen: () => void }) {
   return (
     <group
-      position={[-1.2, 2.7, -3.94]}
+      position={[-4.18, 2.75, -1.45]}
+      rotation={[0, Math.PI / 2, 0]}
       onClick={(event) => {
         event.stopPropagation();
         onOpen();
@@ -280,7 +281,12 @@ function Corkboard({ onOpen }: { onOpen: () => void }) {
       onPointerOut={() => (document.body.style.cursor = "default")}
     >
       <group>
-        <Box position={[0, 0, 0]} scale={[2.5, 1.55, 0.12]} color="#c9a575" />
+        <Box
+          position={[0, 0, 0]}
+          scale={[2.5, 1.55, 0.12]}
+          color="#c9a575"
+        />
+
         <group>
           {[
             [-0.72, 0.25, "#eee0c4", -0.08],
@@ -298,7 +304,10 @@ function Corkboard({ onOpen }: { onOpen: () => void }) {
                 rotation={[0, 0, Number(rotate)]}
               >
                 <planeGeometry args={[0.62, 0.78]} />
-                <meshStandardMaterial color={String(color)} roughness={0.95} />
+                <meshStandardMaterial
+                  color={String(color)}
+                  roughness={0.95}
+                />
               </mesh>
             </Float>
           ))}
