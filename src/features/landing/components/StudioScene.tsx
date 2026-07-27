@@ -694,7 +694,7 @@ function Room({
         color="#dfc9a8"
       />
 
-      <MiniStairs position={[-1.61, 0, -1.14]} bottomStepOffsetX={0.22} />
+      <MiniStairs position={[-1.61, 0, -1.14]} />
       <MiniStairs position={[2.68, 0, -1.14]} />
 
       <SolidBox
