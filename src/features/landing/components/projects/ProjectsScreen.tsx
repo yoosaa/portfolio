@@ -1,7 +1,13 @@
-import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ExternalLink,
+  Github,
+} from "lucide-react";
 import { motion } from "motion/react";
 import type { CSSProperties } from "react";
 import type { Project } from "../../data/projects";
+import styles from "./ProjectsScreen.module.css";
 
 type ProjectsScreenProps = {
   projects: readonly Project[];
@@ -26,6 +32,7 @@ export function ProjectsScreen({
     y: entry === "from-bottom" ? 72 : 0,
     scale: entry === "from-depth" ? 0.78 : 1,
   };
+  const hasPublicLink = Boolean(project.demo || project.source);
 
   return (
     <motion.section
@@ -75,15 +82,33 @@ export function ProjectsScreen({
           </button>
         </div>
 
-        {project.demo ? (
-          <a href={project.demo} target="_blank" rel="noreferrer">
-            Open app
-            <ExternalLink size={16} />
-          </a>
+        {hasPublicLink ? (
+          <div className={styles.projectLinks} aria-label="制作物へのリンク">
+            {project.demo ? (
+              <a
+                className={`${styles.projectLink} ${styles.primaryLink}`}
+                href={project.demo}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open app
+                <ExternalLink size={15} />
+              </a>
+            ) : null}
+            {project.source ? (
+              <a
+                className={`${styles.projectLink} ${styles.secondaryLink}`}
+                href={project.source}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View source
+                <Github size={15} />
+              </a>
+            ) : null}
+          </div>
         ) : (
-          <p className="project-note">
-            作品リンクと詳しい設計意図は次の工程で接続します。
-          </p>
+          <p className="project-note">公開リンクは準備中です。</p>
         )}
       </motion.article>
     </motion.section>
