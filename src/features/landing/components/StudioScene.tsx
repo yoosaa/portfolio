@@ -9,7 +9,13 @@ import type { StudioSceneProps } from "../model/studio-scene";
 import { CameraRig } from "./studio/CameraRig";
 import { CanvasResizeSync } from "./studio/CanvasResizeSync";
 
-function Box({ position, scale, color, rotation, radius = 0.06 }: {
+function Box({
+  position,
+  scale,
+  color,
+  rotation,
+  radius = 0.06,
+}: {
   position: [number, number, number];
   scale: [number, number, number];
   color: string;
@@ -17,7 +23,15 @@ function Box({ position, scale, color, rotation, radius = 0.06 }: {
   radius?: number;
 }) {
   return (
-    <RoundedBox position={position} scale={scale} rotation={rotation} radius={radius} smoothness={3} castShadow receiveShadow>
+    <RoundedBox
+      position={position}
+      scale={scale}
+      rotation={rotation}
+      radius={radius}
+      smoothness={3}
+      castShadow
+      receiveShadow
+    >
       <meshStandardMaterial color={color} roughness={0.78} />
     </RoundedBox>
   );
@@ -47,14 +61,22 @@ function MiniStairs({
           position={step.position}
           scale={step.scale}
           color="#d8c3a2"
-          radius={0.045}
+          radius={0.055}
         />
       ))}
     </group>
   );
 }
 
-function Desk({ accent, active, onOpen }: { accent: string; active: boolean; onOpen: () => void }) {
+function Desk({
+  accent,
+  active,
+  onOpen,
+}: {
+  accent: string;
+  active: boolean;
+  onOpen: () => void;
+}) {
   const [hovered, setHovered] = useState(false);
   const screenMaterial = useRef<THREE.MeshStandardMaterial>(null);
 
@@ -77,32 +99,83 @@ function Desk({ accent, active, onOpen }: { accent: string; active: boolean; onO
   };
 
   return (
-    <group position={[1.55, 0, 0.45]}>
-      <Box position={[0, 1.25, 0]} scale={[3.5, 0.22, 1.65]} color="#b18d6c" />
+    <group position={[1.35, 0, 0.65]}>
+      <Box
+        position={[0, 1.25, 0]}
+        scale={[3.5, 0.22, 1.65]}
+        color="#6176bd"
+        radius={0.1}
+      />
       {[-1.45, 1.45].map((x) => (
-        <Box key={x} position={[x, 0.55, 0]} scale={[0.18, 1.45, 1.35]} color="#806852" />
+        <Box
+          key={x}
+          position={[x, 0.55, 0]}
+          scale={[0.18, 1.45, 1.35]}
+          color="#4f5f86"
+          radius={0.05}
+        />
       ))}
 
       <group
         position={[0.25, 2.15, -0.3]}
-        onClick={(event) => { event.stopPropagation(); onOpen(); }}
+        onClick={(event) => {
+          event.stopPropagation();
+          onOpen();
+        }}
         onPointerOver={(event) => handlePointer(event, true)}
         onPointerOut={(event) => handlePointer(event, false)}
       >
-        <Box position={[0, 0, 0]} scale={[1.72, 1.05, 0.1]} color="#66756b" radius={0.04} />
+        <Box
+          position={[0, 0, 0]}
+          scale={[1.72, 1.05, 0.1]}
+          color="#66756b"
+          radius={0.04}
+        />
         <mesh position={[0, 0, 0.06]}>
           <planeGeometry args={[1.5, 0.82]} />
-          <meshStandardMaterial ref={screenMaterial} color="#d9e2d3" emissive={accent} emissiveIntensity={1.35} toneMapped={false} />
+          <meshStandardMaterial
+            ref={screenMaterial}
+            color="#d9e2d3"
+            emissive={accent}
+            emissiveIntensity={1.35}
+            toneMapped={false}
+          />
         </mesh>
-        <Box position={[0, -0.48, 0.055]} scale={[1.58, 0.08, 0.05]} color="#5d6962" radius={0.02} />
-        <Box position={[0, -0.62, -0.015]} scale={[0.14, 0.28, 0.12]} color="#77837c" radius={0.025} />
-        <Box position={[0, -0.75, 0.1]} scale={[0.82, 0.08, 0.46]} color="#77837c" radius={0.025} />
+        <Box
+          position={[0, -0.48, 0.055]}
+          scale={[1.58, 0.08, 0.05]}
+          color="#5d6962"
+          radius={0.02}
+        />
+        <Box
+          position={[0, -0.62, -0.015]}
+          scale={[0.14, 0.28, 0.12]}
+          color="#77837c"
+          radius={0.025}
+        />
+        <Box
+          position={[0, -0.75, 0.1]}
+          scale={[0.82, 0.08, 0.46]}
+          color="#77837c"
+          radius={0.025}
+        />
       </group>
 
       <group position={[0.25, 1.43, 0.47]} rotation={[-0.035, 0, 0]}>
-        <Box position={[0, 0, 0]} scale={[1.22, 0.09, 0.5]} color="#d4d0c3" radius={0.035} />
+        <Box
+          position={[0, 0, 0]}
+          scale={[1.22, 0.09, 0.5]}
+          color="#d4d0c3"
+          radius={0.035}
+        />
         {[-0.4, -0.2, 0, 0.2, 0.4].map((x) => (
-          <Box key={x} position={[x, 0.055, -0.04]} scale={[0.13, 0.025, 0.28]} color="#eee9dc" radius={0.01} />
+          <Box
+            key={x}
+            position={[x, 0.055, -0.04]}
+            scale={[0.13, 0.025, 0.28]}
+            color="#eee9dc"
+            radius={0.01}
+          />
         ))}
       </group>
 
@@ -122,9 +195,22 @@ function Desk({ accent, active, onOpen }: { accent: string; active: boolean; onO
       </group>
 
       <group position={[-0.82, 1.42, 0.4]} rotation={[0, -0.18, 0]}>
-        <Box position={[0, 0, 0]} scale={[0.64, 0.075, 0.48]} color="#d8c6a5" radius={0.025} />
-        <Box position={[-0.27, 0.045, 0]} scale={[0.035, 0.025, 0.42]} color="#a66f5e" radius={0.008} />
-        <mesh position={[0.08, 0.075, 0.03]} rotation={[0, -0.35, Math.PI / 2]}>
+        <Box
+          position={[0, 0, 0]}
+          scale={[0.64, 0.075, 0.48]}
+          color="#d8c6a5"
+          radius={0.025}
+        />
+        <Box
+          position={[-0.27, 0.045, 0]}
+          scale={[0.035, 0.025, 0.42]}
+          color="#a66f5e"
+          radius={0.008}
+        />
+        <mesh
+          position={[0.08, 0.075, 0.03]}
+          rotation={[0, -0.35, Math.PI / 2]}
+        >
           <cylinderGeometry args={[0.018, 0.018, 0.5, 10]} />
           <meshStandardMaterial color="#6d7f78" roughness={0.7} />
         </mesh>
@@ -136,20 +222,59 @@ function Desk({ accent, active, onOpen }: { accent: string; active: boolean; onO
 function Bookshelf({ onOpen }: { onOpen: () => void }) {
   const bookColors = ["#c78976", "#d3b56f", "#89a28a", "#91a5b7", "#dac79b"];
   const shelfLevels = [0.82, 1.72, 2.62];
+
   return (
     <group
-      position={[-3.05, 0.45, -3.58]}
-      onClick={(event) => { event.stopPropagation(); onOpen(); }}
-      onPointerOver={() => { document.body.style.cursor = "pointer"; }}
-      onPointerOut={() => { document.body.style.cursor = "default"; }}
+      position={[-2.55, 0.48, -3.18]}
+      onClick={(event) => {
+        event.stopPropagation();
+        onOpen();
+      }}
+      onPointerOver={() => {
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = "default";
+      }}
     >
-      <Box position={[0, 1.8, -0.35]} scale={[1.68, 3.42, 0.07]} color="#ad8968" radius={0.02} />
-      <Box position={[-0.86, 1.8, 0]} scale={[0.12, 3.55, 0.76]} color="#987354" radius={0.025} />
-      <Box position={[0.86, 1.8, 0]} scale={[0.12, 3.55, 0.76]} color="#987354" radius={0.025} />
-      <Box position={[0, 3.52, 0]} scale={[1.84, 0.12, 0.76]} color="#8c694e" radius={0.025} />
-      <Box position={[0, 0.08, 0]} scale={[1.84, 0.16, 0.76]} color="#8c694e" radius={0.025} />
+      <Box
+        position={[0, 1.8, -0.35]}
+        scale={[1.68, 3.42, 0.07]}
+        color="#70927f"
+        radius={0.035}
+      />
+      <Box
+        position={[-0.86, 1.8, 0]}
+        scale={[0.12, 3.55, 0.76]}
+        color="#5f806f"
+        radius={0.04}
+      />
+      <Box
+        position={[0.86, 1.8, 0]}
+        scale={[0.12, 3.55, 0.76]}
+        color="#5f806f"
+        radius={0.04}
+      />
+      <Box
+        position={[0, 3.52, 0]}
+        scale={[1.84, 0.12, 0.76]}
+        color="#557463"
+        radius={0.04}
+      />
+      <Box
+        position={[0, 0.08, 0]}
+        scale={[1.84, 0.16, 0.76]}
+        color="#557463"
+        radius={0.04}
+      />
       {shelfLevels.map((y) => (
-        <Box key={y} position={[0, y, 0]} scale={[1.68, 0.1, 0.7]} color="#765944" radius={0.02} />
+        <Box
+          key={y}
+          position={[0, y, 0]}
+          scale={[1.68, 0.1, 0.7]}
+          color="#4f6c5d"
+          radius={0.025}
+        />
       ))}
       {Array.from({ length: 15 }, (_, index) => {
         const row = Math.floor(index / 5);
@@ -157,10 +282,15 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
         const height = 0.54 + ((index * 7) % 5) * 0.055;
         const width = 0.16 + ((index * 3) % 4) * 0.018;
         const shelfY = shelfLevels[row];
+
         return (
           <Box
             key={index}
-            position={[-0.6 + column * 0.3, shelfY + height / 2 + 0.06, 0.02]}
+            position={[
+              -0.6 + column * 0.3,
+              shelfY + height / 2 + 0.06,
+              0.02,
+            ]}
             scale={[width, height, 0.4]}
             color={bookColors[index % bookColors.length]}
             rotation={[0, 0, ((index % 3) - 1) * 0.025]}
@@ -175,21 +305,36 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
 function Corkboard({ onOpen }: { onOpen: () => void }) {
   return (
     <group
-      position={[-4.18, 2.75, -1.45]}
-      rotation={[0, Math.PI / 2, 0]}
-      onClick={(event) => { event.stopPropagation(); onOpen(); }}
+      position={[2.68, 2.72, -3.94]}
+      onClick={(event) => {
+        event.stopPropagation();
+        onOpen();
+      }}
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
     >
-      <Box position={[0, 0, 0]} scale={[2.5, 1.55, 0.12]} color="#c9a575" />
+      <Box
+        position={[0, 0, 0]}
+        scale={[1.95, 1.45, 0.12]}
+        color="#d97d68"
+        radius={0.09}
+      />
       {[
-        [-0.72, 0.25, "#eee0c4", -0.08],
-        [0.05, -0.18, "#dfe7dc", 0.04],
-        [0.75, 0.2, "#d8dce6", 0.09],
+        [-0.54, 0.22, "#eee0c4", -0.08],
+        [0, -0.2, "#dfe7dc", 0.04],
+        [0.54, 0.2, "#d8dce6", 0.09],
       ].map(([x, y, color, rotate], index) => (
-        <Float key={index} speed={1 + index * 0.15} floatIntensity={0.035} rotationIntensity={0.02}>
-          <mesh position={[Number(x), Number(y), 0.09]} rotation={[0, 0, Number(rotate)]}>
-            <planeGeometry args={[0.62, 0.78]} />
+        <Float
+          key={index}
+          speed={1 + index * 0.15}
+          floatIntensity={0.035}
+          rotationIntensity={0.02}
+        >
+          <mesh
+            position={[Number(x), Number(y), 0.09]}
+            rotation={[0, 0, Number(rotate)]}
+          >
+            <planeGeometry args={[0.48, 0.64]} />
             <meshStandardMaterial color={String(color)} roughness={0.95} />
           </mesh>
         </Float>
@@ -201,18 +346,41 @@ function Corkboard({ onOpen }: { onOpen: () => void }) {
 function Window({ onOpen }: { onOpen: () => void }) {
   return (
     <group
-      position={[3.15, 2.65, -3.92]}
-      onClick={(event) => { event.stopPropagation(); onOpen(); }}
+      position={[-4.18, 2.55, 0.55]}
+      rotation={[0, Math.PI / 2, 0]}
+      onClick={(event) => {
+        event.stopPropagation();
+        onOpen();
+      }}
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
     >
-      <Box position={[0, 0, 0]} scale={[2.05, 1.72, 0.14]} color="#91a18e" />
+      <Box
+        position={[0, 0, 0]}
+        scale={[2.05, 1.72, 0.14]}
+        color="#d5c09f"
+        radius={0.05}
+      />
       <mesh position={[0, 0, 0.08]}>
         <planeGeometry args={[1.76, 1.44]} />
-        <meshStandardMaterial color="#d5e0d4" emissive="#edf0d9" emissiveIntensity={0.16} />
+        <meshStandardMaterial
+          color="#d5e0d4"
+          emissive="#edf0d9"
+          emissiveIntensity={0.16}
+        />
       </mesh>
-      <Box position={[0, 0, 0.13]} scale={[0.08, 1.5, 0.08]} color="#eee5ce" />
-      <Box position={[0, 0, 0.13]} scale={[1.82, 0.08, 0.08]} color="#eee5ce" />
+      <Box
+        position={[0, 0, 0.13]}
+        scale={[0.08, 1.5, 0.08]}
+        color="#eee5ce"
+        radius={0.018}
+      />
+      <Box
+        position={[0, 0, 0.13]}
+        scale={[1.82, 0.08, 0.08]}
+        color="#eee5ce"
+        radius={0.018}
+      />
     </group>
   );
 }
@@ -220,6 +388,7 @@ function Window({ onOpen }: { onOpen: () => void }) {
 function Plant() {
   const [active, setActive] = useState(false);
   const leaves = useRef<THREE.Group>(null);
+
   useFrame((state, delta) => {
     if (leaves.current) {
       leaves.current.rotation.z = THREE.MathUtils.damp(
@@ -228,13 +397,22 @@ function Plant() {
         6,
         delta
       );
-      leaves.current.scale.y = THREE.MathUtils.damp(leaves.current.scale.y, active ? 1.12 : 1, 6, delta);
+      leaves.current.scale.y = THREE.MathUtils.damp(
+        leaves.current.scale.y,
+        active ? 1.12 : 1,
+        6,
+        delta
+      );
     }
   });
+
   return (
     <group
-      position={[-3.1, 0.42, 2.8]}
-      onClick={(event) => { event.stopPropagation(); setActive((value) => !value); }}
+      position={[-2.75, 0.43, 2.35]}
+      onClick={(event) => {
+        event.stopPropagation();
+        setActive((value) => !value);
+      }}
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
     >
@@ -248,9 +426,16 @@ function Plant() {
           [0.2, 0.82, 0, 0.4],
           [0, 1.03, -0.04, 0],
         ].map(([x, y, z, rotation], index) => (
-          <mesh key={index} position={[x, y, z]} rotation={[0, 0, rotation]} castShadow>
+          <mesh
+            key={index}
+            position={[x, y, z]}
+            rotation={[0, 0, rotation]}
+            castShadow
+          >
             <sphereGeometry args={[0.28, 8, 6]} />
-            <meshStandardMaterial color={index === 1 ? "#789878" : "#91a98b"} />
+            <meshStandardMaterial
+              color={index === 1 ? "#789878" : "#91a98b"}
+            />
           </mesh>
         ))}
       </group>
@@ -262,37 +447,82 @@ function DeskLamp() {
   const [active, setActive] = useState(false);
   const light = useRef<THREE.PointLight>(null);
   const bulb = useRef<THREE.MeshStandardMaterial>(null);
+
   useFrame((_, delta) => {
     if (light.current) {
-      light.current.intensity = THREE.MathUtils.damp(light.current.intensity, active ? 7 : 0.6, 8, delta);
+      light.current.intensity = THREE.MathUtils.damp(
+        light.current.intensity,
+        active ? 7 : 0.6,
+        8,
+        delta
+      );
     }
     if (bulb.current) {
-      bulb.current.emissiveIntensity = THREE.MathUtils.damp(bulb.current.emissiveIntensity, active ? 3 : 0.35, 8, delta);
+      bulb.current.emissiveIntensity = THREE.MathUtils.damp(
+        bulb.current.emissiveIntensity,
+        active ? 3 : 0.35,
+        8,
+        delta
+      );
     }
   });
+
   return (
     <group
-      position={[2.95, 1.4, 0.45]}
-      onClick={(event) => { event.stopPropagation(); setActive((value) => !value); }}
+      position={[2.75, 1.4, 0.65]}
+      onClick={(event) => {
+        event.stopPropagation();
+        setActive((value) => !value);
+      }}
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
     >
-      <Box position={[0, 0, 0]} scale={[0.52, 0.08, 0.36]} color="#8b715c" />
-      <Box position={[0, 0.38, 0]} scale={[0.07, 0.72, 0.07]} color="#a18367" />
+      <Box
+        position={[0, 0, 0]}
+        scale={[0.52, 0.08, 0.36]}
+        color="#4f5f86"
+        radius={0.05}
+      />
+      <Box
+        position={[0, 0.38, 0]}
+        scale={[0.07, 0.72, 0.07]}
+        color="#5e72b4"
+        radius={0.025}
+      />
       <mesh position={[0.17, 0.7, 0]} rotation={[0, 0, -0.55]}>
         <coneGeometry args={[0.29, 0.32, 16, 1, true]} />
         <meshStandardMaterial color="#d8b477" side={THREE.DoubleSide} />
       </mesh>
       <mesh position={[0.17, 0.62, 0]}>
         <sphereGeometry args={[0.09, 12, 8]} />
-        <meshStandardMaterial ref={bulb} color="#fff4ce" emissive="#f7d693" emissiveIntensity={0.35} toneMapped={false} />
+        <meshStandardMaterial
+          ref={bulb}
+          color="#fff4ce"
+          emissive="#f7d693"
+          emissiveIntensity={0.35}
+          toneMapped={false}
+        />
       </mesh>
-      <pointLight ref={light} position={[0.17, 0.55, 0.32]} color="#f5d9a8" intensity={0.6} distance={3.2} />
+      <pointLight
+        ref={light}
+        position={[0.17, 0.55, 0.32]}
+        color="#f5d9a8"
+        intensity={0.6}
+        distance={3.2}
+      />
     </group>
   );
 }
 
-function Room({ phase, accent, projectIndex, onOpenProjects, onOpenBookshelf, onOpenCorkboard, onOpenWindow }: Pick<
+function Room({
+  phase,
+  accent,
+  projectIndex,
+  onOpenProjects,
+  onOpenBookshelf,
+  onOpenCorkboard,
+  onOpenWindow,
+}: Pick<
   StudioSceneProps,
   | "phase"
   | "accent"
@@ -303,38 +533,100 @@ function Room({ phase, accent, projectIndex, onOpenProjects, onOpenBookshelf, on
   | "onOpenWindow"
 >) {
   void projectIndex;
+
   return (
     <group>
-      <Box position={[0, -0.2, -0.35]} scale={[8.5, 0.34, 7.5]} color="#d8c5a5" radius={0.12} />
+      <Box
+        position={[0, -0.2, -0.35]}
+        scale={[8.5, 0.34, 7.5]}
+        color="#d8c5a5"
+        radius={0.14}
+      />
 
-      <Box position={[1.35, 0.01, 0.65]} scale={[4.15, 0.08, 2.55]} color="#6176bd" radius={0.12} />
+      <Box
+        position={[1.35, 0.025, 0.65]}
+        scale={[4.15, 0.11, 2.55]}
+        color="#6176bd"
+        radius={0.16}
+      />
 
-      <Box position={[-2.55, 0.18, -2.67]} scale={[3.0, 0.42, 2.35]} color="#d8c3a2" radius={0.1} />
-      <Box position={[-2.55, 0.42, -2.62]} scale={[2.7, 0.06, 1.95]} color="#7da28b" radius={0.1} />
+      <Box
+        position={[-2.55, 0.18, -2.67]}
+        scale={[3, 0.42, 2.35]}
+        color="#d8c3a2"
+        radius={0.14}
+      />
+      <Box
+        position={[-2.55, 0.44, -2.62]}
+        scale={[2.7, 0.1, 1.95]}
+        color="#7da28b"
+        radius={0.16}
+      />
 
-      <Box position={[2.68, 0.12, -2.68]} scale={[2.25, 0.3, 2.15]} color="#d8c3a2" radius={0.1} />
-      <Box position={[2.68, 0.3, -2.61]} scale={[1.92, 0.06, 1.72]} color="#d97d68" radius={0.1} />
+      <Box
+        position={[2.68, 0.18, -2.68]}
+        scale={[2.25, 0.42, 2.15]}
+        color="#d8c3a2"
+        radius={0.14}
+      />
+      <Box
+        position={[2.68, 0.44, -2.61]}
+        scale={[1.92, 0.1, 1.72]}
+        color="#d97d68"
+        radius={0.16}
+      />
 
-      <Box position={[-2.75, 0.01, 2.35]} scale={[2.35, 0.08, 1.58]} color="#d8b98d" radius={0.12} />
+      <Box
+        position={[-2.75, 0.025, 2.35]}
+        scale={[2.35, 0.11, 1.58]}
+        color="#d8b98d"
+        radius={0.16}
+      />
 
       <MiniStairs position={[-1.05, 0, -1.25]} />
       <MiniStairs position={[2.68, 0, -1.25]} />
 
-      <Box position={[0, 2.0, -4.05]} scale={[8.5, 4.3, 0.18]} color="#eee7d7" />
-      <Box position={[-4.3, 2.0, -0.35]} scale={[0.18, 4.3, 7.5]} color="#e4dfcc" />
+      <Box
+        position={[0, 2, -4.05]}
+        scale={[8.5, 4.3, 0.18]}
+        color="#eee7d7"
+        radius={0.08}
+      />
+      <Box
+        position={[-4.3, 2, -0.35]}
+        scale={[0.18, 4.3, 7.5]}
+        color="#e4dfcc"
+        radius={0.08}
+      />
 
-      <Desk accent={accent} active={phase === "projects"} onOpen={onOpenProjects} />
+      <Desk
+        accent={accent}
+        active={phase === "projects"}
+        onOpen={onOpenProjects}
+      />
       <Bookshelf onOpen={onOpenBookshelf} />
       <Corkboard onOpen={onOpenCorkboard} />
       <Window onOpen={onOpenWindow} />
       <Plant />
       <DeskLamp />
 
-      <mesh position={[0.3, 4.0, 0.5]}>
+      <mesh position={[0.3, 4, 0.5]}>
         <sphereGeometry args={[0.13, 12, 8]} />
-        <meshStandardMaterial color="#fff2cf" emissive="#f8dfa9" emissiveIntensity={2} toneMapped={false} />
+        <meshStandardMaterial
+          color="#fff2cf"
+          emissive="#f8dfa9"
+          emissiveIntensity={2}
+          toneMapped={false}
+        />
       </mesh>
-      <pointLight position={[0.3, 3.8, 0.5]} color="#f7dfa9" intensity={16} distance={8} decay={2} castShadow />
+      <pointLight
+        position={[0.3, 3.8, 0.5]}
+        color="#f7dfa9"
+        intensity={16}
+        distance={8}
+        decay={2}
+        castShadow
+      />
     </group>
   );
 }
@@ -356,13 +648,28 @@ export function StudioScene({
 }: StudioSceneProps) {
   const roomIsInteractive = phase === "room";
   const viewRef = useRef<HTMLDivElement>(null!);
+
   return (
-    <div className="studio-canvas" aria-hidden="true" data-camera-phase={cameraPhase} style={{ pointerEvents: "none" }}>
-      <div ref={viewRef} className="studio-view" style={{ pointerEvents: roomIsInteractive ? "auto" : "none" }}>
+    <div
+      className="studio-canvas"
+      aria-hidden="true"
+      data-camera-phase={cameraPhase}
+      style={{ pointerEvents: "none" }}
+    >
+      <div
+        ref={viewRef}
+        className="studio-view"
+        style={{ pointerEvents: roomIsInteractive ? "auto" : "none" }}
+      >
         <Canvas
           shadows
           dpr={[1, 1.6]}
-          camera={{ position: ROOM_CAMERA_POSITION.toArray(), fov: ROOM_FOV, near: 0.1, far: 100 }}
+          camera={{
+            position: ROOM_CAMERA_POSITION.toArray(),
+            fov: ROOM_FOV,
+            near: 0.1,
+            far: 100,
+          }}
           gl={{ antialias: true, alpha: true }}
           onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
         >
