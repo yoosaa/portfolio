@@ -689,8 +689,8 @@ function Room({
         color="#d8b98d"
       />
       <SolidBox
-        position={[-0.95, -0.01, -0.35]}
-        scale={[1.55, 0.1, 1.5]}
+        position={[-0.35, -0.01, -0.55]}
+        scale={[1.3, 0.1, 1]}
         color="#dfc9a8"
       />
 
