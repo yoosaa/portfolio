@@ -5,13 +5,13 @@ import dynamic from "next/dynamic";
 import { useReducer } from "react";
 import { deskProjects, getProjectsForPhase } from "./data/projects";
 import { AboutScreen } from "./components/about/AboutScreen";
+import { ElsewhereScreen } from "./components/elsewhere/ElsewhereScreen";
 import { LandingHeader } from "./components/layout/LandingHeader";
 import { StudioFooter } from "./components/layout/StudioFooter";
 import { StudioHint } from "./components/layout/StudioHint";
 import { StudioIntro } from "./components/layout/StudioIntro";
+import { LibraryScreen } from "./components/library/LibraryScreen";
 import { ProjectsScreen } from "./components/projects/ProjectsScreen";
-import { BookshelfProjectsScreen } from "./components/projects/BookshelfProjectsScreen";
-import { WindowProjectsScreen } from "./components/projects/WindowProjectsScreen";
 import { initialStudioState, studioReducer } from "./model/studio-state";
 
 const StudioScene = dynamic(
@@ -27,9 +27,9 @@ export default function App() {
   const activeProjects = getProjectsForPhase(state.phase);
   const project = activeProjects[state.projectIndex];
   const isProjects = state.phase === "projects";
-  const isBookshelfProjects = state.phase === "bookshelf-projects";
+  const isLibrary = state.phase === "bookshelf-projects";
   const isAbout = state.phase === "corkboard-projects";
-  const isWindowProjects = state.phase === "window-projects";
+  const isElsewhere = state.phase === "window-projects";
   const cameraPhase =
     state.phase === "returning-to-room" && !state.isProjectScreenClosed
       ? "projects"
@@ -99,26 +99,20 @@ export default function App() {
               onPreviousProject={() => dispatch({ type: "PREVIOUS_PROJECT" })}
               onNextProject={() => dispatch({ type: "NEXT_PROJECT" })}
             />
-          ) : isBookshelfProjects ? (
-            <BookshelfProjectsScreen
-              key="bookshelf-projects"
-              projectIndex={state.projectIndex}
+          ) : isLibrary ? (
+            <LibraryScreen
+              key="library"
               onReturnToRoom={() => dispatch({ type: "RETURN_FROM_BOOKSHELF" })}
-              onPreviousProject={() => dispatch({ type: "PREVIOUS_PROJECT" })}
-              onNextProject={() => dispatch({ type: "NEXT_PROJECT" })}
             />
           ) : isAbout ? (
             <AboutScreen
               key="about"
               onReturnToRoom={() => dispatch({ type: "RETURN_FROM_CORKBOARD" })}
             />
-          ) : isWindowProjects ? (
-            <WindowProjectsScreen
-              key="window-projects"
-              projectIndex={state.projectIndex}
+          ) : isElsewhere ? (
+            <ElsewhereScreen
+              key="elsewhere"
               onReturnToRoom={() => dispatch({ type: "RETURN_FROM_WINDOW" })}
-              onPreviousProject={() => dispatch({ type: "PREVIOUS_PROJECT" })}
-              onNextProject={() => dispatch({ type: "NEXT_PROJECT" })}
             />
           ) : null}
         </AnimatePresence>
