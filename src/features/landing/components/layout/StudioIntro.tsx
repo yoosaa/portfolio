@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import styles from "./StudioIntro.module.css";
 
 type StudioIntroProps = {
   onOpenProjects: () => void;
@@ -6,7 +7,7 @@ type StudioIntroProps = {
 
 export function StudioIntro({ onOpenProjects }: StudioIntroProps) {
   return (
-    <div className="studio-intro">
+    <div className={`studio-intro ${styles.intro}`}>
       <h1>
         <em>WELCOME</em> TO MY SMALL STUDIO
       </h1>
