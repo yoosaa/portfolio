@@ -2,10 +2,7 @@
 
 import { Float, PresentationControls, RoundedBox } from "@react-three/drei";
 import { Canvas, type ThreeEvent, useFrame } from "@react-three/fiber";
-import {
-  useRef,
-  useState,
-} from "react";
+import { useRef, useState } from "react";
 import * as THREE from "three";
 import { ROOM_CAMERA_POSITION, ROOM_FOV } from "../model/scene-config";
 import type { StudioSceneProps } from "../model/studio-scene";
@@ -52,7 +49,7 @@ function Desk({
   const [hovered, setHovered] = useState(false);
   const screenMaterial = useRef<THREE.MeshStandardMaterial>(null);
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (screenMaterial.current) {
       const glow = active || hovered ? 2.5 : 1.35;
       screenMaterial.current.emissiveIntensity = THREE.MathUtils.damp(
@@ -83,82 +80,103 @@ function Desk({
       ))}
 
       <group
-  position={[0.25, 2.15, -0.3]}
-  onClick={(event) => {
-    event.stopPropagation();
-    onOpen();
-  }}
-  onPointerOver={(event) => handlePointer(event, true)}
-  onPointerOut={(event) => handlePointer(event, false)}
->
-  {/* モニター背面 */}
-  <Box
-    position={[0, 0, 0]}
-    scale={[1.72, 1.05, 0.1]}
-    color="#66756b"
-    radius={0.04}
-  />
+        position={[0.25, 2.15, -0.3]}
+        onClick={(event) => {
+          event.stopPropagation();
+          onOpen();
+        }}
+        onPointerOver={(event) => handlePointer(event, true)}
+        onPointerOut={(event) => handlePointer(event, false)}
+      >
+        <Box
+          position={[0, 0, 0]}
+          scale={[1.72, 1.05, 0.1]}
+          color="#66756b"
+          radius={0.04}
+        />
 
-  {/* 画面 */}
-  <mesh position={[0, 0, 0.06]}>
-    <planeGeometry args={[1.5, 0.82]} />
-    <meshStandardMaterial
-      ref={screenMaterial}
-      color="#d9e2d3"
-      emissive={accent}
-      emissiveIntensity={1.35}
-      toneMapped={false}
-    />
-  </mesh>
-
-  {/* 下部ベゼル */}
-  <Box
-    position={[0, -0.48, 0.055]}
-    scale={[1.58, 0.08, 0.05]}
-    color="#5d6962"
-    radius={0.02}
-  />
-
-  {/* スタンド */}
-  <Box
-    position={[0, -0.72, -0.015]}
-    scale={[0.12, 0.38, 0.12]}
-    color="#77837c"
-    radius={0.025}
-  />
-
-  <Box
-    position={[0, -0.93, 0.04]}
-    scale={[0.68, 0.08, 0.42]}
-    color="#77837c"
-    radius={0.025}
-  />
-</group>
-
-      <Box
-        position={[0.28, 1.48, 0.46]}
-        scale={[1.45, 0.12, 0.58]}
-        color="#d6d2c2"
-        rotation={[-0.04, 0, 0]}
-      />
-
-      <group position={[1.25, 1.55, 0.32]}>
-        <mesh castShadow>
-          <cylinderGeometry args={[0.23, 0.2, 0.42, 16]} />
-          <meshStandardMaterial color="#e0d4ba" roughness={0.82} />
+        <mesh position={[0, 0, 0.06]}>
+          <planeGeometry args={[1.5, 0.82]} />
+          <meshStandardMaterial
+            ref={screenMaterial}
+            color="#d9e2d3"
+            emissive={accent}
+            emissiveIntensity={1.35}
+            toneMapped={false}
+          />
         </mesh>
-        <mesh position={[0.22, 0.02, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.13, 0.035, 8, 16, Math.PI * 1.65]} />
-          <meshStandardMaterial color="#e0d4ba" />
+
+        <Box
+          position={[0, -0.48, 0.055]}
+          scale={[1.58, 0.08, 0.05]}
+          color="#5d6962"
+          radius={0.02}
+        />
+        <Box
+          position={[0, -0.72, -0.015]}
+          scale={[0.12, 0.38, 0.12]}
+          color="#77837c"
+          radius={0.025}
+        />
+        <Box
+          position={[0, -0.93, 0.04]}
+          scale={[0.68, 0.08, 0.42]}
+          color="#77837c"
+          radius={0.025}
+        />
+      </group>
+
+      <group position={[0.25, 1.43, 0.47]} rotation={[-0.035, 0, 0]}>
+        <Box
+          position={[0, 0, 0]}
+          scale={[1.22, 0.09, 0.5]}
+          color="#d4d0c3"
+          radius={0.035}
+        />
+        {[-0.4, -0.2, 0, 0.2, 0.4].map((x) => (
+          <Box
+            key={x}
+            position={[x, 0.055, -0.04]}
+            scale={[0.13, 0.025, 0.28]}
+            color="#eee9dc"
+            radius={0.01}
+          />
+        ))}
+      </group>
+
+      <group position={[1.28, 1.55, 0.13]}>
+        <mesh castShadow receiveShadow>
+          <cylinderGeometry args={[0.2, 0.18, 0.38, 20]} />
+          <meshStandardMaterial color="#dfd3b8" roughness={0.86} />
+        </mesh>
+        <mesh position={[0.2, 0.015, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.12, 0.03, 10, 20, Math.PI * 1.65]} />
+          <meshStandardMaterial color="#dfd3b8" roughness={0.86} />
+        </mesh>
+        <mesh position={[0, 0.195, 0]}>
+          <circleGeometry args={[0.155, 20]} />
+          <meshStandardMaterial color="#765441" roughness={0.95} />
         </mesh>
       </group>
 
-      <Box
-        position={[-0.45, 1.48, 0.48]}
-        scale={[0.7, 0.08, 0.48]}
-        color="#e5dcc8"
-        rotation={[0, -0.2, 0]}
-      />
+      <group position={[-0.82, 1.42, 0.4]} rotation={[0, -0.18, 0]}>
+        <Box
+          position={[0, 0, 0]}
+          scale={[0.64, 0.075, 0.48]}
+          color="#d8c6a5"
+          radius={0.025}
+        />
+        <Box
+          position={[-0.27, 0.045, 0]}
+          scale={[0.035, 0.025, 0.42]}
+          color="#a66f5e"
+          radius={0.008}
+        />
+        <mesh position={[0.08, 0.075, 0.03]} rotation={[0, 0, -0.14]}>
+          <cylinderGeometry args={[0.018, 0.018, 0.5, 10]} />
+          <meshStandardMaterial color="#6d7f78" roughness={0.7} />
+        </mesh>
+      </group>
     </group>
   );
 }
@@ -176,7 +194,6 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
 
   return (
     <group
-      // 背面を奥の壁へ寄せる
       position={[-3.05, 0, -3.58]}
       onClick={(event) => {
         event.stopPropagation();
@@ -189,7 +206,6 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
         document.body.style.cursor = "default";
       }}
     >
-      {/* 背板 */}
       <Box
         position={[0, 1.8, -0.35]}
         scale={[1.68, 3.42, 0.07]}
@@ -197,7 +213,6 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
         radius={0.02}
       />
 
-      {/* 左右の側板 */}
       <Box
         position={[-0.86, 1.8, 0]}
         scale={[0.12, 3.55, 0.76]}
@@ -211,7 +226,6 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
         radius={0.025}
       />
 
-      {/* 天板・底板 */}
       <Box
         position={[0, 3.52, 0]}
         scale={[1.84, 0.12, 0.76]}
@@ -225,7 +239,6 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
         radius={0.025}
       />
 
-      {/* 棚板 */}
       {shelfLevels.map((y) => (
         <Box
           key={y}
@@ -236,11 +249,9 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
         />
       ))}
 
-      {/* 本 */}
       {Array.from({ length: 15 }, (_, index) => {
         const row = Math.floor(index / 5);
         const column = index % 5;
-
         const height = 0.54 + ((index * 7) % 5) * 0.055;
         const width = 0.16 + ((index * 3) % 4) * 0.018;
         const shelfY = shelfLevels[row];
@@ -474,7 +485,10 @@ function Room({
   onOpenWindow,
 }: Pick<
   StudioSceneProps,
-  "phase" | "accent" | "projectIndex" | "onOpenProjects"
+  | "phase"
+  | "accent"
+  | "projectIndex"
+  | "onOpenProjects"
   | "onOpenBookshelf"
   | "onOpenCorkboard"
   | "onOpenWindow"
