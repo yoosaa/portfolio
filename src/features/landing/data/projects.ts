@@ -4,6 +4,7 @@ export type Project = {
   tags: readonly string[];
   accent: string;
   demo: string | null;
+  source?: string | null;
 };
 
 export const deskProjects = [
@@ -13,7 +14,8 @@ export const deskProjects = [
       "顧客との接点を、あとから振り返れる形で残す業務ログ。フロントとAPIを分け、設計・テスト・公開まで一通り組み立てました。",
     tags: ["SvelteKit", "Hono", "Cloudflare D1", "Playwright"],
     accent: "#78998b",
-    demo: null,
+    demo: "https://clientnote.pages.dev",
+    source: null,
   },
   {
     title: "Restocknote",
@@ -21,7 +23,8 @@ export const deskProjects = [
       "小規模店舗の入荷・補充を迷わず共有するメモツール。Svelte 5とStorybookで、日常業務に馴染むUIを検証しました。",
     tags: ["Svelte 5", "Storybook", "Playwright", "Vercel"],
     accent: "#bd8f67",
-    demo: null,
+    demo: "https://restocknote.vercel.app",
+    source: "https://github.com/yoosaa/restocknote",
   },
   {
     title: "Decision note",
@@ -29,7 +32,8 @@ export const deskProjects = [
       "複数の選択肢を落ち着いて比較するための意思決定メモ。小さく作り、テストとCIを通して公開する一連の流れを実践しました。",
     tags: ["Next.js", "TypeScript", "Vitest", "GitHub Actions"],
     accent: "#879bb0",
-    demo: null,
+    demo: "https://decision-note-eight.vercel.app",
+    source: "https://github.com/yoosaa/decision-note",
   },
 ] as const satisfies readonly Project[];
 
