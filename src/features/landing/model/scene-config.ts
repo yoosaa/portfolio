@@ -11,8 +11,8 @@ export const DISPLAY_LOOK_AT = new THREE.Vector3(1.8, 2.2, 0.365);
 // The bookshelf is centred at (-3.25, 1.75, -0.25) and faces +Z.
 export const BOOKSHELF_CAMERA_POSITION = new THREE.Vector3(-3.25, 1.8, 3.35);
 export const BOOKSHELF_LOOK_AT = new THREE.Vector3(-3.25, 1.75, -0.25);
-export const CORKBOARD_CAMERA_POSITION = new THREE.Vector3(-1.2, 2.7, -2.1);
-export const CORKBOARD_LOOK_AT = new THREE.Vector3(-1.2, 2.7, -3.94);
+export const CORKBOARD_CAMERA_POSITION = new THREE.Vector3(-2.25, 2.75, -1.45);
+export const CORKBOARD_LOOK_AT = new THREE.Vector3(-4.18, 2.75, -1.45);
 export const WINDOW_CAMERA_POSITION = new THREE.Vector3(3.15, 2.65, -2.1);
 export const WINDOW_LOOK_AT = new THREE.Vector3(3.15, 2.65, -3.92);
 
