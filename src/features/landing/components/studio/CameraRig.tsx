@@ -186,41 +186,11 @@ function createCorkboardDetails() {
     rotation: number;
     pinColor: string;
   }> = [
-    {
-      position: [-0.52, 0.28, 0.2],
-      size: [0.42, 0.58],
-      color: "#eee0c4",
-      rotation: -0.08,
-      pinColor: "#80584b",
-    },
-    {
-      position: [0.02, 0.34, 0.205],
-      size: [0.56, 0.38],
-      color: "#dfe7dc",
-      rotation: 0.05,
-      pinColor: "#718474",
-    },
-    {
-      position: [0.52, 0.12, 0.2],
-      size: [0.38, 0.52],
-      color: "#d8dce6",
-      rotation: 0.09,
-      pinColor: "#775e54",
-    },
-    {
-      position: [-0.25, -0.3, 0.21],
-      size: [0.58, 0.32],
-      color: "#e7cfaa",
-      rotation: -0.04,
-      pinColor: "#806253",
-    },
-    {
-      position: [0.4, -0.34, 0.215],
-      size: [0.3, 0.26],
-      color: "#ece5d2",
-      rotation: 0.08,
-      pinColor: "#6f7f72",
-    },
+    { position: [-0.52, 0.28, 0.2], size: [0.42, 0.58], color: "#eee0c4", rotation: -0.08, pinColor: "#80584b" },
+    { position: [0.02, 0.34, 0.205], size: [0.56, 0.38], color: "#dfe7dc", rotation: 0.05, pinColor: "#718474" },
+    { position: [0.52, 0.12, 0.2], size: [0.38, 0.52], color: "#d8dce6", rotation: 0.09, pinColor: "#775e54" },
+    { position: [-0.25, -0.3, 0.21], size: [0.58, 0.32], color: "#e7cfaa", rotation: -0.04, pinColor: "#806253" },
+    { position: [0.4, -0.34, 0.215], size: [0.3, 0.26], color: "#ece5d2", rotation: 0.08, pinColor: "#6f7f72" },
   ];
 
   notes.forEach(({ position, size, color, rotation, pinColor }) => {
@@ -243,6 +213,26 @@ function createCorkboardDetails() {
 
   details.add(shelf, shelfLip);
   return details;
+}
+
+function createSimpleWindow() {
+  const window = new THREE.Group();
+  window.name = "studio-simple-window";
+  window.position.set(0, 0, 0.3);
+
+  const frame = createBoxMesh([1.62, 1.14, 0.12], "#c7ab82", 0.93);
+  const glass = createBoxMesh([1.34, 0.86, 0.07], "#d7e0d6", 0.78);
+  glass.position.z = 0.08;
+
+  window.add(frame, glass);
+  return window;
+}
+
+function createWindowWallPanel() {
+  const panel = createBoxMesh([0.28, 4.6, 2.3], "#e6d8c2", 0.95);
+  panel.name = "studio-window-wall-panel";
+  panel.position.set(-4.22, 2.29, 0.55);
+  return panel;
 }
 
 function easeDisplayTransition(progress: number) {
@@ -363,29 +353,26 @@ export function CameraRig({
     if (windowPlantRef.current) {
       hideObject(windowPlantRef.current, restoredVisibility);
     }
-    if (windowGroupRef.current) {
-      windowGroupRef.current.traverse((object) => {
-        const material = getStandardMaterial(object);
-        if (!material) {
-          return;
-        }
-
-        const colorHex = material.color.getHexString();
-        const isGrid =
-          colorHex === "eee5ce" &&
-          (matchesScale(object, 0.08, 1.42, 0.08) ||
-            matchesScale(object, 1.66, 0.08, 0.08));
-        const isSill = colorHex === "c8aa7f" && matchesScale(object, 2.02, 0.18, 0.3);
-
-        if (isGrid || isSill) {
-          hideObject(object, restoredVisibility);
-        }
-      });
-    }
 
     const artwork = createWallArtwork();
     roomGroupRef.current?.add(artwork);
     addedObjects.push(artwork);
+
+    if (windowGroupRef.current) {
+      windowGroupRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          hideObject(object, restoredVisibility);
+        }
+      });
+
+      const simpleWindow = createSimpleWindow();
+      windowGroupRef.current.add(simpleWindow);
+      addedObjects.push(simpleWindow);
+
+      const wallPanel = createWindowWallPanel();
+      roomGroupRef.current?.add(wallPanel);
+      addedObjects.push(wallPanel);
+    }
 
     if (deskGroupRef.current) {
       deskGroupRef.current.traverse((object) => {
