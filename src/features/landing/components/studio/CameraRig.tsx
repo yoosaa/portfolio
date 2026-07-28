@@ -37,6 +37,8 @@ const WALL_SOURCE_COLORS = new Set(["b3bba4", "eadbc4", "d8a08c", "aab59e", "dbc
 const WALL_COLOR = new THREE.Color("#e6d8c2");
 const BOOK_COLORS = new Set(["c78976", "d3b56f", "89a28a", "91a5b7", "dac79b"]);
 const OLD_CORK_NOTE_COLORS = new Set(["eee0c4", "dfe7dc", "d8dce6"]);
+const STRAY_ACCENT_COLORS = new Set(["91a18d", "c98672"]);
+const WINDOW_RECESS_COLORS = new Set(["cdb393", "d4bd9d"]);
 
 function roughly(value: number, target: number, epsilon = 0.035) {
   return Math.abs(value - target) < epsilon;
@@ -140,11 +142,6 @@ function createBookshelfDetails() {
 function createCorkboardDetails() {
   const details = new THREE.Group();
   details.name = "studio-corkboard-details";
-  const shelf = createBoxMesh([1.76, 0.12, 0.3], "#a85f52", 0.94);
-  shelf.position.set(0, -0.92, 0.23);
-  const shelfLip = createBoxMesh([1.76, 0.08, 0.1], "#965448", 0.94);
-  shelfLip.position.set(0, -0.84, 0.36);
-
   const notes: Array<{
     position: [number, number, number];
     size: [number, number];
@@ -175,7 +172,6 @@ function createCorkboardDetails() {
     details.add(note, pin);
   });
 
-  details.add(shelf, shelfLip);
   return details;
 }
 
@@ -197,9 +193,9 @@ function createSquareWindow() {
 }
 
 function createWindowWallPanel() {
-  const panel = createBoxMesh([0.28, 4.6, 2.3], "#e6d8c2", 0.95);
+  const panel = createBoxMesh([0.34, 4.6, 2.3], "#e6d8c2", 0.95);
   panel.name = "studio-window-wall-panel";
-  panel.position.set(-4.22, 2.29, 0.55);
+  panel.position.set(-4.18, 2.29, 0.55);
   return panel;
 }
 
@@ -271,6 +267,9 @@ export function CameraRig({
           restoredColors.set(material, material.color.clone());
           material.color.copy(WALL_COLOR);
           material.needsUpdate = true;
+        }
+        if (STRAY_ACCENT_COLORS.has(colorHex) || WINDOW_RECESS_COLORS.has(colorHex)) {
+          hideObject(object, restoredVisibility);
         }
         if (colorHex === "6176bd" && matchesScale(object, 3.42, 0.3, 1.58)) deskGroupRef.current = object.parent;
         if (colorHex === "70927f" && matchesScale(object, 2.02, 2.98, 0.12)) bookshelfGroupRef.current = object.parent;
@@ -433,8 +432,11 @@ export function CameraRig({
     }
 
     const elapsed = state.clock.elapsedTime - transition.current.startedAt;
-    const progress = prefersReducedMotion ? 1 : Math.min(elapsed / CAMERA_TRANSITION_DURATION, 1);
+    const progress = prefersReducedMotion
+      ? 1
+      : Math.min(elapsed / CAMERA_TRANSITION_DURATION, 1);
     const easedProgress = easeDisplayTransition(progress);
+
     camera.position.lerpVectors(transition.current.position, targetPosition, easedProgress);
     camera.quaternion.slerpQuaternions(
       transition.current.quaternion,
@@ -442,13 +444,18 @@ export function CameraRig({
       easedProgress
     );
     // eslint-disable-next-line react-hooks/immutability
-    perspectiveCamera.fov = THREE.MathUtils.lerp(transition.current.fov, targetFov, easedProgress);
+    perspectiveCamera.fov = THREE.MathUtils.lerp(
+      transition.current.fov,
+      targetFov,
+      easedProgress
+    );
     perspectiveCamera.updateProjectionMatrix();
 
     const hasReachedTarget =
       camera.position.distanceTo(targetPosition) < CAMERA_POSITION_EPSILON &&
       Math.abs(perspectiveCamera.fov - targetFov) < CAMERA_FOV_EPSILON &&
       camera.quaternion.angleTo(targetCamera.quaternion) < CAMERA_ANGLE_EPSILON;
+
     if (!hasReachedTarget || settledPhase.current === phase) return;
 
     settledPhase.current = phase;
