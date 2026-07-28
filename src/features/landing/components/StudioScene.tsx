@@ -650,12 +650,12 @@ function Room({
       />
 
       <SolidBox
-        position={[1.2, 0.02, 0.5]}
+        position={[-1.15, 0.02, 0.6]}
         scale={[4.3, 0.14, 2.7]}
         color="#6176bd"
       />
       <Box
-        position={[1.25, 0.125, 1.65]}
+        position={[-1.1, 0.125, 1.75]}
         scale={[2.5, 0.06, 1.5]}
         color="#c7c4bc"
         radius={0.045}
@@ -756,13 +756,15 @@ function Room({
         color="#c98672"
       />
 
-      <Desk accent={accent} active={phase === "projects"} onOpen={onOpenProjects} />
-      <DeskChair />
+      <group position={[-2.35, 0, 0.1]}>
+        <Desk accent={accent} active={phase === "projects"} onOpen={onOpenProjects} />
+        <DeskChair />
+        <DeskLamp />
+      </group>
       <Bookshelf onOpen={onOpenBookshelf} />
       <Corkboard onOpen={onOpenCorkboard} />
       <Window onOpen={onOpenWindow} />
       <Plant />
-      <DeskLamp />
 
       <pointLight
         position={[0.4, 4.7, 3.2]}
