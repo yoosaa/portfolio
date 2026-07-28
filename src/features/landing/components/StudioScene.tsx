@@ -300,7 +300,7 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
 
   return (
     <group
-      position={[-2.55, 0.5, -3.12]}
+      position={[-2.9, 0.5, -3.18]}
       onClick={(event) => {
         event.stopPropagation();
         onOpen();
@@ -489,7 +489,13 @@ function Window({ onOpen }: { onOpen: () => void }) {
   );
 }
 
-function Plant() {
+function Plant({
+  position,
+  scale = 1,
+}: {
+  position: [number, number, number];
+  scale?: number;
+}) {
   const [active, setActive] = useState(false);
   const leaves = useRef<THREE.Group>(null);
 
@@ -512,7 +518,8 @@ function Plant() {
 
   return (
     <group
-      position={[-2.9, 0.45, 2.42]}
+      position={position}
+      scale={scale}
       onClick={(event) => {
         event.stopPropagation();
         setActive((value) => !value);
@@ -764,7 +771,7 @@ function Room({
       <Bookshelf onOpen={onOpenBookshelf} />
       <Corkboard onOpen={onOpenCorkboard} />
       <Window onOpen={onOpenWindow} />
-      <Plant />
+      <Plant position={[-1.42, 0.84, -2.72]} scale={0.78} />
 
       <pointLight
         position={[0.4, 4.7, 3.2]}
