@@ -167,7 +167,7 @@ function createCorkboardDetails() {
       new THREE.PlaneGeometry(...size),
       new THREE.MeshStandardMaterial({ color, roughness: 0.96 })
     );
-    note.position.set(...position);
+    note.position.set(position[0], position[1], position[2]);
     note.rotation.z = rotation;
     const pin = new THREE.Mesh(
       new THREE.SphereGeometry(0.035, 10, 8),
