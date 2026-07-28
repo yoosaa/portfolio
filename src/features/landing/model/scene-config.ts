@@ -9,8 +9,8 @@ export const DISPLAY_LOOK_AT = new THREE.Vector3(-0.95, 2.08, 0.41);
 export const BOOKSHELF_CAMERA_POSITION = new THREE.Vector3(-2.9, 2.05, -1.25);
 export const BOOKSHELF_LOOK_AT = new THREE.Vector3(-2.9, 2.05, -3.18);
 
-export const CORKBOARD_CAMERA_POSITION = new THREE.Vector3(2.7, 2.65, -2.02);
-export const CORKBOARD_LOOK_AT = new THREE.Vector3(2.7, 2.65, -3.93);
+export const CORKBOARD_CAMERA_POSITION = new THREE.Vector3(2.15, 2.65, -2.02);
+export const CORKBOARD_LOOK_AT = new THREE.Vector3(2.15, 2.65, -3.93);
 
 export const WINDOW_CAMERA_POSITION = new THREE.Vector3(-2.18, 2.48, 0.55);
 export const WINDOW_LOOK_AT = new THREE.Vector3(-4.04, 2.48, 0.55);
