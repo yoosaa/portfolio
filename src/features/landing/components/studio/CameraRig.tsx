@@ -44,7 +44,13 @@ function roughly(value: number, target: number, epsilon = 0.035) {
   return Math.abs(value - target) < epsilon;
 }
 
-function matchesScale(object: THREE.Object3D, x: number, y: number, z: number, epsilon = 0.05) {
+function matchesScale(
+  object: THREE.Object3D,
+  x: number,
+  y: number,
+  z: number,
+  epsilon = 0.05
+) {
   return (
     roughly(object.scale.x, x, epsilon) &&
     roughly(object.scale.y, y, epsilon) &&
@@ -53,12 +59,19 @@ function matchesScale(object: THREE.Object3D, x: number, y: number, z: number, e
 }
 
 function getStandardMaterial(object: THREE.Object3D) {
-  if (!(object instanceof THREE.Mesh)) return null;
+  if (!(object instanceof THREE.Mesh)) {
+    return null;
+  }
+
   const material = Array.isArray(object.material) ? object.material[0] : object.material;
   return material instanceof THREE.MeshStandardMaterial ? material : null;
 }
 
-function createBoxMesh(scale: [number, number, number], color: string, roughness = 0.93) {
+function createBoxMesh(
+  scale: [number, number, number],
+  color: string,
+  roughness = 0.93
+) {
   const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(...scale),
     new THREE.MeshStandardMaterial({ color, roughness })
@@ -68,14 +81,22 @@ function createBoxMesh(scale: [number, number, number], color: string, roughness
   return mesh;
 }
 
-function hideObject(object: THREE.Object3D, restoredVisibility: Map<THREE.Object3D, boolean>) {
-  if (!restoredVisibility.has(object)) restoredVisibility.set(object, object.visible);
+function hideObject(
+  object: THREE.Object3D,
+  restoredVisibility: Map<THREE.Object3D, boolean>
+) {
+  if (!restoredVisibility.has(object)) {
+    restoredVisibility.set(object, object.visible);
+  }
   object.visible = false;
 }
 
 function disposeObjectTree(root: THREE.Object3D) {
   root.traverse((object) => {
-    if (!(object instanceof THREE.Mesh)) return;
+    if (!(object instanceof THREE.Mesh)) {
+      return;
+    }
+
     object.geometry.dispose();
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     materials.forEach((material) => material.dispose());
@@ -113,17 +134,20 @@ function createDeskLegs() {
     [-1.4, 0.54, 0.56],
     [1.34, 0.54, 0.56],
   ];
+
   positions.forEach((position) => {
     const leg = createBoxMesh([0.16, 1.06, 0.16], "#4f5f86");
     leg.position.set(...position);
     legs.add(leg);
   });
+
   return legs;
 }
 
 function createBookshelfDetails() {
   const details = new THREE.Group();
   details.name = "studio-bookshelf-details";
+
   const storageBox = createBoxMesh([0.82, 0.48, 0.52], "#c7aa80", 0.95);
   storageBox.position.set(0.45, 1.03, 0.02);
   const storageLabel = createBoxMesh([0.34, 0.12, 0.03], "#eee2ca", 0.96);
@@ -135,6 +159,7 @@ function createBookshelfDetails() {
   const frameShape = createBoxMesh([0.22, 0.1, 0.025], "#7f9a83", 0.95);
   frameShape.position.set(-0.08, 1.86, 0.155);
   frameShape.rotation.z = 0.16;
+
   details.add(storageBox, storageLabel, frame, frameCanvas, frameShape);
   return details;
 }
@@ -149,11 +174,41 @@ function createCorkboardDetails() {
     rotation: number;
     pinColor: string;
   }> = [
-    { position: [-0.52, 0.28, 0.2], size: [0.42, 0.58], color: "#eee0c4", rotation: -0.08, pinColor: "#80584b" },
-    { position: [0.02, 0.34, 0.205], size: [0.56, 0.38], color: "#dfe7dc", rotation: 0.05, pinColor: "#718474" },
-    { position: [0.52, 0.12, 0.2], size: [0.38, 0.52], color: "#d8dce6", rotation: 0.09, pinColor: "#775e54" },
-    { position: [-0.25, -0.3, 0.21], size: [0.58, 0.32], color: "#e7cfaa", rotation: -0.04, pinColor: "#806253" },
-    { position: [0.4, -0.34, 0.215], size: [0.3, 0.26], color: "#ece5d2", rotation: 0.08, pinColor: "#6f7f72" },
+    {
+      position: [-0.52, 0.28, 0.2],
+      size: [0.42, 0.58],
+      color: "#eee0c4",
+      rotation: -0.08,
+      pinColor: "#80584b",
+    },
+    {
+      position: [0.02, 0.34, 0.205],
+      size: [0.56, 0.38],
+      color: "#dfe7dc",
+      rotation: 0.05,
+      pinColor: "#718474",
+    },
+    {
+      position: [0.52, 0.12, 0.2],
+      size: [0.38, 0.52],
+      color: "#d8dce6",
+      rotation: 0.09,
+      pinColor: "#775e54",
+    },
+    {
+      position: [-0.25, -0.3, 0.21],
+      size: [0.58, 0.32],
+      color: "#e7cfaa",
+      rotation: -0.04,
+      pinColor: "#806253",
+    },
+    {
+      position: [0.4, -0.34, 0.215],
+      size: [0.3, 0.26],
+      color: "#ece5d2",
+      rotation: 0.08,
+      pinColor: "#6f7f72",
+    },
   ];
 
   notes.forEach(({ position, size, color, rotation, pinColor }) => {
@@ -163,6 +218,7 @@ function createCorkboardDetails() {
     );
     note.position.set(...position);
     note.rotation.z = rotation;
+
     const pin = new THREE.Mesh(
       new THREE.SphereGeometry(0.035, 10, 8),
       new THREE.MeshStandardMaterial({ color: pinColor, roughness: 0.9 })
@@ -178,7 +234,7 @@ function createCorkboardDetails() {
 function createSquareWindow() {
   const window = new THREE.Group();
   window.name = "studio-square-window";
-  window.position.set(0, 0, 0.3);
+  window.position.set(0, 0, 0.22);
 
   const frame = createBoxMesh([1.42, 1.42, 0.12], "#c7ab82", 0.93);
   const glass = createBoxMesh([1.12, 1.12, 0.07], "#d7e0d6", 0.78);
@@ -193,25 +249,65 @@ function createSquareWindow() {
 }
 
 function createWindowWallPanel() {
-  const panel = createBoxMesh([0.34, 4.6, 2.3], "#e6d8c2", 0.95);
+  const panel = createBoxMesh([0.25, 4.62, 2.42], "#e6d8c2", 0.95);
   panel.name = "studio-window-wall-panel";
-  panel.position.set(-4.18, 2.29, 0.55);
+  panel.position.set(-4.075, 2.29, 0.55);
   return panel;
 }
 
+function createUpperBackFiller() {
+  const filler = createBoxMesh([8.0, 0.89, 0.54], "#d8c3a2", 0.93);
+  filler.name = "studio-upper-back-filler";
+  filler.position.set(0, 0.435, -3.61);
+  return filler;
+}
+
+function createUniformStairs() {
+  const stairs = new THREE.Group();
+  stairs.name = "studio-uniform-stairs";
+  stairs.position.set(1.85, 0, -1.05);
+
+  const fromY = -0.01;
+  const toY = 0.88;
+  const stepCount = 4;
+  const rise = (toY - fromY) / stepCount;
+  const treadDepth = 0.38;
+  const depthOffset = ((stepCount - 1) * treadDepth) / 2;
+
+  for (let index = 0; index < stepCount; index += 1) {
+    const step = createBoxMesh([1.18, rise, treadDepth], "#d7c2a2", 0.93);
+    step.position.set(
+      0,
+      fromY + rise * (index + 0.5),
+      depthOffset - index * treadDepth
+    );
+    stairs.add(step);
+  }
+
+  return stairs;
+}
+
 function easeDisplayTransition(progress: number) {
-  if (progress <= 0 || progress >= 1) return progress <= 0 ? 0 : 1;
+  if (progress <= 0 || progress >= 1) {
+    return progress <= 0 ? 0 : 1;
+  }
+
   const sampleCurve = (time: number, point1: number, point2: number) =>
     3 * (1 - time) * (1 - time) * time * point1 +
     3 * (1 - time) * time * time * point2 +
     time * time * time;
   let lower = 0;
   let upper = 1;
+
   for (let index = 0; index < 14; index += 1) {
     const time = (lower + upper) / 2;
-    if (sampleCurve(time, 0.16, 0.3) < progress) lower = time;
-    else upper = time;
+    if (sampleCurve(time, 0.16, 0.3) < progress) {
+      lower = time;
+    } else {
+      upper = time;
+    }
   }
+
   return sampleCurve((lower + upper) / 2, 1, 1);
 }
 
@@ -263,49 +359,84 @@ export function CameraRig({
       const material = getStandardMaterial(object);
       if (material) {
         const colorHex = material.color.getHexString();
+
         if (WALL_SOURCE_COLORS.has(colorHex)) {
           restoredColors.set(material, material.color.clone());
           material.color.copy(WALL_COLOR);
           material.needsUpdate = true;
         }
-        if (STRAY_ACCENT_COLORS.has(colorHex) || WINDOW_RECESS_COLORS.has(colorHex)) {
+
+        if (
+          STRAY_ACCENT_COLORS.has(colorHex) ||
+          WINDOW_RECESS_COLORS.has(colorHex) ||
+          colorHex === "d7c2a2"
+        ) {
           hideObject(object, restoredVisibility);
         }
-        if (colorHex === "6176bd" && matchesScale(object, 3.42, 0.3, 1.58)) deskGroupRef.current = object.parent;
-        if (colorHex === "70927f" && matchesScale(object, 2.02, 2.98, 0.12)) bookshelfGroupRef.current = object.parent;
-        if (colorHex === "b96d5d" && matchesScale(object, 2.08, 1.58, 0.16)) corkboardGroupRef.current = object.parent;
-        if (colorHex === "d5c09f" && matchesScale(object, 1.86, 1.68, 0.16)) windowGroupRef.current = object.parent;
+
+        if (colorHex === "6176bd" && matchesScale(object, 3.42, 0.3, 1.58)) {
+          deskGroupRef.current = object.parent;
+        }
+        if (colorHex === "70927f" && matchesScale(object, 2.02, 2.98, 0.12)) {
+          bookshelfGroupRef.current = object.parent;
+        }
+        if (colorHex === "b96d5d" && matchesScale(object, 2.08, 1.58, 0.16)) {
+          corkboardGroupRef.current = object.parent;
+        }
+        if (colorHex === "d5c09f" && matchesScale(object, 1.86, 1.68, 0.16)) {
+          windowGroupRef.current = object.parent;
+        }
       }
 
       const { x, y, z } = object.position;
-      const isPendantRoot = roughly(x, 3.35, 0.01) && roughly(y, 4.07, 0.03) && roughly(z, -2.82, 0.01);
+      const isPendantRoot =
+        roughly(x, 3.35, 0.01) && roughly(y, 4.07, 0.03) && roughly(z, -2.82, 0.01);
       const isWindowPlantRoot =
         !(object instanceof THREE.Mesh) &&
         roughly(x, -4.02, 0.02) &&
         roughly(y, 1.92, 0.02) &&
         roughly(z, 0.95, 0.02) &&
         roughly(object.scale.x, 0.45, 0.02);
+
       if (isPendantRoot) {
         pendantGroupRef.current = object;
         roomGroupRef.current = object.parent;
       }
-      if (isWindowPlantRoot) windowPlantRef.current = object;
+      if (isWindowPlantRoot) {
+        windowPlantRef.current = object;
+      }
     });
 
-    if (pendantGroupRef.current) hideObject(pendantGroupRef.current, restoredVisibility);
-    if (windowPlantRef.current) hideObject(windowPlantRef.current, restoredVisibility);
+    if (pendantGroupRef.current) {
+      hideObject(pendantGroupRef.current, restoredVisibility);
+    }
+    if (windowPlantRef.current) {
+      hideObject(windowPlantRef.current, restoredVisibility);
+    }
 
     const artwork = createWallArtwork();
     roomGroupRef.current?.add(artwork);
     addedObjects.push(artwork);
 
+    const upperBackFiller = createUpperBackFiller();
+    roomGroupRef.current?.add(upperBackFiller);
+    addedObjects.push(upperBackFiller);
+
+    const uniformStairs = createUniformStairs();
+    roomGroupRef.current?.add(uniformStairs);
+    addedObjects.push(uniformStairs);
+
     if (windowGroupRef.current) {
       windowGroupRef.current.traverse((object) => {
-        if (object instanceof THREE.Mesh) hideObject(object, restoredVisibility);
+        if (object instanceof THREE.Mesh) {
+          hideObject(object, restoredVisibility);
+        }
       });
+
       const squareWindow = createSquareWindow();
       windowGroupRef.current.add(squareWindow);
       addedObjects.push(squareWindow);
+
       const wallPanel = createWindowWallPanel();
       roomGroupRef.current?.add(wallPanel);
       addedObjects.push(wallPanel);
@@ -314,13 +445,23 @@ export function CameraRig({
     if (deskGroupRef.current) {
       deskGroupRef.current.traverse((object) => {
         const material = getStandardMaterial(object);
-        if (!material) return;
+        if (!material) {
+          return;
+        }
+
         const colorHex = material.color.getHexString();
-        const isLeftCabinet = colorHex === "4f5f86" && matchesScale(object, 0.25, 1.35, 1.2);
-        const isRightCabinet = colorHex === "53668f" && matchesScale(object, 0.66, 1.16, 1.22);
-        const isDrawerHandle = colorHex === "7e8cb1" && matchesScale(object, 0.48, 0.1, 0.05);
-        if (isLeftCabinet || isRightCabinet || isDrawerHandle) hideObject(object, restoredVisibility);
+        const isLeftCabinet =
+          colorHex === "4f5f86" && matchesScale(object, 0.25, 1.35, 1.2);
+        const isRightCabinet =
+          colorHex === "53668f" && matchesScale(object, 0.66, 1.16, 1.22);
+        const isDrawerHandle =
+          colorHex === "7e8cb1" && matchesScale(object, 0.48, 0.1, 0.05);
+
+        if (isLeftCabinet || isRightCabinet || isDrawerHandle) {
+          hideObject(object, restoredVisibility);
+        }
       });
+
       const deskLegs = createDeskLegs();
       deskGroupRef.current.add(deskLegs);
       addedObjects.push(deskLegs);
@@ -330,22 +471,30 @@ export function CameraRig({
       bookshelfGroupRef.current.traverse((object) => {
         const material = getStandardMaterial(object);
         const { x, y, z } = object.position;
-        const isTopPlantGroup = !(object instanceof THREE.Mesh) && roughly(x, 0.58) && roughly(y, 3.5) && roughly(z, 0);
+        const isTopPlantGroup =
+          !(object instanceof THREE.Mesh) && roughly(x, 0.58) && roughly(y, 3.5) && roughly(z, 0);
         const isTopPlantPot =
           object instanceof THREE.Mesh &&
           object.geometry instanceof THREE.CylinderGeometry &&
           roughly(x, 0.58) &&
           roughly(y, 3.36) &&
           roughly(z, 0);
+
         if (isTopPlantGroup || isTopPlantPot) {
           hideObject(object, restoredVisibility);
           return;
         }
-        if (!material || !BOOK_COLORS.has(material.color.getHexString()) || !roughly(z, 0.04)) return;
+        if (!material || !BOOK_COLORS.has(material.color.getHexString()) || !roughly(z, 0.04)) {
+          return;
+        }
+
         const isLowerRightBook = y < 1.3 && x > 0;
         const isMiddleCenterBook = y > 1.65 && y < 2.05 && x > -0.4 && x < 0.4;
-        if (isLowerRightBook || isMiddleCenterBook) hideObject(object, restoredVisibility);
+        if (isLowerRightBook || isMiddleCenterBook) {
+          hideObject(object, restoredVisibility);
+        }
       });
+
       const bookshelfDetails = createBookshelfDetails();
       bookshelfGroupRef.current.add(bookshelfDetails);
       addedObjects.push(bookshelfDetails);
@@ -363,6 +512,7 @@ export function CameraRig({
           hideObject(object, restoredVisibility);
         }
       });
+
       const corkboardDetails = createCorkboardDetails();
       corkboardGroupRef.current.add(corkboardDetails);
       addedObjects.push(corkboardDetails);
@@ -387,8 +537,10 @@ export function CameraRig({
   // eslint-disable-next-line react-hooks/immutability
   useFrame((state) => {
     const isDisplayView = phase === "zooming-to-display" || phase === "projects";
-    const isBookshelfView = phase === "zooming-to-bookshelf" || phase === "bookshelf-projects";
-    const isCorkboardView = phase === "zooming-to-corkboard" || phase === "corkboard-projects";
+    const isBookshelfView =
+      phase === "zooming-to-bookshelf" || phase === "bookshelf-projects";
+    const isCorkboardView =
+      phase === "zooming-to-corkboard" || phase === "corkboard-projects";
     const isWindowView = phase === "zooming-to-window" || phase === "window-projects";
     const targetPosition = isDisplayView
       ? DISPLAY_CAMERA_POSITION
@@ -421,6 +573,7 @@ export function CameraRig({
     targetCamera.position.copy(targetPosition);
     targetCamera.lookAt(targetLookAt);
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
+
     if (!transition.current || transition.current.phase !== phase) {
       transition.current = {
         phase,
@@ -456,7 +609,9 @@ export function CameraRig({
       Math.abs(perspectiveCamera.fov - targetFov) < CAMERA_FOV_EPSILON &&
       camera.quaternion.angleTo(targetCamera.quaternion) < CAMERA_ANGLE_EPSILON;
 
-    if (!hasReachedTarget || settledPhase.current === phase) return;
+    if (!hasReachedTarget || settledPhase.current === phase) {
+      return;
+    }
 
     settledPhase.current = phase;
     if (phase === "zooming-to-display") onDisplayReached();
