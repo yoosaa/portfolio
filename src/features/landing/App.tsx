@@ -1,19 +1,126 @@
-import { Header } from "./components/Header";
-import { Hero } from "./components/Hero";
-import { About } from "./components/About";
-import { Skills } from "./components/Skills";
-import { Projects } from "./components/Projects";
-import { Contact } from "./components/Contact";
+"use client";
+
+import { AnimatePresence, motion } from "motion/react";
+import dynamic from "next/dynamic";
+import { useReducer } from "react";
+import { deskProjects, getProjectsForPhase } from "./data/projects";
+import { AboutScreen } from "./components/about/AboutScreen";
+import { ElsewhereScreen } from "./components/elsewhere/ElsewhereScreen";
+import { LandingHeader } from "./components/layout/LandingHeader";
+import { StudioFooter } from "./components/layout/StudioFooter";
+import { StudioHint } from "./components/layout/StudioHint";
+import { StudioIntro } from "./components/layout/StudioIntro";
+import { LibraryScreen } from "./components/library/LibraryScreen";
+import { ProjectsScreen } from "./components/projects/ProjectsScreen";
+import { initialStudioState, studioReducer } from "./model/studio-state";
+
+const StudioScene = dynamic(
+  () => import("./components/StudioScene").then((module) => module.StudioScene),
+  {
+    ssr: false,
+    loading: () => <div className="studio-canvas studio-canvas-loading" />,
+  }
+);
 
 export default function App() {
+  const [state, dispatch] = useReducer(studioReducer, initialStudioState);
+  const activeProjects = getProjectsForPhase(state.phase);
+  const project = activeProjects[state.projectIndex];
+  const isProjects = state.phase === "projects";
+  const isLibrary = state.phase === "bookshelf-projects";
+  const isAbout = state.phase === "corkboard-projects";
+  const isElsewhere = state.phase === "window-projects";
+  const cameraPhase =
+    state.phase === "returning-to-room" && !state.isProjectScreenClosed
+      ? "projects"
+      : state.phase === "returning-from-bookshelf" && !state.isProjectScreenClosed
+        ? "bookshelf-projects"
+        : state.phase === "returning-from-corkboard" && !state.isProjectScreenClosed
+          ? "corkboard-projects"
+          : state.phase === "returning-from-window" && !state.isProjectScreenClosed
+            ? "window-projects"
+            : state.phase;
+
   return (
-    <div className="min-h-screen bg-black text-gray-100">
-      <Header />
-      <Hero />
-      <About />
-      <Skills />
-      <Projects />
-      <Contact />
-    </div>
+    <main className="studio-shell">
+      <div className="studio-grain" aria-hidden="true" />
+      <LandingHeader />
+
+      <section className="studio-stage" aria-label="3D portfolio studio">
+        <StudioScene
+          phase={state.phase}
+          cameraPhase={cameraPhase}
+          accent={project.accent}
+          projectIndex={state.projectIndex}
+          onOpenProjects={() => dispatch({ type: "REQUEST_PROJECTS" })}
+          onOpenBookshelf={() => dispatch({ type: "REQUEST_BOOKSHELF" })}
+          onOpenCorkboard={() => dispatch({ type: "REQUEST_CORKBOARD" })}
+          onOpenWindow={() => dispatch({ type: "REQUEST_WINDOW" })}
+          onDisplayReached={() => dispatch({ type: "DISPLAY_REACHED" })}
+          onBookshelfReached={() => dispatch({ type: "BOOKSHELF_REACHED" })}
+          onCorkboardReached={() => dispatch({ type: "CORKBOARD_REACHED" })}
+          onWindowReached={() => dispatch({ type: "WINDOW_REACHED" })}
+          onRoomRestored={() => dispatch({ type: "ROOM_RESTORED" })}
+        />
+
+        <AnimatePresence
+          mode="wait"
+          onExitComplete={() =>
+            dispatch({
+              type:
+                state.phase === "returning-from-bookshelf"
+                  ? "BOOKSHELF_PROJECTS_CLOSED"
+                  : state.phase === "returning-from-corkboard"
+                    ? "CORKBOARD_PROJECTS_CLOSED"
+                    : state.phase === "returning-from-window"
+                      ? "WINDOW_PROJECTS_CLOSED"
+                      : "PROJECTS_CLOSED",
+            })
+          }
+        >
+          {state.phase === "room" ? (
+            <motion.div
+              key="intro"
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.45 }}
+            >
+              <StudioIntro
+                onOpenProjects={() => dispatch({ type: "REQUEST_PROJECTS" })}
+              />
+            </motion.div>
+          ) : isProjects ? (
+            <ProjectsScreen
+              key="projects"
+              projects={deskProjects}
+              projectIndex={state.projectIndex}
+              onReturnToRoom={() => dispatch({ type: "RETURN_TO_ROOM" })}
+              onPreviousProject={() => dispatch({ type: "PREVIOUS_PROJECT" })}
+              onNextProject={() => dispatch({ type: "NEXT_PROJECT" })}
+            />
+          ) : isLibrary ? (
+            <LibraryScreen
+              key="library"
+              onReturnToRoom={() => dispatch({ type: "RETURN_FROM_BOOKSHELF" })}
+            />
+          ) : isAbout ? (
+            <AboutScreen
+              key="about"
+              onReturnToRoom={() => dispatch({ type: "RETURN_FROM_CORKBOARD" })}
+            />
+          ) : isElsewhere ? (
+            <ElsewhereScreen
+              key="elsewhere"
+              onReturnToRoom={() => dispatch({ type: "RETURN_FROM_WINDOW" })}
+            />
+          ) : null}
+        </AnimatePresence>
+
+        {state.phase === "room" ? <StudioHint /> : null}
+      </section>
+
+      <StudioFooter />
+    </main>
   );
 }

@@ -1,0 +1,288 @@
+.screen {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: auto;
+  color: var(--studio-ink);
+  background: radial-gradient(
+      circle at 14% 18%,
+      rgba(226, 187, 139, 0.26),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 84% 76%,
+      rgba(142, 165, 137, 0.18),
+      transparent 28%
+    ),
+    linear-gradient(135deg, #eee2ce 0%, #d9c09d 48%, #c9a879 100%);
+}
+
+.screen::before {
+  position: fixed;
+  inset: 14px;
+  border: 1px solid rgba(91, 67, 43, 0.2);
+  content: "";
+  pointer-events: none;
+}
+
+.screen::after {
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+  background-image: linear-gradient(rgba(91, 67, 43, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91, 67, 43, 0.06) 1px, transparent 1px);
+  background-size: 18px 18px;
+  content: "";
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.topbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5vh clamp(24px, 5vw, 80px) 24px;
+  color: #725e49;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #655343;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: normal;
+}
+
+.board {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(280px, 1.1fr) minmax(240px, 0.9fr);
+  grid-template-areas:
+    "profile experience"
+    "work next";
+  gap: clamp(22px, 3vw, 42px);
+  width: min(1060px, calc(100% - 64px));
+  margin: auto;
+  padding: 28px 0 72px;
+}
+
+.card {
+  position: relative;
+  padding: clamp(24px, 3vw, 38px);
+  border: 1px solid rgba(94, 81, 63, 0.12);
+  background: rgba(255, 253, 244, 0.92);
+  box-shadow: 0 18px 30px rgba(79, 60, 40, 0.16);
+  transform-origin: center;
+}
+
+.card::before {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #e8bc84 0 18%,
+    #b87946 46%,
+    #764626 100%
+  );
+  box-shadow: 0 3px 5px rgba(76, 47, 26, 0.3);
+  content: "";
+  transform: translateX(-50%);
+}
+
+.profileCard {
+  grid-area: profile;
+  transform: rotate(-0.7deg);
+}
+
+.experienceCard {
+  grid-area: experience;
+  align-self: end;
+  background: rgba(242, 236, 216, 0.95);
+  transform: rotate(0.9deg);
+}
+
+.workCard {
+  grid-area: work;
+  background: rgba(235, 241, 226, 0.95);
+  transform: rotate(0.45deg);
+}
+
+.nextCard {
+  grid-area: next;
+  align-self: start;
+  background: rgba(248, 232, 215, 0.96);
+  transform: rotate(-1deg);
+}
+
+.cardLabel {
+  margin: 0 0 16px;
+  color: #9a7655;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+.card h1,
+.card h2 {
+  margin: 0;
+  color: #3f4b42;
+  font-family: var(--studio-font-display);
+  font-weight: 500;
+}
+
+.card h1 {
+  font-size: clamp(34px, 4vw, 58px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.card h2 {
+  margin-bottom: 16px;
+  font-size: clamp(21px, 2.2vw, 31px);
+  line-height: 1.35;
+}
+
+.role {
+  margin: 10px 0 22px;
+  color: #a36f55;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.bodyText {
+  margin: 0;
+  color: #59645b;
+  font-size: clamp(12px, 1.1vw, 14px);
+  line-height: 1.9;
+}
+
+.bodyText + .bodyText {
+  margin-top: 12px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tags li {
+  padding: 6px 9px;
+  border: 1px solid rgba(93, 111, 94, 0.18);
+  border-radius: 999px;
+  color: #687569;
+  background: rgba(255, 255, 251, 0.55);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+.experienceList {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  color: #5d6258;
+  font-size: 12px;
+  line-height: 1.55;
+  list-style: none;
+}
+
+.experienceList li {
+  position: relative;
+  padding-left: 16px;
+}
+
+.experienceList li::before {
+  position: absolute;
+  top: 0.65em;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #a78862;
+  content: "";
+}
+
+.smallNote {
+  margin: 20px 0 0;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(83, 102, 86, 0.24);
+  color: #728074;
+  font-size: 10px;
+  line-height: 1.8;
+}
+
+.direction {
+  margin: 24px 0 0;
+  color: #ae765d;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+@media (max-width: 780px) {
+  .board {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "profile"
+      "experience"
+      "work"
+      "next";
+    width: min(560px, calc(100% - 40px));
+    gap: 20px;
+    padding-bottom: 56px;
+  }
+
+  .profileCard,
+  .experienceCard,
+  .workCard,
+  .nextCard {
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .screen::before {
+    inset: 8px;
+  }
+
+  .topbar {
+    padding: 20px 24px;
+  }
+
+  .topbar > span {
+    display: none;
+  }
+
+  .board {
+    width: calc(100% - 32px);
+    padding-top: 18px;
+  }
+
+  .card {
+    padding: 24px 22px;
+  }
+}
