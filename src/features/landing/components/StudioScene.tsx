@@ -14,6 +14,13 @@ import type { StudioSceneProps } from "../model/studio-scene";
 import { CameraRig } from "./studio/CameraRig";
 import { CanvasResizeSync } from "./studio/CanvasResizeSync";
 
+const BASE_TOP = -0.01;
+const LOWER_FLOOR_TOP = 0.26;
+const UPPER_FLOOR_TOP = 0.88;
+const MAT_THICKNESS = 0.06;
+const LOWER_MAT_TOP = LOWER_FLOOR_TOP + MAT_THICKNESS;
+const UPPER_MAT_TOP = UPPER_FLOOR_TOP + MAT_THICKNESS;
+
 type BoxProps = {
   position: [number, number, number];
   scale: [number, number, number];
@@ -47,35 +54,39 @@ function SolidBox({ position, scale, color, rotation }: BoxProps) {
   );
 }
 
-function MiniStairs({
+function LevelStairs({
   position,
-  rotation = [0, 0, 0],
-  bottomStepOffsetX = 0,
+  fromY,
+  toY,
+  stepCount,
+  width = 1.18,
+  treadDepth = 0.38,
 }: {
   position: [number, number, number];
-  rotation?: [number, number, number];
-  bottomStepOffsetX?: number;
+  fromY: number;
+  toY: number;
+  stepCount: number;
+  width?: number;
+  treadDepth?: number;
 }) {
-  const steps: Array<{
-    position: [number, number, number];
-    scale: [number, number, number];
-  }> = [
-    { position: [bottomStepOffsetX, 0.075, 0.54], scale: [1.18, 0.15, 0.48] },
-    { position: [0, 0.2, 0.18], scale: [1.18, 0.15, 0.48] },
-    { position: [0, 0.325, -0.18], scale: [1.18, 0.15, 0.48] },
-    { position: [0, 0.45, -0.54], scale: [1.18, 0.15, 0.48] },
-  ];
+  const rise = (toY - fromY) / stepCount;
+  const depthOffset = ((stepCount - 1) * treadDepth) / 2;
 
   return (
-    <group position={position} rotation={rotation}>
-      {steps.map((step, index) => (
-        <SolidBox
-          key={index}
-          position={step.position}
-          scale={step.scale}
-          color="#d7c2a2"
-        />
-      ))}
+    <group position={position}>
+      {Array.from({ length: stepCount }, (_, index) => {
+        const stepTop = fromY + rise * (index + 1);
+        const height = stepTop - fromY;
+
+        return (
+          <SolidBox
+            key={index}
+            position={[0, fromY + height / 2, depthOffset - index * treadDepth]}
+            scale={[width, height, treadDepth]}
+            color="#d7c2a2"
+          />
+        );
+      })}
     </group>
   );
 }
@@ -300,7 +311,7 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
 
   return (
     <group
-      position={[-2.9, 0.5, -3.18]}
+      position={[-2.9, UPPER_MAT_TOP - 0.07, -3.18]}
       onClick={(event) => {
         event.stopPropagation();
         onOpen();
@@ -396,7 +407,7 @@ function Bookshelf({ onOpen }: { onOpen: () => void }) {
 function Corkboard({ onOpen }: { onOpen: () => void }) {
   return (
     <group
-      position={[2.15, 2.65, -3.78]}
+      position={[2.15, UPPER_MAT_TOP + 2.1, -3.78]}
       onClick={(event) => {
         event.stopPropagation();
         onOpen();
@@ -442,7 +453,7 @@ function Corkboard({ onOpen }: { onOpen: () => void }) {
 
 function PendantLamp() {
   return (
-    <group position={[3.35, 3.68, -2.82]}>
+    <group position={[3.35, UPPER_MAT_TOP + 3.13, -2.82]}>
       <mesh position={[0, -0.58, 0]} castShadow>
         <cylinderGeometry args={[0.035, 0.035, 1.16, 10]} />
         <meshStandardMaterial color="#6d6258" roughness={0.86} />
@@ -593,7 +604,7 @@ function Plant({
 
 function FloorBookStack() {
   return (
-    <group position={[2.16, 0.215, 2.5]} rotation={[0, -0.16, 0]}>
+    <group position={[2.16, LOWER_MAT_TOP + 0.06, 2.5]} rotation={[0, -0.16, 0]}>
       <Box
         position={[0, 0, 0]}
         scale={[0.78, 0.12, 0.5]}
@@ -718,53 +729,57 @@ function Room({
         radius={0.08}
       />
 
-      <SolidBox
-        position={[-1.15, 0.02, 0.6]}
-        scale={[4.3, 0.14, 2.7]}
+      <Box
+        position={[-1.15, (BASE_TOP + LOWER_FLOOR_TOP) / 2, 0.6]}
+        scale={[4.3, LOWER_FLOOR_TOP - BASE_TOP, 2.7]}
+        color="#d8c3a2"
+        radius={0.06}
+      />
+      <Box
+        position={[-1.15, LOWER_FLOOR_TOP + MAT_THICKNESS / 2, 0.6]}
+        scale={[4, MAT_THICKNESS, 2.45]}
         color="#6176bd"
-      />
-      <Box
-        position={[-1.1, 0.125, 1.75]}
-        scale={[2.5, 0.06, 1.5]}
-        color="#c7c4bc"
-        radius={0.045}
+        radius={0.055}
       />
 
-      <SolidBox
-        position={[-0.08, 0.2, -2.58]}
-        scale={[8.02, 0.46, 2.7]}
+      <Box
+        position={[-0.08, (BASE_TOP + UPPER_FLOOR_TOP) / 2, -2.58]}
+        scale={[8.02, UPPER_FLOOR_TOP - BASE_TOP, 2.7]}
         color="#d8c3a2"
+        radius={0.06}
       />
-      <SolidBox
-        position={[-2.5, 0.49, -2.58]}
-        scale={[2.96, 0.12, 2.3]}
+      <Box
+        position={[-2.5, UPPER_FLOOR_TOP + MAT_THICKNESS / 2, -2.58]}
+        scale={[2.96, MAT_THICKNESS, 2.3]}
         color="#7da28b"
-      />
-      <SolidBox
-        position={[2.68, 0.49, -2.58]}
-        scale={[2.18, 0.12, 1.96]}
-        color="#d97d68"
-      />
-
-      <SolidBox
-        position={[-2.8, 0.02, 2.35]}
-        scale={[2.5, 0.14, 1.8]}
-        color="#d8b98d"
-      />
-
-      <SolidBox
-        position={[2.7, 0.02, 2.55]}
-        scale={[2.25, 0.14, 1.25]}
-        color="#d8c3a2"
+        radius={0.055}
       />
       <Box
-        position={[2.7, 0.125, 2.55]}
-        scale={[1.75, 0.06, 0.82]}
+        position={[2.68, UPPER_FLOOR_TOP + MAT_THICKNESS / 2, -2.58]}
+        scale={[2.18, MAT_THICKNESS, 1.96]}
+        color="#d97d68"
+        radius={0.055}
+      />
+
+      <Box
+        position={[2.7, (BASE_TOP + LOWER_FLOOR_TOP) / 2, 2.55]}
+        scale={[2.25, LOWER_FLOOR_TOP - BASE_TOP, 1.25]}
+        color="#d8c3a2"
+        radius={0.06}
+      />
+      <Box
+        position={[2.7, LOWER_FLOOR_TOP + MAT_THICKNESS / 2, 2.55]}
+        scale={[1.75, MAT_THICKNESS, 0.82]}
         color="#d8b98d"
         radius={0.045}
       />
 
-      <MiniStairs position={[2.68, 0, -1.14]} />
+      <LevelStairs
+        position={[2.68, 0, -1.14]}
+        fromY={LOWER_FLOOR_TOP}
+        toY={UPPER_FLOOR_TOP}
+        stepCount={4}
+      />
 
       <Box
         position={[1.45, -0.22, 3.42]}
@@ -772,20 +787,12 @@ function Room({
         color="#d8c5a5"
         radius={0.08}
       />
-      <SolidBox
-        position={[1.45, 0.12, 2.94]}
-        scale={[1.2, 0.08, 0.38]}
-        color="#d7c2a2"
-      />
-      <SolidBox
-        position={[1.45, 0.08, 3.22]}
-        scale={[1.2, 0.08, 0.38]}
-        color="#d7c2a2"
-      />
-      <SolidBox
-        position={[1.45, 0.04, 3.5]}
-        scale={[1.2, 0.08, 0.38]}
-        color="#d7c2a2"
+      <LevelStairs
+        position={[1.45, 0, 3.22]}
+        fromY={BASE_TOP}
+        toY={LOWER_FLOOR_TOP}
+        stepCount={3}
+        width={1.2}
       />
 
       <SolidBox
@@ -846,17 +853,17 @@ function Room({
       />
 
       <SolidBox
-        position={[-2.55, 0.48, -3.74]}
+        position={[-2.55, UPPER_FLOOR_TOP + 0.05, -3.74]}
         scale={[3.08, 0.18, 0.36]}
         color="#91a18d"
       />
       <SolidBox
-        position={[2.68, 0.48, -3.74]}
+        position={[2.68, UPPER_FLOOR_TOP + 0.05, -3.74]}
         scale={[2.34, 0.18, 0.36]}
         color="#c98672"
       />
 
-      <group position={[-2.35, 0, 0.1]}>
+      <group position={[-2.35, LOWER_MAT_TOP, 0.1]}>
         <Desk accent={accent} active={phase === "projects"} onOpen={onOpenProjects} />
         <DeskChair />
         <DeskLamp />
@@ -865,10 +872,10 @@ function Room({
       <Corkboard onOpen={onOpenCorkboard} />
       <PendantLamp />
       <Window onOpen={onOpenWindow} />
-      <Plant position={[-3.8, 0.38, 1.06]} scale={0.9} />
-      <Plant position={[-1.42, 0.84, -2.72]} scale={0.78} />
+      <Plant position={[-4.02, 1.92, 0.95]} scale={0.45} />
+      <Plant position={[-1.42, UPPER_MAT_TOP + 0.36 * 0.78, -2.72]} scale={0.78} />
       <FloorBookStack />
-      <Plant position={[3.22, 0.4, 2.62]} scale={0.68} />
+      <Plant position={[3.22, LOWER_MAT_TOP + 0.36 * 0.68, 2.62]} scale={0.68} />
 
       <pointLight
         position={[0.4, 4.7, 3.2]}
