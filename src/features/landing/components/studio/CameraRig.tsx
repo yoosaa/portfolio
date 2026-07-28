@@ -236,7 +236,9 @@ function createSquareWindow() {
   window.name = "studio-square-window";
   window.position.set(0, 0, 0.22);
 
-  const frame = createBoxMesh([1.42, 1.42, 0.12], "#c7ab82", 0.93);
+  const outerFrame = createBoxMesh([1.7, 1.7, 0.1], "#b89368", 0.93);
+  outerFrame.position.z = -0.02;
+  const innerFrame = createBoxMesh([1.46, 1.46, 0.12], "#d8c19d", 0.94);
   const glass = createBoxMesh([1.12, 1.12, 0.07], "#d7e0d6", 0.78);
   glass.position.z = 0.08;
   const verticalBar = createBoxMesh([0.08, 1.12, 0.07], "#eee5ce", 0.94);
@@ -244,7 +246,7 @@ function createSquareWindow() {
   const horizontalBar = createBoxMesh([1.12, 0.08, 0.07], "#eee5ce", 0.94);
   horizontalBar.position.z = 0.14;
 
-  window.add(frame, glass, verticalBar, horizontalBar);
+  window.add(outerFrame, innerFrame, glass, verticalBar, horizontalBar);
   return window;
 }
 
@@ -256,9 +258,9 @@ function createWindowWallPanel() {
 }
 
 function createUpperBackFiller() {
-  const filler = createBoxMesh([8.0, 0.89, 0.54], "#d8c3a2", 0.93);
+  const filler = createBoxMesh([7.975, 0.89, 0.54], "#d8c3a2", 0.93);
   filler.name = "studio-upper-back-filler";
-  filler.position.set(0, 0.435, -3.61);
+  filler.position.set(-0.1125, 0.435, -3.61);
   return filler;
 }
 
@@ -269,7 +271,7 @@ function createUniformStairs() {
 
   const fromY = -0.01;
   const toY = 0.88;
-  const stepCount = 4;
+  const stepCount = 3;
   const rise = (toY - fromY) / stepCount;
   const treadDepth = 0.38;
   const depthOffset = ((stepCount - 1) * treadDepth) / 2;
