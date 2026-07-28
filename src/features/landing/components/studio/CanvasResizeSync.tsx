@@ -1,5 +1,6 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { type RefObject, useLayoutEffect, useRef } from "react";
+import { useWindowSimplification } from "./useWindowSimplification";
 
 type CanvasResizeSyncProps = {
   viewRef: RefObject<HTMLDivElement | null>;
@@ -13,6 +14,8 @@ export function CanvasResizeSync({ viewRef }: CanvasResizeSyncProps) {
     top: number;
     left: number;
   } | null>(null);
+
+  useWindowSimplification();
 
   useLayoutEffect(() => {
     const view = viewRef.current;
