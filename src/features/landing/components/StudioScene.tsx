@@ -47,7 +47,13 @@ function Box({ position, scale, color, rotation, radius = 0.06 }: BoxProps) {
 
 function SolidBox({ position, scale, color, rotation }: BoxProps) {
   return (
-    <mesh position={position} scale={scale} rotation={rotation} castShadow receiveShadow>
+    <mesh
+      position={position}
+      scale={scale}
+      rotation={rotation}
+      castShadow
+      receiveShadow
+    >
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color={color} roughness={0.93} metalness={0.01} />
     </mesh>
@@ -604,7 +610,10 @@ function Plant({
 
 function FloorBookStack() {
   return (
-    <group position={[2.16, LOWER_MAT_TOP + 0.06, 2.5]} rotation={[0, -0.16, 0]}>
+    <group
+      position={[2.16, LOWER_MAT_TOP + 0.06, 2.5]}
+      rotation={[0, -0.16, 0]}
+    >
       <Box
         position={[0, 0, 0]}
         scale={[0.78, 0.12, 0.5]}
@@ -677,7 +686,11 @@ function DeskLamp() {
       />
       <mesh position={[0.18, 0.75, 0]} rotation={[0, 0, -0.55]}>
         <coneGeometry args={[0.31, 0.35, 16, 1, true]} />
-        <meshStandardMaterial color="#d8b477" roughness={0.92} side={THREE.DoubleSide} />
+        <meshStandardMaterial
+          color="#d8b477"
+          roughness={0.92}
+          side={THREE.DoubleSide}
+        />
       </mesh>
       <mesh position={[0.18, 0.66, 0]}>
         <sphereGeometry args={[0.1, 12, 8]} />
@@ -846,7 +859,11 @@ function Room({
       />
 
       <group position={[-2.35, LOWER_MAT_TOP, 0.1]}>
-        <Desk accent={accent} active={phase === "projects"} onOpen={onOpenProjects} />
+        <Desk
+          accent={accent}
+          active={phase === "projects"}
+          onOpen={onOpenProjects}
+        />
         <DeskChair />
         <DeskLamp />
       </group>
@@ -855,9 +872,15 @@ function Room({
       <PendantLamp />
       <Window onOpen={onOpenWindow} />
       <Plant position={[-4.02, 1.92, 0.95]} scale={0.45} />
-      <Plant position={[-1.42, UPPER_MAT_TOP + 0.36 * 0.78, -2.72]} scale={0.78} />
+      <Plant
+        position={[-1.42, UPPER_MAT_TOP + 0.36 * 0.78, -2.72]}
+        scale={0.78}
+      />
       <FloorBookStack />
-      <Plant position={[3.22, LOWER_MAT_TOP + 0.36 * 0.68, 2.62]} scale={0.68} />
+      <Plant
+        position={[3.22, LOWER_MAT_TOP + 0.36 * 0.68, 2.62]}
+        scale={0.68}
+      />
 
       <pointLight
         position={[0.4, 4.7, 3.2]}

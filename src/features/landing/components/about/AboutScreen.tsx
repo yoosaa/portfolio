@@ -14,12 +14,7 @@ const experienceItems = [
   "既存システムの移行・改善",
 ] as const;
 
-const profileTags = [
-  "React",
-  "SvelteKit",
-  "TypeScript",
-  "Kanagawa, Japan",
-] as const;
+const profileTags = ["React", "SvelteKit", "TypeScript"] as const;
 
 const cardAnimation = {
   initial: { opacity: 0, y: 22, scale: 0.98 },
@@ -36,7 +31,11 @@ export function AboutScreen({ onReturnToRoom }: AboutScreenProps) {
       transition={{ duration: 0.28 }}
     >
       <div className={styles.topbar}>
-        <button className={styles.backButton} type="button" onClick={onReturnToRoom}>
+        <button
+          className={styles.backButton}
+          type="button"
+          onClick={onReturnToRoom}
+        >
           <ArrowLeft size={16} />
           部屋全体へ
         </button>
@@ -102,9 +101,8 @@ export function AboutScreen({ onReturnToRoom }: AboutScreenProps) {
           <p className={styles.cardLabel}>NEXT</p>
           <h2>これから</h2>
           <p className={styles.bodyText}>
-            フロントエンドを軸に、バックエンドや設計領域にも関わりながら、一つのプロダクトを長期的に育てていきたいと考えています。
+            フロントエンドを軸に、バックエンドや設計領域にも関わりながら、長期的にはマネジメント経験も積みたいと考えています。
           </p>
-          <p className={styles.direction}>PRODUCT / ARCHITECTURE / BACKEND</p>
         </motion.article>
       </div>
     </motion.section>

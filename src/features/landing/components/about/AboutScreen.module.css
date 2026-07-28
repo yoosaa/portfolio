@@ -6,14 +6,21 @@
   grid-template-rows: auto 1fr;
   overflow: auto;
   color: var(--studio-ink);
-  background:
-    radial-gradient(circle at 14% 18%, rgba(226, 187, 139, 0.26), transparent 30%),
-    radial-gradient(circle at 84% 76%, rgba(142, 165, 137, 0.18), transparent 28%),
+  background: radial-gradient(
+      circle at 14% 18%,
+      rgba(226, 187, 139, 0.26),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 84% 76%,
+      rgba(142, 165, 137, 0.18),
+      transparent 28%
+    ),
     linear-gradient(135deg, #eee2ce 0%, #d9c09d 48%, #c9a879 100%);
 }
 
 .screen::before {
-  position: absolute;
+  position: fixed;
   inset: 14px;
   border: 1px solid rgba(91, 67, 43, 0.2);
   content: "";
@@ -24,8 +31,7 @@
   position: absolute;
   inset: 0;
   opacity: 0.22;
-  background-image:
-    linear-gradient(rgba(91, 67, 43, 0.08) 1px, transparent 1px),
+  background-image: linear-gradient(rgba(91, 67, 43, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(91, 67, 43, 0.06) 1px, transparent 1px);
   background-size: 18px 18px;
   content: "";
@@ -91,7 +97,12 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #e8bc84 0 18%, #b87946 46%, #764626 100%);
+  background: radial-gradient(
+    circle at 35% 30%,
+    #e8bc84 0 18%,
+    #b87946 46%,
+    #764626 100%
+  );
   box-shadow: 0 3px 5px rgba(76, 47, 26, 0.3);
   content: "";
   transform: translateX(-50%);
