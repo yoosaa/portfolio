@@ -311,6 +311,8 @@ export function CameraRig({
     const deskGroupRef: { current: THREE.Object3D | null } = { current: null };
     const bookshelfGroupRef: { current: THREE.Object3D | null } = { current: null };
     const corkboardGroupRef: { current: THREE.Object3D | null } = { current: null };
+    const windowGroupRef: { current: THREE.Object3D | null } = { current: null };
+    const windowPlantRef: { current: THREE.Object3D | null } = { current: null };
 
     scene.traverse((object) => {
       const material = getStandardMaterial(object);
@@ -331,20 +333,54 @@ export function CameraRig({
         if (colorHex === "b96d5d" && matchesScale(object, 2.08, 1.58, 0.16)) {
           corkboardGroupRef.current = object.parent;
         }
+        if (colorHex === "d5c09f" && matchesScale(object, 1.86, 1.68, 0.16)) {
+          windowGroupRef.current = object.parent;
+        }
       }
 
       const { x, y, z } = object.position;
       const isPendantRoot =
         roughly(x, 3.35, 0.01) && roughly(y, 4.07, 0.03) && roughly(z, -2.82, 0.01);
+      const isWindowPlantRoot =
+        !(object instanceof THREE.Mesh) &&
+        roughly(x, -4.02, 0.02) &&
+        roughly(y, 1.92, 0.02) &&
+        roughly(z, 0.95, 0.02) &&
+        roughly(object.scale.x, 0.45, 0.02);
 
       if (isPendantRoot) {
         pendantGroupRef.current = object;
         roomGroupRef.current = object.parent;
       }
+      if (isWindowPlantRoot) {
+        windowPlantRef.current = object;
+      }
     });
 
     if (pendantGroupRef.current) {
       hideObject(pendantGroupRef.current, restoredVisibility);
+    }
+    if (windowPlantRef.current) {
+      hideObject(windowPlantRef.current, restoredVisibility);
+    }
+    if (windowGroupRef.current) {
+      windowGroupRef.current.traverse((object) => {
+        const material = getStandardMaterial(object);
+        if (!material) {
+          return;
+        }
+
+        const colorHex = material.color.getHexString();
+        const isGrid =
+          colorHex === "eee5ce" &&
+          (matchesScale(object, 0.08, 1.42, 0.08) ||
+            matchesScale(object, 1.66, 0.08, 0.08));
+        const isSill = colorHex === "c8aa7f" && matchesScale(object, 2.02, 0.18, 0.3);
+
+        if (isGrid || isSill) {
+          hideObject(object, restoredVisibility);
+        }
+      });
     }
 
     const artwork = createWallArtwork();
