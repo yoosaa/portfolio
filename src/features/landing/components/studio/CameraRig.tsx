@@ -33,6 +33,13 @@ type CameraRigProps = {
   onRoomRestored: () => void;
 };
 
+/**
+ * StudioScene.tsx で生成された既存オブジェクトを見つけるための識別情報。
+ *
+ * 現状は name ではなく「色・scale・座標」の組み合わせで対象を特定している。
+ * そのため StudioScene.tsx 側で家具の色や寸法を変えた場合は、ここも一緒に確認すること。
+ * 判定が外れると、元の家具と差し替え家具が二重表示になることがある。
+ */
 const WALL_SOURCE_COLORS = new Set(["b3bba4", "eadbc4", "d8a08c", "aab59e", "dbc29e"]);
 const WALL_COLOR = new THREE.Color("#e6d8c2");
 const BOOK_COLORS = new Set(["c78976", "d3b56f", "89a28a", "91a5b7", "dac79b"]);
@@ -40,10 +47,12 @@ const OLD_CORK_NOTE_COLORS = new Set(["eee0c4", "dfe7dc", "d8dce6"]);
 const STRAY_ACCENT_COLORS = new Set(["91a18d", "c98672"]);
 const WINDOW_RECESS_COLORS = new Set(["cdb393", "d4bd9d"]);
 
+// 浮動小数点の座標・scaleは完全一致しづらいため、許容誤差つきで比較する。
 function roughly(value: number, target: number, epsilon = 0.035) {
   return Math.abs(value - target) < epsilon;
 }
 
+// 色だけでは同じ家具を誤検出しやすいため、scaleも組み合わせて対象を絞る。
 function matchesScale(
   object: THREE.Object3D,
   x: number,
@@ -64,6 +73,10 @@ function getStandardMaterial(object: THREE.Object3D) {
   return material instanceof THREE.MeshStandardMaterial ? material : null;
 }
 
+/**
+ * CameraRig内で後付けする小物用の共通Box生成関数。
+ * ここで作ったgeometry/materialは、effectのcleanup時に必ずdisposeする。
+ */
 function createBoxMesh(
   scale: [number, number, number],
   color: string,
@@ -78,6 +91,10 @@ function createBoxMesh(
   return mesh;
 }
 
+/**
+ * 元のvisible値を保存してから非表示にする。
+ * 単純に visible = false だけにすると、HMRや再マウント時に元へ戻せなくなる。
+ */
 function hideObject(
   object: THREE.Object3D,
   restoredVisibility: Map<THREE.Object3D, boolean>
@@ -86,6 +103,7 @@ function hideObject(
   object.visible = false;
 }
 
+// CameraRigが追加したObject3Dだけを破棄するためのcleanup用ヘルパー。
 function disposeObjectTree(root: THREE.Object3D) {
   root.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;
@@ -95,6 +113,12 @@ function disposeObjectTree(root: THREE.Object3D) {
   });
 }
 
+/**
+ * 以下の createXxx 関数は StudioScene.tsx の既存モデルを直接書き換えず、
+ * CameraRigのeffect内で追加する「見た目の差し替えパーツ」を生成する。
+ *
+ * 配置値は親groupのローカル座標。家具全体を動かす場合は、親側の座標も考慮すること。
+ */
 function createWallArtwork() {
   const artwork = new THREE.Group();
   artwork.name = "studio-wall-artwork";
@@ -119,6 +143,8 @@ function createWallArtwork() {
 function createDeskLegs() {
   const legs = new THREE.Group();
   legs.name = "studio-light-desk-legs";
+
+  // Desk groupを原点として、天板の四隅に細い脚を置く。
   const positions: Array<[number, number, number]> = [
     [-1.4, 0.54, -0.56],
     [1.34, 0.54, -0.56],
@@ -154,6 +180,8 @@ function createBookshelfDetails() {
 function createCorkboardDetails() {
   const details = new THREE.Group();
   details.name = "studio-corkboard-details";
+
+  // position/sizeはコルクボードgroup内のローカル座標。
   const notes = [
     { position: [-0.52, 0.28, 0.2] as const, size: [0.42, 0.58] as const, color: "#eee0c4", rotation: -0.08, pinColor: "#80584b" },
     { position: [0.02, 0.34, 0.205] as const, size: [0.56, 0.38] as const, color: "#dfe7dc", rotation: 0.05, pinColor: "#718474" },
@@ -180,6 +208,11 @@ function createCorkboardDetails() {
   return details;
 }
 
+/**
+ * 元のWindow group配下を非表示にしたあと、同じ親groupへ追加される差し替え窓。
+ * 親group自体のposition/rotationはStudioScene.tsx側にある。
+ * 窓全体を移動したい場合は、ここではなく親groupとscene-config.tsを確認する。
+ */
 function createSquareWindow() {
   const window = new THREE.Group();
   window.name = "studio-square-window";
@@ -211,6 +244,7 @@ function createSquareWindow() {
   return window;
 }
 
+// 左壁の窓周辺を埋める補助パネル。窓の位置を変えるときはこの座標も要確認。
 function createWindowWallPanel() {
   const panel = createBoxMesh([0.25, 4.62, 2.42], "#e6d8c2", 0.95);
   panel.name = "studio-window-wall-panel";
@@ -218,6 +252,7 @@ function createWindowWallPanel() {
   return panel;
 }
 
+// 上段床の奥に見える隙間を塞ぐための補助形状。
 function createUpperBackFiller() {
   const group = new THREE.Group();
   group.name = "studio-upper-back-filler";
@@ -236,6 +271,10 @@ function createUpperBackFiller() {
   return group;
 }
 
+/**
+ * StudioScene.tsxの旧階段を非表示にしたあと追加する、均一な3段階段。
+ * fromY/toYは床の高さと連動しているため、床高を変えた場合は同時に修正する。
+ */
 function createUniformStairs() {
   const stairs = new THREE.Group();
   stairs.name = "studio-uniform-stairs";
@@ -254,12 +293,14 @@ function createUniformStairs() {
     stairs.add(step);
   }
 
+  // 最上段と上段床の間に隙間が出ないよう、薄い橋を足している。
   const landingBridge = createBoxMesh([1.18, 0.06, 0.34], "#d7c2a2", 0.93);
   landingBridge.position.set(0, toY - 0.03, -0.63);
   stairs.add(landingBridge);
   return stairs;
 }
 
+// カメラ遷移の進み方。位置や向きではなく、移動の緩急だけを決める。
 function easeDisplayTransition(progress: number) {
   if (progress <= 0 || progress >= 1) return progress <= 0 ? 0 : 1;
   const sampleCurve = (time: number, point1: number, point2: number) =>
@@ -287,6 +328,8 @@ export function CameraRig({
   const { camera, scene } = useThree();
   const targetCamera = useMemo(() => new THREE.PerspectiveCamera(), []);
   const settledPhase = useRef<StudioPhase | null>(null);
+
+  // phaseが変わった瞬間のカメラ状態を保存し、そこから目的地まで補間する。
   const transition = useRef<{
     phase: StudioPhase;
     startedAt: number;
@@ -297,6 +340,7 @@ export function CameraRig({
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
+    // 同じphaseで到着callbackが複数回発火しないよう、phase変更時だけリセットする。
     settledPhase.current = null;
   }, [phase]);
 
@@ -308,6 +352,18 @@ export function CameraRig({
     return () => mediaQuery.removeEventListener("change", updatePreference);
   }, []);
 
+  /**
+   * StudioScene.tsxで宣言されたシーンを一度走査し、見た目を補正するeffect。
+   *
+   * 処理の流れ:
+   * 1. 色・scale・座標から対象groupを見つける
+   * 2. 元の色やvisibleを保存する
+   * 3. 不要な元オブジェクトを非表示にする
+   * 4. 差し替えパーツを追加する
+   * 5. cleanupで元の状態へ戻し、追加パーツをdisposeする
+   *
+   * 見た目が二重になった・差し替えが消えた場合は、まずtraverse内の識別条件を確認する。
+   */
   useEffect(() => {
     const restoredColors = new Map<THREE.MeshStandardMaterial, THREE.Color>();
     const restoredVisibility = new Map<THREE.Object3D, boolean>();
@@ -324,11 +380,15 @@ export function CameraRig({
       const material = getStandardMaterial(object);
       if (material) {
         const colorHex = material.color.getHexString();
+
+        // 複数色で作られていた壁を、現在のクリーム色へ統一する。
         if (WALL_SOURCE_COLORS.has(colorHex)) {
           restoredColors.set(material, material.color.clone());
           material.color.copy(WALL_COLOR);
           material.needsUpdate = true;
         }
+
+        // 旧アクセント、旧窓のくぼみ、旧階段を非表示にする。
         if (
           STRAY_ACCENT_COLORS.has(colorHex) ||
           WINDOW_RECESS_COLORS.has(colorHex) ||
@@ -336,6 +396,8 @@ export function CameraRig({
         ) {
           hideObject(object, restoredVisibility);
         }
+
+        // 以下は家具の代表的なmeshを目印にして、その親groupを取得している。
         if (colorHex === "6176bd" && matchesScale(object, 3.42, 0.3, 1.58)) {
           deskGroupRef.current = object.parent;
         }
@@ -369,6 +431,7 @@ export function CameraRig({
     if (pendantGroupRef.current) hideObject(pendantGroupRef.current, restoredVisibility);
     if (windowPlantRef.current) hideObject(windowPlantRef.current, restoredVisibility);
 
+    // room直下へ追加する補助オブジェクト。
     const artwork = createWallArtwork();
     roomGroupRef.current?.add(artwork);
     addedObjects.push(artwork);
@@ -381,6 +444,7 @@ export function CameraRig({
     roomGroupRef.current?.add(uniformStairs);
     addedObjects.push(uniformStairs);
 
+    // Windowのクリック可能な親groupは残し、見た目のmeshだけを差し替える。
     if (windowGroupRef.current) {
       windowGroupRef.current.traverse((object) => {
         if (object instanceof THREE.Mesh) hideObject(object, restoredVisibility);
@@ -393,6 +457,7 @@ export function CameraRig({
       addedObjects.push(wallPanel);
     }
 
+    // 机の箱型収納を隠し、軽い4本脚へ差し替える。モニターは変更しない。
     if (deskGroupRef.current) {
       deskGroupRef.current.traverse((object) => {
         const material = getStandardMaterial(object);
@@ -410,6 +475,7 @@ export function CameraRig({
       addedObjects.push(deskLegs);
     }
 
+    // 本棚上の植物と一部の本を隠し、収納箱と小さな額へ置き換える。
     if (bookshelfGroupRef.current) {
       bookshelfGroupRef.current.traverse((object) => {
         const material = getStandardMaterial(object);
@@ -436,6 +502,7 @@ export function CameraRig({
       addedObjects.push(bookshelfDetails);
     }
 
+    // 旧3枚メモを隠し、サイズと角度にばらつきのあるメモへ差し替える。
     if (corkboardGroupRef.current) {
       corkboardGroupRef.current.traverse((object) => {
         const material = getStandardMaterial(object);
@@ -454,6 +521,7 @@ export function CameraRig({
     }
 
     return () => {
+      // Strict Mode、HMR、Canvas再マウント時に元のシーンへ戻せるよう必ず復元する。
       restoredColors.forEach((color, material) => {
         material.color.copy(color);
         material.needsUpdate = true;
@@ -468,6 +536,11 @@ export function CameraRig({
     };
   }, [scene]);
 
+  /**
+   * カメラのposition・quaternion・FOVを毎フレーム補間する。
+   * 目的地の数値は scene-config.ts に集約している。
+   * 家具を移動してズーム先がずれた場合は、まずそちらを調整する。
+   */
   // R3F camera transforms are intentionally updated inside its render loop.
   // eslint-disable-next-line react-hooks/immutability
   useFrame((state) => {
@@ -506,6 +579,8 @@ export function CameraRig({
     targetCamera.position.copy(targetPosition);
     targetCamera.lookAt(targetLookAt);
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
+
+    // phaseが変わったフレームだけ、補間の始点を現在のカメラ状態で作り直す。
     if (!transition.current || transition.current.phase !== phase) {
       transition.current = {
         phase,
@@ -536,6 +611,7 @@ export function CameraRig({
     );
     perspectiveCamera.updateProjectionMatrix();
 
+    // 位置・FOV・角度の3条件が揃った時点で、画面側へ「到着」を通知する。
     const hasReachedTarget =
       camera.position.distanceTo(targetPosition) < CAMERA_POSITION_EPSILON &&
       Math.abs(perspectiveCamera.fov - targetFov) < CAMERA_FOV_EPSILON &&
