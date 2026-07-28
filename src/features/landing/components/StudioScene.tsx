@@ -478,7 +478,7 @@ function PendantLamp() {
 function Window({ onOpen }: { onOpen: () => void }) {
   return (
     <group
-      position={[-3.98, 2.55, 0.55]}
+      position={[-4.28, 2.58, 0.42]}
       rotation={[0, Math.PI / 2, 0]}
       onClick={(event) => {
         event.stopPropagation();
@@ -489,12 +489,12 @@ function Window({ onOpen }: { onOpen: () => void }) {
     >
       <Box
         position={[0, 0, 0]}
-        scale={[2.1, 1.78, 0.18]}
+        scale={[1.86, 1.68, 0.16]}
         color="#d5c09f"
         radius={0.05}
       />
-      <mesh position={[0, 0, 0.1]}>
-        <planeGeometry args={[1.78, 1.44]} />
+      <mesh position={[0, 0, 0.09]}>
+        <planeGeometry args={[1.58, 1.36]} />
         <meshStandardMaterial
           color="#d5e0d4"
           emissive="#edf0d9"
@@ -503,20 +503,20 @@ function Window({ onOpen }: { onOpen: () => void }) {
         />
       </mesh>
       <Box
-        position={[0, 0, 0.15]}
-        scale={[0.09, 1.52, 0.09]}
+        position={[0, 0, 0.14]}
+        scale={[0.08, 1.42, 0.08]}
         color="#eee5ce"
         radius={0.018}
       />
       <Box
-        position={[0, 0, 0.15]}
-        scale={[1.84, 0.09, 0.09]}
+        position={[0, 0, 0.14]}
+        scale={[1.66, 0.08, 0.08]}
         color="#eee5ce"
         radius={0.018}
       />
       <Box
-        position={[0, -0.96, 0.05]}
-        scale={[2.28, 0.2, 0.34]}
+        position={[0, -0.92, 0.04]}
+        scale={[2.02, 0.18, 0.3]}
         color="#c8aa7f"
         radius={0.045}
       />
@@ -593,7 +593,7 @@ function Plant({
 
 function FloorBookStack() {
   return (
-    <group position={[2.16, 0.38, 2.5]} rotation={[0, -0.16, 0]}>
+    <group position={[2.16, 0.215, 2.5]} rotation={[0, -0.16, 0]}>
       <Box
         position={[0, 0, 0]}
         scale={[0.78, 0.12, 0.5]}
@@ -753,13 +753,13 @@ function Room({
       />
 
       <SolidBox
-        position={[2.7, 0.11, 2.55]}
-        scale={[2.25, 0.26, 1.25]}
+        position={[2.7, 0.02, 2.55]}
+        scale={[2.25, 0.14, 1.25]}
         color="#d8c3a2"
       />
       <Box
-        position={[2.7, 0.275, 2.55]}
-        scale={[1.75, 0.07, 0.82]}
+        position={[2.7, 0.125, 2.55]}
+        scale={[1.75, 0.06, 0.82]}
         color="#d8b98d"
         radius={0.045}
       />
@@ -773,45 +773,76 @@ function Room({
         radius={0.08}
       />
       <SolidBox
-        position={[1.45, 0.18, 2.94]}
-        scale={[1.2, 0.24, 0.38]}
+        position={[1.45, 0.12, 2.94]}
+        scale={[1.2, 0.08, 0.38]}
         color="#d7c2a2"
       />
       <SolidBox
-        position={[1.45, 0.11, 3.22]}
-        scale={[1.2, 0.18, 0.38]}
+        position={[1.45, 0.08, 3.22]}
+        scale={[1.2, 0.08, 0.38]}
         color="#d7c2a2"
       />
       <SolidBox
-        position={[1.45, 0.045, 3.5]}
-        scale={[1.2, 0.1, 0.38]}
+        position={[1.45, 0.04, 3.5]}
+        scale={[1.2, 0.08, 0.38]}
         color="#d7c2a2"
       />
 
       <SolidBox
-        position={[-2.55, 1.89, -3.91]}
-        scale={[3.2, 3.8, 0.24]}
+        position={[-2.55, 2.29, -3.91]}
+        scale={[3.2, 4.6, 0.24]}
         color="#b3bba4"
       />
       <SolidBox
-        position={[0, 1.89, -3.91]}
-        scale={[2, 3.8, 0.24]}
+        position={[0, 2.29, -3.91]}
+        scale={[2, 4.6, 0.24]}
         color="#eadbc4"
       />
       <SolidBox
-        position={[2.55, 1.89, -3.91]}
-        scale={[3.2, 3.8, 0.24]}
+        position={[2.55, 2.29, -3.91]}
+        scale={[3.2, 4.6, 0.24]}
         color="#d8a08c"
       />
       <SolidBox
-        position={[-4.09, 1.89, -2.45]}
-        scale={[0.24, 3.8, 2.96]}
+        position={[-4.09, 2.29, -2.45]}
+        scale={[0.24, 4.6, 2.96]}
         color="#aab59e"
       />
+
       <SolidBox
-        position={[-4.09, 1.89, 1.1]}
-        scale={[0.24, 3.8, 4.2]}
+        position={[-4.09, 2.29, -0.79]}
+        scale={[0.24, 4.6, 0.38]}
         color="#dbc29e"
+      />
+      <SolidBox
+        position={[-4.09, 2.29, 2.44]}
+        scale={[0.24, 4.6, 1.52]}
+        color="#dbc29e"
+      />
+      <SolidBox
+        position={[-4.09, 4.09, 0.55]}
+        scale={[0.24, 1, 2.3]}
+        color="#dbc29e"
+      />
+      <SolidBox
+        position={[-4.36, 2.29, 0.55]}
+        scale={[0.3, 4.6, 2.3]}
+        color="#d4bd9d"
+      />
+      <SolidBox
+        position={[-4.225, 1.84, -0.6]}
+        scale={[0.27, 3.7, 0.14]}
+        color="#cdb393"
+      />
+      <SolidBox
+        position={[-4.225, 1.84, 1.7]}
+        scale={[0.27, 3.7, 0.14]}
+        color="#cdb393"
+      />
+      <SolidBox
+        position={[-4.225, 3.65, 0.55]}
+        scale={[0.27, 0.14, 2.3]}
+        color="#cdb393"
       />
 
       <SolidBox
@@ -834,10 +865,10 @@ function Room({
       <Corkboard onOpen={onOpenCorkboard} />
       <PendantLamp />
       <Window onOpen={onOpenWindow} />
-      <Plant position={[-2.9, 0.47, 2.42]} scale={1.05} />
+      <Plant position={[-3.8, 0.38, 1.06]} scale={0.9} />
       <Plant position={[-1.42, 0.84, -2.72]} scale={0.78} />
       <FloorBookStack />
-      <Plant position={[3.22, 0.56, 2.62]} scale={0.68} />
+      <Plant position={[3.22, 0.4, 2.62]} scale={0.68} />
 
       <pointLight
         position={[0.4, 4.7, 3.2]}
