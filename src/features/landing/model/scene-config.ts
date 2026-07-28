@@ -3,8 +3,8 @@ import * as THREE from "three";
 export const ROOM_CAMERA_POSITION = new THREE.Vector3(8.8, 6.6, 11.4);
 export const ROOM_LOOK_AT = new THREE.Vector3(0, 1.55, 0);
 
-export const DISPLAY_CAMERA_POSITION = new THREE.Vector3(-0.95, 2.4, 1.5);
-export const DISPLAY_LOOK_AT = new THREE.Vector3(-0.95, 2.4, 0.41);
+export const DISPLAY_CAMERA_POSITION = new THREE.Vector3(-0.95, 2.13, 1.5);
+export const DISPLAY_LOOK_AT = new THREE.Vector3(-0.95, 2.13, 0.41);
 
 export const BOOKSHELF_CAMERA_POSITION = new THREE.Vector3(-2.9, 2.42, -1.25);
 export const BOOKSHELF_LOOK_AT = new THREE.Vector3(-2.9, 2.42, -3.18);
