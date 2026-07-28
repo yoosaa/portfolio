@@ -3,14 +3,14 @@ import * as THREE from "three";
 export const ROOM_CAMERA_POSITION = new THREE.Vector3(8.8, 6.6, 11.4);
 export const ROOM_LOOK_AT = new THREE.Vector3(0, 1.55, 0);
 
-export const DISPLAY_CAMERA_POSITION = new THREE.Vector3(-0.95, 2.08, 1.5);
-export const DISPLAY_LOOK_AT = new THREE.Vector3(-0.95, 2.08, 0.41);
+export const DISPLAY_CAMERA_POSITION = new THREE.Vector3(-0.95, 2.4, 1.5);
+export const DISPLAY_LOOK_AT = new THREE.Vector3(-0.95, 2.4, 0.41);
 
-export const BOOKSHELF_CAMERA_POSITION = new THREE.Vector3(-2.9, 2.05, -1.25);
-export const BOOKSHELF_LOOK_AT = new THREE.Vector3(-2.9, 2.05, -3.18);
+export const BOOKSHELF_CAMERA_POSITION = new THREE.Vector3(-2.9, 2.42, -1.25);
+export const BOOKSHELF_LOOK_AT = new THREE.Vector3(-2.9, 2.42, -3.18);
 
-export const CORKBOARD_CAMERA_POSITION = new THREE.Vector3(2.15, 2.65, -2.02);
-export const CORKBOARD_LOOK_AT = new THREE.Vector3(2.15, 2.65, -3.93);
+export const CORKBOARD_CAMERA_POSITION = new THREE.Vector3(2.15, 3.04, -2.02);
+export const CORKBOARD_LOOK_AT = new THREE.Vector3(2.15, 3.04, -3.93);
 
 export const WINDOW_CAMERA_POSITION = new THREE.Vector3(-2.35, 2.52, 0.42);
 export const WINDOW_LOOK_AT = new THREE.Vector3(-4.22, 2.52, 0.42);
