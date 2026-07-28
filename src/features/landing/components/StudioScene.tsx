@@ -720,6 +720,11 @@ function Room({
 >) {
   void projectIndex;
 
+  const lowerFloorHeight = LOWER_FLOOR_TOP - BASE_TOP;
+  const lowerFloorY = (BASE_TOP + LOWER_FLOOR_TOP) / 2;
+  const upperFloorHeight = UPPER_FLOOR_TOP - BASE_TOP;
+  const upperFloorY = (BASE_TOP + UPPER_FLOOR_TOP) / 2;
+
   return (
     <group>
       <Box
@@ -730,42 +735,22 @@ function Room({
       />
 
       <Box
-        position={[-1.15, (BASE_TOP + LOWER_FLOOR_TOP) / 2, 0.6]}
-        scale={[4.3, LOWER_FLOOR_TOP - BASE_TOP, 2.7]}
+        position={[-0.2, lowerFloorY, 0.75]}
+        scale={[6.55, lowerFloorHeight, 3.2]}
         color="#d8c3a2"
-        radius={0.06}
+        radius={0.07}
+      />
+      <Box
+        position={[2.65, lowerFloorY, 2.35]}
+        scale={[2.55, lowerFloorHeight, 1.65]}
+        color="#d8c3a2"
+        radius={0.07}
       />
       <Box
         position={[-1.15, LOWER_FLOOR_TOP + MAT_THICKNESS / 2, 0.6]}
         scale={[4, MAT_THICKNESS, 2.45]}
         color="#6176bd"
         radius={0.055}
-      />
-
-      <Box
-        position={[-0.08, (BASE_TOP + UPPER_FLOOR_TOP) / 2, -2.58]}
-        scale={[8.02, UPPER_FLOOR_TOP - BASE_TOP, 2.7]}
-        color="#d8c3a2"
-        radius={0.06}
-      />
-      <Box
-        position={[-2.5, UPPER_FLOOR_TOP + MAT_THICKNESS / 2, -2.58]}
-        scale={[2.96, MAT_THICKNESS, 2.3]}
-        color="#7da28b"
-        radius={0.055}
-      />
-      <Box
-        position={[2.68, UPPER_FLOOR_TOP + MAT_THICKNESS / 2, -2.58]}
-        scale={[2.18, MAT_THICKNESS, 1.96]}
-        color="#d97d68"
-        radius={0.055}
-      />
-
-      <Box
-        position={[2.7, (BASE_TOP + LOWER_FLOOR_TOP) / 2, 2.55]}
-        scale={[2.25, LOWER_FLOOR_TOP - BASE_TOP, 1.25]}
-        color="#d8c3a2"
-        radius={0.06}
       />
       <Box
         position={[2.7, LOWER_FLOOR_TOP + MAT_THICKNESS / 2, 2.55]}
@@ -774,21 +759,39 @@ function Room({
         radius={0.045}
       />
 
+      <Box
+        position={[-0.65, upperFloorY, -2.55]}
+        scale={[6.9, upperFloorHeight, 2.75]}
+        color="#d8c3a2"
+        radius={0.07}
+      />
+      <Box
+        position={[2.6, upperFloorY, -2.25]}
+        scale={[2.55, upperFloorHeight, 2.35]}
+        color="#d8c3a2"
+        radius={0.07}
+      />
+      <Box
+        position={[-2.5, UPPER_FLOOR_TOP + MAT_THICKNESS / 2, -2.58]}
+        scale={[2.96, MAT_THICKNESS, 2.3]}
+        color="#7da28b"
+        radius={0.055}
+      />
+      <Box
+        position={[2.68, UPPER_FLOOR_TOP + MAT_THICKNESS / 2, -2.38]}
+        scale={[2.18, MAT_THICKNESS, 1.96]}
+        color="#d97d68"
+        radius={0.055}
+      />
+
       <LevelStairs
-        position={[2.68, 0, -1.14]}
+        position={[1.85, 0, -1.05]}
         fromY={LOWER_FLOOR_TOP}
         toY={UPPER_FLOOR_TOP}
         stepCount={4}
       />
-
-      <Box
-        position={[1.45, -0.22, 3.42]}
-        scale={[1.65, 0.42, 0.84]}
-        color="#d8c5a5"
-        radius={0.08}
-      />
       <LevelStairs
-        position={[1.45, 0, 3.22]}
+        position={[1.25, 0, 3.28]}
         fromY={BASE_TOP}
         toY={LOWER_FLOOR_TOP}
         stepCount={3}
