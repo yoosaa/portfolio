@@ -15,7 +15,7 @@ import { CameraRig } from "./studio/CameraRig";
 import { CanvasResizeSync } from "./studio/CanvasResizeSync";
 
 const BASE_TOP = -0.01;
-const LOWER_FLOOR_TOP = 0.26;
+const LOWER_FLOOR_TOP = BASE_TOP;
 const UPPER_FLOOR_TOP = 0.88;
 const MAT_THICKNESS = 0.06;
 const LOWER_MAT_TOP = LOWER_FLOOR_TOP + MAT_THICKNESS;
@@ -720,8 +720,6 @@ function Room({
 >) {
   void projectIndex;
 
-  const lowerFloorHeight = LOWER_FLOOR_TOP - BASE_TOP;
-  const lowerFloorY = (BASE_TOP + LOWER_FLOOR_TOP) / 2;
   const upperFloorHeight = UPPER_FLOOR_TOP - BASE_TOP;
   const upperFloorY = (BASE_TOP + UPPER_FLOOR_TOP) / 2;
 
@@ -734,18 +732,6 @@ function Room({
         radius={0.08}
       />
 
-      <Box
-        position={[-0.2, lowerFloorY, 0.75]}
-        scale={[6.55, lowerFloorHeight, 3.2]}
-        color="#d8c3a2"
-        radius={0.07}
-      />
-      <Box
-        position={[2.65, lowerFloorY, 2.35]}
-        scale={[2.55, lowerFloorHeight, 1.65]}
-        color="#d8c3a2"
-        radius={0.07}
-      />
       <Box
         position={[-1.15, LOWER_FLOOR_TOP + MAT_THICKNESS / 2, 0.6]}
         scale={[4, MAT_THICKNESS, 2.45]}
@@ -786,16 +772,9 @@ function Room({
 
       <LevelStairs
         position={[1.85, 0, -1.05]}
-        fromY={LOWER_FLOOR_TOP}
+        fromY={BASE_TOP}
         toY={UPPER_FLOOR_TOP}
         stepCount={4}
-      />
-      <LevelStairs
-        position={[1.25, 0, 3.28]}
-        fromY={BASE_TOP}
-        toY={LOWER_FLOOR_TOP}
-        stepCount={3}
-        width={1.2}
       />
 
       <SolidBox
