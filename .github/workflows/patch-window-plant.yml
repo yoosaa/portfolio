@@ -1,15 +1,16 @@
 name: Patch window plant
 
 on:
-  push:
-    paths:
-      - .github/workflows/patch-window-plant.yml
+  issues:
+    types: [opened]
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   patch:
+    if: github.event.issue.title == '[automation] patch window plant'
     runs-on: ubuntu-latest
     steps:
       - name: Check out feature
@@ -44,4 +45,7 @@ jobs:
           git commit -m "Furnish window plant area"
           git push origin HEAD:feature
 
-# retrigger
+      - name: Close trigger issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue close "${{ github.event.issue.number }}" --repo "${{ github.repository }}"
