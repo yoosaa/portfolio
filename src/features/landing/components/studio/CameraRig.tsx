@@ -136,8 +136,8 @@ export function CameraRig({
 
   useEffect(() => {
     const restoredColors = new Map<THREE.MeshStandardMaterial, THREE.Color>();
-    let roomGroup: THREE.Object3D | null = null;
-    let pendantGroup: THREE.Object3D | null = null;
+    const roomGroupRef: { current: THREE.Object3D | null } = { current: null };
+    const pendantGroupRef: { current: THREE.Object3D | null } = { current: null };
 
     scene.traverse((object) => {
       if (object instanceof THREE.Mesh) {
@@ -165,10 +165,13 @@ export function CameraRig({
         Math.abs(z + 2.82) < 0.01;
 
       if (isPendantRoot) {
-        pendantGroup = object;
-        roomGroup = object.parent;
+        pendantGroupRef.current = object;
+        roomGroupRef.current = object.parent;
       }
     });
+
+    const pendantGroup = pendantGroupRef.current;
+    const roomGroup = roomGroupRef.current;
 
     if (pendantGroup) {
       pendantGroup.visible = false;
