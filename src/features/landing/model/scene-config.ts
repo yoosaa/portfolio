@@ -12,8 +12,8 @@ export const BOOKSHELF_LOOK_AT = new THREE.Vector3(-2.9, 2.05, -3.18);
 export const CORKBOARD_CAMERA_POSITION = new THREE.Vector3(2.15, 2.65, -2.02);
 export const CORKBOARD_LOOK_AT = new THREE.Vector3(2.15, 2.65, -3.93);
 
-export const WINDOW_CAMERA_POSITION = new THREE.Vector3(-2.18, 2.48, 0.55);
-export const WINDOW_LOOK_AT = new THREE.Vector3(-4.04, 2.48, 0.55);
+export const WINDOW_CAMERA_POSITION = new THREE.Vector3(-2.35, 2.52, 0.42);
+export const WINDOW_LOOK_AT = new THREE.Vector3(-4.22, 2.52, 0.42);
 
 export const ROOM_FOV = 36;
 export const DISPLAY_FOV = 48;
