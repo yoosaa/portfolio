@@ -834,6 +834,7 @@ function Room({
       <Corkboard onOpen={onOpenCorkboard} />
       <PendantLamp />
       <Window onOpen={onOpenWindow} />
+      <Plant position={[-2.9, 0.47, 2.42]} scale={1.05} />
       <Plant position={[-1.42, 0.84, -2.72]} scale={0.78} />
       <FloorBookStack />
       <Plant position={[3.22, 0.56, 2.62]} scale={0.68} />
