@@ -6,8 +6,8 @@ export const ROOM_LOOK_AT = new THREE.Vector3(0, 1.55, 0);
 export const DISPLAY_CAMERA_POSITION = new THREE.Vector3(-0.95, 2.08, 1.5);
 export const DISPLAY_LOOK_AT = new THREE.Vector3(-0.95, 2.08, 0.41);
 
-export const BOOKSHELF_CAMERA_POSITION = new THREE.Vector3(-2.55, 2.05, -1.25);
-export const BOOKSHELF_LOOK_AT = new THREE.Vector3(-2.55, 2.05, -3.12);
+export const BOOKSHELF_CAMERA_POSITION = new THREE.Vector3(-2.9, 2.05, -1.25);
+export const BOOKSHELF_LOOK_AT = new THREE.Vector3(-2.9, 2.05, -3.18);
 
 export const CORKBOARD_CAMERA_POSITION = new THREE.Vector3(2.7, 2.65, -2.02);
 export const CORKBOARD_LOOK_AT = new THREE.Vector3(2.7, 2.65, -3.93);
