@@ -13,13 +13,14 @@ import { ROOM_CAMERA_POSITION, ROOM_FOV } from "../model/scene-config";
 import type { StudioSceneProps } from "../model/studio-scene";
 import { CameraRig } from "./studio/CameraRig";
 import { CanvasResizeSync } from "./studio/CanvasResizeSync";
-
-const BASE_TOP = -0.01;
-const LOWER_FLOOR_TOP = BASE_TOP;
-const UPPER_FLOOR_TOP = 0.88;
-const MAT_THICKNESS = 0.06;
-const LOWER_MAT_TOP = LOWER_FLOOR_TOP + MAT_THICKNESS;
-const UPPER_MAT_TOP = UPPER_FLOOR_TOP + MAT_THICKNESS;
+import {
+  BASE_TOP,
+  LOWER_FLOOR_TOP,
+  LOWER_MAT_TOP,
+  MAT_THICKNESS,
+  UPPER_FLOOR_TOP,
+  UPPER_MAT_TOP,
+} from "./studio/scene-levels";
 
 type BoxProps = {
   position: [number, number, number];
