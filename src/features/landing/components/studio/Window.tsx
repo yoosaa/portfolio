@@ -13,7 +13,6 @@ export function Window({ onOpen }: WindowProps) {
       onPointerOver={() => (document.body.style.cursor = "pointer")}
       onPointerOut={() => (document.body.style.cursor = "default")}
     >
-      {/* Keep the window intentionally simple: glass and outer frame only. */}
       <group name="studio-square-window" position={[0, 0, 0.22]}>
         <mesh castShadow receiveShadow position={[0, 0, 0.08]}>
           <boxGeometry args={[1.12, 1.12, 0.07]} />
@@ -28,10 +27,6 @@ export function Window({ onOpen }: WindowProps) {
           <meshStandardMaterial color="#a77f56" roughness={0.92} />
         </mesh>
         <mesh castShadow receiveShadow position={[0, 0.68, 0.17]}>
-          <boxGeometry args={[1.52, 0.16, 0.12]} />
-          <meshStandardMaterial color="#a77f56" roughness={0.92} />
-        </mesh>
-        <mesh castShadow receiveShadow position={[0, -0.68, 0.17]}>
           <boxGeometry args={[1.52, 0.16, 0.12]} />
           <meshStandardMaterial color="#a77f56" roughness={0.92} />
         </mesh>
