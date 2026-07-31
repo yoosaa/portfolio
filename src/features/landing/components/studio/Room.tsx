@@ -88,9 +88,9 @@ export function Room({
       />
       <LevelStairs
         position={[1.85, 0, -1.05]}
-        fromY={BASE_TOP}
-        toY={UPPER_FLOOR_TOP}
-        stepCount={4}
+        fromY={-0.01}
+        toY={0.88}
+        stepCount={3}
       />
       <SolidBox
         position={[-2.55, 2.29, -3.91]}

@@ -204,39 +204,6 @@ function createUpperBackFiller() {
   return group;
 }
 
-/**
- * StudioScene.tsxの旧階段を非表示にしたあと追加する、均一な3段階段。
- * fromY/toYは床の高さと連動しているため、床高を変えた場合は同時に修正する。
- */
-function createUniformStairs() {
-  const stairs = new THREE.Group();
-  stairs.name = "studio-uniform-stairs";
-  stairs.position.set(1.85, 0, -1.05);
-
-  const fromY = -0.01;
-  const toY = 0.88;
-  const stepCount = 3;
-  const rise = (toY - fromY) / stepCount;
-  const treadDepth = 0.38;
-  const depthOffset = ((stepCount - 1) * treadDepth) / 2;
-
-  for (let index = 0; index < stepCount; index += 1) {
-    const step = createBoxMesh([1.18, rise, treadDepth], "#d7c2a2", 0.93);
-    step.position.set(
-      0,
-      fromY + rise * (index + 0.5),
-      depthOffset - index * treadDepth,
-    );
-    stairs.add(step);
-  }
-
-  // 最上段と上段床の間に隙間が出ないよう、薄い橋を足している。
-  const landingBridge = createBoxMesh([1.18, 0.06, 0.34], "#d7c2a2", 0.93);
-  landingBridge.position.set(0, toY - 0.03, -0.63);
-  stairs.add(landingBridge);
-  return stairs;
-}
-
 // カメラ遷移の進み方。位置や向きではなく、移動の緩急だけを決める。
 function easeDisplayTransition(progress: number) {
   if (progress <= 0 || progress >= 1) return progress <= 0 ? 0 : 1;
@@ -322,11 +289,10 @@ export function CameraRig({
           material.needsUpdate = true;
         }
 
-        // 旧アクセント、旧窓のくぼみ、旧階段を非表示にする。
+        // 旧アクセントと旧窓のくぼみを非表示にする。
         if (
           STRAY_ACCENT_COLORS.has(colorHex) ||
-          WINDOW_RECESS_COLORS.has(colorHex) ||
-          colorHex === "d7c2a2"
+          WINDOW_RECESS_COLORS.has(colorHex)
         ) {
           hideObject(object, restoredVisibility);
         }
@@ -344,10 +310,6 @@ export function CameraRig({
     const upperBackFiller = createUpperBackFiller();
     roomGroup?.add(upperBackFiller);
     addedObjects.push(upperBackFiller);
-
-    const uniformStairs = createUniformStairs();
-    roomGroup?.add(uniformStairs);
-    addedObjects.push(uniformStairs);
 
     // Windowのクリック可能な親groupは残し、見た目のmeshだけを差し替える。
     if (windowGroup) {
