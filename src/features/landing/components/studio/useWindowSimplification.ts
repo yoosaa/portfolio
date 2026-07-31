@@ -2,22 +2,8 @@ import { useThree } from "@react-three/fiber";
 import { useEffect } from "react";
 import * as THREE from "three";
 
-function roughly(value: number, target: number, epsilon = 0.035) {
+function roughly(value: number, target: number, epsilon = 0.08) {
   return Math.abs(value - target) < epsilon;
-}
-
-function matchesScale(
-  object: THREE.Object3D,
-  x: number,
-  y: number,
-  z: number,
-  epsilon = 0.05
-) {
-  return (
-    roughly(object.scale.x, x, epsilon) &&
-    roughly(object.scale.y, y, epsilon) &&
-    roughly(object.scale.z, z, epsilon)
-  );
 }
 
 function getStandardMaterial(object: THREE.Object3D) {
@@ -25,8 +11,23 @@ function getStandardMaterial(object: THREE.Object3D) {
     return null;
   }
 
-  const material = Array.isArray(object.material) ? object.material[0] : object.material;
+  const material = Array.isArray(object.material)
+    ? object.material[0]
+    : object.material;
   return material instanceof THREE.MeshStandardMaterial ? material : null;
+}
+
+function hasNamedAncestor(object: THREE.Object3D, name: string) {
+  let current: THREE.Object3D | null = object;
+
+  while (current) {
+    if (current.name === name) {
+      return true;
+    }
+    current = current.parent;
+  }
+
+  return false;
 }
 
 export function useWindowSimplification() {
@@ -36,34 +37,38 @@ export function useWindowSimplification() {
     const restoredVisibility = new Map<THREE.Object3D, boolean>();
 
     const hideObject = (object: THREE.Object3D) => {
-      restoredVisibility.set(object, object.visible);
+      if (!restoredVisibility.has(object)) {
+        restoredVisibility.set(object, object.visible);
+      }
       object.visible = false;
     };
 
-    scene.traverse((object) => {
-      const material = getStandardMaterial(object);
-      const colorHex = material?.color.getHexString();
+    const hideLegacyWindowParts = () => {
+      scene.traverse((object) => {
+        const material = getStandardMaterial(object);
+        const colorHex = material?.color.getHexString();
 
-      const isVerticalGrid =
-        colorHex === "eee5ce" && matchesScale(object, 0.08, 1.42, 0.08);
-      const isHorizontalGrid =
-        colorHex === "eee5ce" && matchesScale(object, 1.66, 0.08, 0.08);
-      const isWindowBase =
-        colorHex === "c8aa7f" && matchesScale(object, 2.02, 0.18, 0.3);
+        const isLegacyGrid =
+          colorHex === "eee5ce" && hasNamedAncestor(object, "studio-window");
+        const isLegacyWindowBase = colorHex === "c8aa7f";
+        const isLegacyWindowPlant =
+          object.name === "studio-window-plant" ||
+          (!(object instanceof THREE.Mesh) &&
+            roughly(object.position.x, -4.02) &&
+            roughly(object.position.y, 1.92) &&
+            roughly(object.position.z, 0.95));
 
-      const isWindowPlant =
-        !(object instanceof THREE.Mesh) &&
-        roughly(object.position.x, -4.02) &&
-        roughly(object.position.y, 1.92) &&
-        roughly(object.position.z, 0.95) &&
-        matchesScale(object, 0.45, 0.45, 0.45);
+        if (isLegacyGrid || isLegacyWindowBase || isLegacyWindowPlant) {
+          hideObject(object);
+        }
+      });
+    };
 
-      if (isVerticalGrid || isHorizontalGrid || isWindowBase || isWindowPlant) {
-        hideObject(object);
-      }
-    });
+    hideLegacyWindowParts();
+    const frameId = window.requestAnimationFrame(hideLegacyWindowParts);
 
     return () => {
+      window.cancelAnimationFrame(frameId);
       restoredVisibility.forEach((visible, object) => {
         object.visible = visible;
       });
