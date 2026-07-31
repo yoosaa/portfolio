@@ -8,6 +8,7 @@ export function Bookshelf({ onOpen }: BookshelfProps) {
   const shelfLevels = [0.72, 1.48, 2.24];
   return (
     <group
+      name="studio-bookshelf"
       position={[-2.9, UPPER_MAT_TOP - 0.07, -3.18]}
       onClick={(event) => {
         event.stopPropagation();
@@ -67,6 +68,12 @@ export function Bookshelf({ onOpen }: BookshelfProps) {
         const shelfY = shelfLevels[row];
         return (
           <Box
+            name={
+              (row === 0 && column > 1) ||
+              (row === 1 && column > 0 && column < 3)
+                ? `studio-bookshelf-replaced-book-${index}`
+                : undefined
+            }
             key={index}
             position={[-0.68 + column * 0.45, shelfY + height / 2 + 0.08, 0.04]}
             scale={[width, height, 0.46]}
@@ -76,11 +83,16 @@ export function Bookshelf({ onOpen }: BookshelfProps) {
           />
         );
       })}
-      <mesh position={[0.58, 3.36, 0]} castShadow receiveShadow>
+      <mesh
+        name="studio-bookshelf-top-plant-pot"
+        position={[0.58, 3.36, 0]}
+        castShadow
+        receiveShadow
+      >
         <cylinderGeometry args={[0.23, 0.19, 0.34, 12]} />
         <meshStandardMaterial color="#d6a073" roughness={0.94} />
       </mesh>
-      <group position={[0.58, 3.5, 0]}>
+      <group name="studio-bookshelf-top-plant" position={[0.58, 3.5, 0]}>
         {[-0.18, 0, 0.18].map((x, index) => (
           <mesh
             key={x}

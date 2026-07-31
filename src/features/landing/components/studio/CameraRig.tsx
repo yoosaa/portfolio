@@ -34,42 +34,24 @@ type CameraRigProps = {
 };
 
 /**
- * StudioScene.tsx で生成された既存オブジェクトを見つけるための識別情報。
- *
- * 現状は name ではなく「色・scale・座標」の組み合わせで対象を特定している。
- * そのため StudioScene.tsx 側で家具の色や寸法を変えた場合は、ここも一緒に確認すること。
- * 判定が外れると、元の家具と差し替え家具が二重表示になることがある。
+ * studio配下のコンポーネントで付与したnameを使い、既存オブジェクトを参照する。
  */
-const WALL_SOURCE_COLORS = new Set(["b3bba4", "eadbc4", "d8a08c", "aab59e", "dbc29e"]);
+const WALL_SOURCE_COLORS = new Set([
+  "b3bba4",
+  "eadbc4",
+  "d8a08c",
+  "aab59e",
+  "dbc29e",
+]);
 const WALL_COLOR = new THREE.Color("#e6d8c2");
-const BOOK_COLORS = new Set(["c78976", "d3b56f", "89a28a", "91a5b7", "dac79b"]);
-const OLD_CORK_NOTE_COLORS = new Set(["eee0c4", "dfe7dc", "d8dce6"]);
 const STRAY_ACCENT_COLORS = new Set(["91a18d", "c98672"]);
 const WINDOW_RECESS_COLORS = new Set(["cdb393", "d4bd9d"]);
 
-// 浮動小数点の座標・scaleは完全一致しづらいため、許容誤差つきで比較する。
-function roughly(value: number, target: number, epsilon = 0.035) {
-  return Math.abs(value - target) < epsilon;
-}
-
-// 色だけでは同じ家具を誤検出しやすいため、scaleも組み合わせて対象を絞る。
-function matchesScale(
-  object: THREE.Object3D,
-  x: number,
-  y: number,
-  z: number,
-  epsilon = 0.05
-) {
-  return (
-    roughly(object.scale.x, x, epsilon) &&
-    roughly(object.scale.y, y, epsilon) &&
-    roughly(object.scale.z, z, epsilon)
-  );
-}
-
 function getStandardMaterial(object: THREE.Object3D) {
   if (!(object instanceof THREE.Mesh)) return null;
-  const material = Array.isArray(object.material) ? object.material[0] : object.material;
+  const material = Array.isArray(object.material)
+    ? object.material[0]
+    : object.material;
   return material instanceof THREE.MeshStandardMaterial ? material : null;
 }
 
@@ -80,11 +62,11 @@ function getStandardMaterial(object: THREE.Object3D) {
 function createBoxMesh(
   scale: [number, number, number],
   color: string,
-  roughness = 0.93
+  roughness = 0.93,
 ) {
   const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(...scale),
-    new THREE.MeshStandardMaterial({ color, roughness })
+    new THREE.MeshStandardMaterial({ color, roughness }),
   );
   mesh.castShadow = true;
   mesh.receiveShadow = true;
@@ -97,9 +79,10 @@ function createBoxMesh(
  */
 function hideObject(
   object: THREE.Object3D,
-  restoredVisibility: Map<THREE.Object3D, boolean>
+  restoredVisibility: Map<THREE.Object3D, boolean>,
 ) {
-  if (!restoredVisibility.has(object)) restoredVisibility.set(object, object.visible);
+  if (!restoredVisibility.has(object))
+    restoredVisibility.set(object, object.visible);
   object.visible = false;
 }
 
@@ -108,7 +91,9 @@ function disposeObjectTree(root: THREE.Object3D) {
   root.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;
     object.geometry.dispose();
-    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    const materials = Array.isArray(object.material)
+      ? object.material
+      : [object.material];
     materials.forEach((material) => material.dispose());
   });
 }
@@ -130,7 +115,7 @@ function createWallArtwork() {
   canvas.position.z = 0.08;
   const shape = new THREE.Mesh(
     new THREE.CircleGeometry(0.18, 20),
-    new THREE.MeshStandardMaterial({ color: "#7f9a83", roughness: 0.95 })
+    new THREE.MeshStandardMaterial({ color: "#7f9a83", roughness: 0.95 }),
   );
   shape.position.set(-0.16, 0.08, 0.125);
   const accent = createBoxMesh([0.3, 0.12, 0.025], "#cc8b72", 0.95);
@@ -183,25 +168,59 @@ function createCorkboardDetails() {
 
   // position/sizeはコルクボードgroup内のローカル座標。
   const notes = [
-    { position: [-0.52, 0.28, 0.2] as const, size: [0.42, 0.58] as const, color: "#eee0c4", rotation: -0.08, pinColor: "#80584b" },
-    { position: [0.02, 0.34, 0.205] as const, size: [0.56, 0.38] as const, color: "#dfe7dc", rotation: 0.05, pinColor: "#718474" },
-    { position: [0.52, 0.12, 0.2] as const, size: [0.38, 0.52] as const, color: "#d8dce6", rotation: 0.09, pinColor: "#775e54" },
-    { position: [-0.25, -0.3, 0.21] as const, size: [0.58, 0.32] as const, color: "#e7cfaa", rotation: -0.04, pinColor: "#806253" },
-    { position: [0.4, -0.34, 0.215] as const, size: [0.3, 0.26] as const, color: "#ece5d2", rotation: 0.08, pinColor: "#6f7f72" },
+    {
+      position: [-0.52, 0.28, 0.2] as const,
+      size: [0.42, 0.58] as const,
+      color: "#eee0c4",
+      rotation: -0.08,
+      pinColor: "#80584b",
+    },
+    {
+      position: [0.02, 0.34, 0.205] as const,
+      size: [0.56, 0.38] as const,
+      color: "#dfe7dc",
+      rotation: 0.05,
+      pinColor: "#718474",
+    },
+    {
+      position: [0.52, 0.12, 0.2] as const,
+      size: [0.38, 0.52] as const,
+      color: "#d8dce6",
+      rotation: 0.09,
+      pinColor: "#775e54",
+    },
+    {
+      position: [-0.25, -0.3, 0.21] as const,
+      size: [0.58, 0.32] as const,
+      color: "#e7cfaa",
+      rotation: -0.04,
+      pinColor: "#806253",
+    },
+    {
+      position: [0.4, -0.34, 0.215] as const,
+      size: [0.3, 0.26] as const,
+      color: "#ece5d2",
+      rotation: 0.08,
+      pinColor: "#6f7f72",
+    },
   ];
 
   notes.forEach(({ position, size, color, rotation, pinColor }) => {
     const note = new THREE.Mesh(
       new THREE.PlaneGeometry(...size),
-      new THREE.MeshStandardMaterial({ color, roughness: 0.96 })
+      new THREE.MeshStandardMaterial({ color, roughness: 0.96 }),
     );
     note.position.set(position[0], position[1], position[2]);
     note.rotation.z = rotation;
     const pin = new THREE.Mesh(
       new THREE.SphereGeometry(0.035, 10, 8),
-      new THREE.MeshStandardMaterial({ color: pinColor, roughness: 0.9 })
+      new THREE.MeshStandardMaterial({ color: pinColor, roughness: 0.9 }),
     );
-    pin.position.set(position[0], position[1] + size[1] / 2 - 0.045, position[2] + 0.035);
+    pin.position.set(
+      position[0],
+      position[1] + size[1] / 2 - 0.045,
+      position[2] + 0.035,
+    );
     pin.castShadow = true;
     details.add(note, pin);
   });
@@ -226,13 +245,29 @@ function createSquareWindow() {
   const frameZ = 0.17;
   const frameThickness = 0.16;
   const frameSize = 1.52;
-  const left = createBoxMesh([frameThickness, frameSize, frameDepth], frameColor, 0.92);
+  const left = createBoxMesh(
+    [frameThickness, frameSize, frameDepth],
+    frameColor,
+    0.92,
+  );
   left.position.set(-0.68, 0, frameZ);
-  const right = createBoxMesh([frameThickness, frameSize, frameDepth], frameColor, 0.92);
+  const right = createBoxMesh(
+    [frameThickness, frameSize, frameDepth],
+    frameColor,
+    0.92,
+  );
   right.position.set(0.68, 0, frameZ);
-  const top = createBoxMesh([frameSize, frameThickness, frameDepth], frameColor, 0.92);
+  const top = createBoxMesh(
+    [frameSize, frameThickness, frameDepth],
+    frameColor,
+    0.92,
+  );
   top.position.set(0, 0.68, frameZ);
-  const bottom = createBoxMesh([frameSize, frameThickness, frameDepth], frameColor, 0.92);
+  const bottom = createBoxMesh(
+    [frameSize, frameThickness, frameDepth],
+    frameColor,
+    0.92,
+  );
   bottom.position.set(0, -0.68, frameZ);
 
   const verticalBar = createBoxMesh([0.08, 1.12, 0.08], "#eee5ce", 0.94);
@@ -289,7 +324,11 @@ function createUniformStairs() {
 
   for (let index = 0; index < stepCount; index += 1) {
     const step = createBoxMesh([1.18, rise, treadDepth], "#d7c2a2", 0.93);
-    step.position.set(0, fromY + rise * (index + 0.5), depthOffset - index * treadDepth);
+    step.position.set(
+      0,
+      fromY + rise * (index + 0.5),
+      depthOffset - index * treadDepth,
+    );
     stairs.add(step);
   }
 
@@ -356,25 +395,25 @@ export function CameraRig({
    * StudioScene.tsxで宣言されたシーンを一度走査し、見た目を補正するeffect。
    *
    * 処理の流れ:
-   * 1. 色・scale・座標から対象groupを見つける
+   * 1. 明示的なnameから対象groupを見つける
    * 2. 元の色やvisibleを保存する
    * 3. 不要な元オブジェクトを非表示にする
    * 4. 差し替えパーツを追加する
    * 5. cleanupで元の状態へ戻し、追加パーツをdisposeする
    *
-   * 見た目が二重になった・差し替えが消えた場合は、まずtraverse内の識別条件を確認する。
+   * 見た目が二重になった・差し替えが消えた場合は、各コンポーネントのnameを確認する。
    */
   useEffect(() => {
     const restoredColors = new Map<THREE.MeshStandardMaterial, THREE.Color>();
     const restoredVisibility = new Map<THREE.Object3D, boolean>();
     const addedObjects: THREE.Object3D[] = [];
-    const roomGroupRef: { current: THREE.Object3D | null } = { current: null };
-    const pendantGroupRef: { current: THREE.Object3D | null } = { current: null };
-    const deskGroupRef: { current: THREE.Object3D | null } = { current: null };
-    const bookshelfGroupRef: { current: THREE.Object3D | null } = { current: null };
-    const corkboardGroupRef: { current: THREE.Object3D | null } = { current: null };
-    const windowGroupRef: { current: THREE.Object3D | null } = { current: null };
-    const windowPlantRef: { current: THREE.Object3D | null } = { current: null };
+    const roomGroup = scene.getObjectByName("studio-room");
+    const pendantGroup = scene.getObjectByName("studio-pendant-lamp");
+    const deskGroup = scene.getObjectByName("studio-desk");
+    const bookshelfGroup = scene.getObjectByName("studio-bookshelf");
+    const corkboardGroup = scene.getObjectByName("studio-corkboard");
+    const windowGroup = scene.getObjectByName("studio-window");
+    const windowPlant = scene.getObjectByName("studio-window-plant");
 
     scene.traverse((object) => {
       const material = getStandardMaterial(object);
@@ -396,127 +435,81 @@ export function CameraRig({
         ) {
           hideObject(object, restoredVisibility);
         }
-
-        // 以下は家具の代表的なmeshを目印にして、その親groupを取得している。
-        if (colorHex === "6176bd" && matchesScale(object, 3.42, 0.3, 1.58)) {
-          deskGroupRef.current = object.parent;
-        }
-        if (colorHex === "70927f" && matchesScale(object, 2.02, 2.98, 0.12)) {
-          bookshelfGroupRef.current = object.parent;
-        }
-        if (colorHex === "b96d5d" && matchesScale(object, 2.08, 1.58, 0.16)) {
-          corkboardGroupRef.current = object.parent;
-        }
-        if (colorHex === "d5c09f" && matchesScale(object, 1.86, 1.68, 0.16)) {
-          windowGroupRef.current = object.parent;
-        }
       }
-
-      const { x, y, z } = object.position;
-      const isPendantRoot =
-        roughly(x, 3.35, 0.01) && roughly(y, 4.07, 0.03) && roughly(z, -2.82, 0.01);
-      const isWindowPlantRoot =
-        !(object instanceof THREE.Mesh) &&
-        roughly(x, -4.02, 0.02) &&
-        roughly(y, 1.92, 0.02) &&
-        roughly(z, 0.95, 0.02) &&
-        roughly(object.scale.x, 0.45, 0.02);
-      if (isPendantRoot) {
-        pendantGroupRef.current = object;
-        roomGroupRef.current = object.parent;
-      }
-      if (isWindowPlantRoot) windowPlantRef.current = object;
     });
 
-    if (pendantGroupRef.current) hideObject(pendantGroupRef.current, restoredVisibility);
-    if (windowPlantRef.current) hideObject(windowPlantRef.current, restoredVisibility);
+    if (pendantGroup) hideObject(pendantGroup, restoredVisibility);
+    if (windowPlant) hideObject(windowPlant, restoredVisibility);
 
     // room直下へ追加する補助オブジェクト。
     const artwork = createWallArtwork();
-    roomGroupRef.current?.add(artwork);
+    roomGroup?.add(artwork);
     addedObjects.push(artwork);
 
     const upperBackFiller = createUpperBackFiller();
-    roomGroupRef.current?.add(upperBackFiller);
+    roomGroup?.add(upperBackFiller);
     addedObjects.push(upperBackFiller);
 
     const uniformStairs = createUniformStairs();
-    roomGroupRef.current?.add(uniformStairs);
+    roomGroup?.add(uniformStairs);
     addedObjects.push(uniformStairs);
 
     // Windowのクリック可能な親groupは残し、見た目のmeshだけを差し替える。
-    if (windowGroupRef.current) {
-      windowGroupRef.current.traverse((object) => {
-        if (object instanceof THREE.Mesh) hideObject(object, restoredVisibility);
+    if (windowGroup) {
+      windowGroup.traverse((object) => {
+        if (object instanceof THREE.Mesh)
+          hideObject(object, restoredVisibility);
       });
       const squareWindow = createSquareWindow();
-      windowGroupRef.current.add(squareWindow);
+      windowGroup.add(squareWindow);
       addedObjects.push(squareWindow);
       const wallPanel = createWindowWallPanel();
-      roomGroupRef.current?.add(wallPanel);
+      roomGroup?.add(wallPanel);
       addedObjects.push(wallPanel);
     }
 
     // 机の箱型収納を隠し、軽い4本脚へ差し替える。モニターは変更しない。
-    if (deskGroupRef.current) {
-      deskGroupRef.current.traverse((object) => {
-        const material = getStandardMaterial(object);
-        if (!material) return;
-        const colorHex = material.color.getHexString();
-        const isLeftCabinet = colorHex === "4f5f86" && matchesScale(object, 0.25, 1.35, 1.2);
-        const isRightCabinet = colorHex === "53668f" && matchesScale(object, 0.66, 1.16, 1.22);
-        const isDrawerHandle = colorHex === "7e8cb1" && matchesScale(object, 0.48, 0.1, 0.05);
+    if (deskGroup) {
+      deskGroup.traverse((object) => {
+        const isLeftCabinet = object.name === "studio-desk-left-cabinet";
+        const isRightCabinet = object.name === "studio-desk-right-cabinet";
+        const isDrawerHandle = object.name.startsWith(
+          "studio-desk-drawer-handle-",
+        );
         if (isLeftCabinet || isRightCabinet || isDrawerHandle) {
           hideObject(object, restoredVisibility);
         }
       });
       const deskLegs = createDeskLegs();
-      deskGroupRef.current.add(deskLegs);
+      deskGroup.add(deskLegs);
       addedObjects.push(deskLegs);
     }
 
     // 本棚上の植物と一部の本を隠し、収納箱と小さな額へ置き換える。
-    if (bookshelfGroupRef.current) {
-      bookshelfGroupRef.current.traverse((object) => {
-        const material = getStandardMaterial(object);
-        const { x, y, z } = object.position;
-        const isTopPlantGroup =
-          !(object instanceof THREE.Mesh) && roughly(x, 0.58) && roughly(y, 3.5) && roughly(z, 0);
-        const isTopPlantPot =
-          object instanceof THREE.Mesh &&
-          object.geometry instanceof THREE.CylinderGeometry &&
-          roughly(x, 0.58) &&
-          roughly(y, 3.36) &&
-          roughly(z, 0);
-        if (isTopPlantGroup || isTopPlantPot) {
-          hideObject(object, restoredVisibility);
-          return;
-        }
-        if (!material || !BOOK_COLORS.has(material.color.getHexString()) || !roughly(z, 0.04)) return;
-        const isLowerRightBook = y < 1.3 && x > 0;
-        const isMiddleCenterBook = y > 1.65 && y < 2.05 && x > -0.4 && x < 0.4;
-        if (isLowerRightBook || isMiddleCenterBook) hideObject(object, restoredVisibility);
-      });
-      const bookshelfDetails = createBookshelfDetails();
-      bookshelfGroupRef.current.add(bookshelfDetails);
-      addedObjects.push(bookshelfDetails);
-    }
-
-    // 旧3枚メモを隠し、サイズと角度にばらつきのあるメモへ差し替える。
-    if (corkboardGroupRef.current) {
-      corkboardGroupRef.current.traverse((object) => {
-        const material = getStandardMaterial(object);
+    if (bookshelfGroup) {
+      bookshelfGroup.traverse((object) => {
         if (
-          object instanceof THREE.Mesh &&
-          object.geometry instanceof THREE.PlaneGeometry &&
-          material &&
-          OLD_CORK_NOTE_COLORS.has(material.color.getHexString())
+          object.name === "studio-bookshelf-top-plant" ||
+          object.name === "studio-bookshelf-top-plant-pot" ||
+          object.name.startsWith("studio-bookshelf-replaced-book-")
         ) {
           hideObject(object, restoredVisibility);
         }
       });
+      const bookshelfDetails = createBookshelfDetails();
+      bookshelfGroup.add(bookshelfDetails);
+      addedObjects.push(bookshelfDetails);
+    }
+
+    // 旧3枚メモを隠し、サイズと角度にばらつきのあるメモへ差し替える。
+    if (corkboardGroup) {
+      corkboardGroup.traverse((object) => {
+        if (object.name.startsWith("studio-corkboard-old-note-")) {
+          hideObject(object, restoredVisibility);
+        }
+      });
       const corkboardDetails = createCorkboardDetails();
-      corkboardGroupRef.current.add(corkboardDetails);
+      corkboardGroup.add(corkboardDetails);
       addedObjects.push(corkboardDetails);
     }
 
@@ -544,10 +537,14 @@ export function CameraRig({
   // R3F camera transforms are intentionally updated inside its render loop.
   // eslint-disable-next-line react-hooks/immutability
   useFrame((state) => {
-    const isDisplayView = phase === "zooming-to-display" || phase === "projects";
-    const isBookshelfView = phase === "zooming-to-bookshelf" || phase === "bookshelf-projects";
-    const isCorkboardView = phase === "zooming-to-corkboard" || phase === "corkboard-projects";
-    const isWindowView = phase === "zooming-to-window" || phase === "window-projects";
+    const isDisplayView =
+      phase === "zooming-to-display" || phase === "projects";
+    const isBookshelfView =
+      phase === "zooming-to-bookshelf" || phase === "bookshelf-projects";
+    const isCorkboardView =
+      phase === "zooming-to-corkboard" || phase === "corkboard-projects";
+    const isWindowView =
+      phase === "zooming-to-window" || phase === "window-projects";
     const targetPosition = isDisplayView
       ? DISPLAY_CAMERA_POSITION
       : isBookshelfView
@@ -597,17 +594,21 @@ export function CameraRig({
       : Math.min(elapsed / CAMERA_TRANSITION_DURATION, 1);
     const easedProgress = easeDisplayTransition(progress);
 
-    camera.position.lerpVectors(transition.current.position, targetPosition, easedProgress);
+    camera.position.lerpVectors(
+      transition.current.position,
+      targetPosition,
+      easedProgress,
+    );
     camera.quaternion.slerpQuaternions(
       transition.current.quaternion,
       targetCamera.quaternion,
-      easedProgress
+      easedProgress,
     );
     // eslint-disable-next-line react-hooks/immutability
     perspectiveCamera.fov = THREE.MathUtils.lerp(
       transition.current.fov,
       targetFov,
-      easedProgress
+      easedProgress,
     );
     perspectiveCamera.updateProjectionMatrix();
 

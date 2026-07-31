@@ -1,6 +1,7 @@
 import { RoundedBox } from "@react-three/drei";
 
 type BoxProps = {
+  name?: string;
   position: [number, number, number];
   scale: [number, number, number];
   color: string;
@@ -15,6 +16,7 @@ type BoxProps = {
  * マテリアル設定はシーン全体の質感を揃えるため、このコンポーネント内に集約する。
  */
 export function Box({
+  name,
   position,
   scale,
   color,
@@ -23,6 +25,7 @@ export function Box({
 }: BoxProps) {
   return (
     <RoundedBox
+      name={name}
       position={position}
       scale={scale}
       rotation={rotation}
@@ -41,10 +44,11 @@ export function Box({
  *
  * 壁や階段など、輪郭を直線的に保ちたいオブジェクトで使う。
  */
-export function SolidBox({ position, scale, color, rotation }: BoxProps) {
+export function SolidBox({ name, position, scale, color, rotation }: BoxProps) {
   return (
     <mesh
       position={position}
+      name={name}
       scale={scale}
       rotation={rotation}
       castShadow
