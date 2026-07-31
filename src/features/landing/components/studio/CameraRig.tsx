@@ -165,24 +165,6 @@ function createWindowWallPanel() {
 }
 
 // 上段床の奥に見える隙間を塞ぐための補助形状。
-function createUpperBackFiller() {
-  const group = new THREE.Group();
-  group.name = "studio-upper-back-filler";
-
-  const left = createBoxMesh([6.9, 0.89, 0.5], "#d8c3a2", 0.93);
-  left.position.set(-0.65, 0.435, -3.68);
-  const right = createBoxMesh([2.55, 0.89, 0.5], "#d8c3a2", 0.93);
-  right.position.set(2.6, 0.435, -3.43);
-
-  const leftTopCover = createBoxMesh([6.9, 0.05, 0.72], "#d8c3a2", 0.93);
-  leftTopCover.position.set(-0.65, 0.865, -3.57);
-  const rightTopCover = createBoxMesh([2.55, 0.05, 0.7], "#d8c3a2", 0.93);
-  rightTopCover.position.set(2.6, 0.865, -3.3);
-
-  group.add(left, right, leftTopCover, rightTopCover);
-  return group;
-}
-
 // カメラ遷移の進み方。位置や向きではなく、移動の緩急だけを決める。
 function easeDisplayTransition(progress: number) {
   if (progress <= 0 || progress >= 1) return progress <= 0 ? 0 : 1;
@@ -275,10 +257,6 @@ export function CameraRig({
         }
       }
     });
-
-    const upperBackFiller = createUpperBackFiller();
-    roomGroup?.add(upperBackFiller);
-    addedObjects.push(upperBackFiller);
 
     // Windowのクリック可能な親groupは残し、見た目のmeshだけを差し替える。
     if (windowGroup) {

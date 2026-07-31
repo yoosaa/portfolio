@@ -10,6 +10,7 @@ import { Plant } from "./Plant";
 import { Box, SolidBox } from "./ScenePrimitives";
 import { Window } from "./Window";
 import { WallArtwork } from "./WallArtwork";
+import { UpperBackFiller } from "./UpperBackFiller";
 import {
   BASE_TOP,
   LOWER_FLOOR_TOP,
@@ -45,6 +46,7 @@ export function Room({
   return (
     <group name="studio-room">
       <WallArtwork />
+      <UpperBackFiller />
       <Box
         position={[0, -0.22, -0.35]}
         scale={[8.2, 0.42, 7.15]}
