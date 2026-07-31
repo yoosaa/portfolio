@@ -150,16 +150,6 @@ export function Room({
         scale={[0.27, 0.14, 2.3]}
         color="#cdb393"
       />
-      <SolidBox
-        position={[-2.55, UPPER_FLOOR_TOP + 0.05, -3.74]}
-        scale={[3.08, 0.18, 0.36]}
-        color="#91a18d"
-      />
-      <SolidBox
-        position={[2.68, UPPER_FLOOR_TOP + 0.05, -3.74]}
-        scale={[2.34, 0.18, 0.36]}
-        color="#c98672"
-      />
       <group position={[-2.35, LOWER_MAT_TOP, 0.1]}>
         <Desk
           accent={accent}
