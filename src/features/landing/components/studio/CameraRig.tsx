@@ -125,24 +125,6 @@ function createWallArtwork() {
   return artwork;
 }
 
-function createBookshelfDetails() {
-  const details = new THREE.Group();
-  details.name = "studio-bookshelf-details";
-  const storageBox = createBoxMesh([0.82, 0.48, 0.52], "#c7aa80", 0.95);
-  storageBox.position.set(0.45, 1.03, 0.02);
-  const storageLabel = createBoxMesh([0.34, 0.12, 0.03], "#eee2ca", 0.96);
-  storageLabel.position.set(0.45, 1.05, 0.3);
-  const frame = createBoxMesh([0.72, 0.54, 0.12], "#a98d6d", 0.93);
-  frame.position.set(0, 1.82, 0.02);
-  const frameCanvas = createBoxMesh([0.52, 0.34, 0.08], "#e8ddc7", 0.96);
-  frameCanvas.position.set(0, 1.82, 0.1);
-  const frameShape = createBoxMesh([0.22, 0.1, 0.025], "#7f9a83", 0.95);
-  frameShape.position.set(-0.08, 1.86, 0.155);
-  frameShape.rotation.z = 0.16;
-  details.add(storageBox, storageLabel, frame, frameCanvas, frameShape);
-  return details;
-}
-
 function createCorkboardDetails() {
   const details = new THREE.Group();
   details.name = "studio-corkboard-details";
@@ -390,7 +372,6 @@ export function CameraRig({
     const addedObjects: THREE.Object3D[] = [];
     const roomGroup = scene.getObjectByName("studio-room");
     const pendantGroup = scene.getObjectByName("studio-pendant-lamp");
-    const bookshelfGroup = scene.getObjectByName("studio-bookshelf");
     const corkboardGroup = scene.getObjectByName("studio-corkboard");
     const windowGroup = scene.getObjectByName("studio-window");
     const windowPlant = scene.getObjectByName("studio-window-plant");
@@ -446,22 +427,6 @@ export function CameraRig({
       const wallPanel = createWindowWallPanel();
       roomGroup?.add(wallPanel);
       addedObjects.push(wallPanel);
-    }
-
-    // 本棚上の植物と一部の本を隠し、収納箱と小さな額へ置き換える。
-    if (bookshelfGroup) {
-      bookshelfGroup.traverse((object) => {
-        if (
-          object.name === "studio-bookshelf-top-plant" ||
-          object.name === "studio-bookshelf-top-plant-pot" ||
-          object.name.startsWith("studio-bookshelf-replaced-book-")
-        ) {
-          hideObject(object, restoredVisibility);
-        }
-      });
-      const bookshelfDetails = createBookshelfDetails();
-      bookshelfGroup.add(bookshelfDetails);
-      addedObjects.push(bookshelfDetails);
     }
 
     // 旧3枚メモを隠し、サイズと角度にばらつきのあるメモへ差し替える。
