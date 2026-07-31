@@ -273,9 +273,7 @@ export function CameraRig({
     const restoredVisibility = new Map<THREE.Object3D, boolean>();
     const addedObjects: THREE.Object3D[] = [];
     const roomGroup = scene.getObjectByName("studio-room");
-    const pendantGroup = scene.getObjectByName("studio-pendant-lamp");
     const windowGroup = scene.getObjectByName("studio-window");
-    const windowPlant = scene.getObjectByName("studio-window-plant");
 
     scene.traverse((object) => {
       const material = getStandardMaterial(object);
@@ -298,9 +296,6 @@ export function CameraRig({
         }
       }
     });
-
-    if (pendantGroup) hideObject(pendantGroup, restoredVisibility);
-    if (windowPlant) hideObject(windowPlant, restoredVisibility);
 
     // room直下へ追加する補助オブジェクト。
     const artwork = createWallArtwork();

@@ -6,7 +6,6 @@ import { DeskChair } from "./DeskChair";
 import { DeskLamp } from "./DeskLamp";
 import { FloorBookStack } from "./FloorBookStack";
 import { LevelStairs } from "./LevelStairs";
-import { PendantLamp } from "./PendantLamp";
 import { Plant } from "./Plant";
 import { Box, SolidBox } from "./ScenePrimitives";
 import { Window } from "./Window";
@@ -168,13 +167,7 @@ export function Room({
       </group>
       <Bookshelf onOpen={onOpenBookshelf} />
       <Corkboard onOpen={onOpenCorkboard} />
-      <PendantLamp />
       <Window onOpen={onOpenWindow} />
-      <Plant
-        name="studio-window-plant"
-        position={[-4.02, 1.92, 0.95]}
-        scale={0.45}
-      />
       <Plant
         position={[-1.42, UPPER_MAT_TOP + 0.36 * 0.78, -2.72]}
         scale={0.78}
