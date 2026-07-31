@@ -3,7 +3,10 @@ import { UPPER_MAT_TOP } from "./scene-levels";
 
 export function PendantLamp() {
   return (
-    <group position={[3.35, UPPER_MAT_TOP + 3.13, -2.82]}>
+    <group
+      name="studio-pendant-lamp"
+      position={[3.35, UPPER_MAT_TOP + 3.13, -2.82]}
+    >
       <mesh position={[0, -0.58, 0]} castShadow>
         <cylinderGeometry args={[0.035, 0.035, 1.16, 10]} />
         <meshStandardMaterial color="#6d6258" roughness={0.86} />

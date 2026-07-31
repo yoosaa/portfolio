@@ -23,7 +23,7 @@ export function Desk({ accent, active, onOpen }: DeskProps) {
     document.body.style.cursor = value ? "pointer" : "default";
   };
   return (
-    <group position={[1.25, 0, 0.45]}>
+    <group name="studio-desk" position={[1.25, 0, 0.45]}>
       <Box
         position={[0, 1.22, 0]}
         scale={[3.42, 0.3, 1.58]}
@@ -31,24 +31,28 @@ export function Desk({ accent, active, onOpen }: DeskProps) {
         radius={0.12}
       />
       <Box
+        name="studio-desk-left-cabinet"
         position={[-1.4, 0.55, 0]}
         scale={[0.25, 1.35, 1.2]}
         color="#4f5f86"
         radius={0.06}
       />
       <Box
+        name="studio-desk-right-cabinet"
         position={[1.34, 0.59, 0]}
         scale={[0.66, 1.16, 1.22]}
         color="#53668f"
         radius={0.08}
       />
       <Box
+        name="studio-desk-drawer-handle-upper"
         position={[1.34, 0.75, 0.62]}
         scale={[0.48, 0.1, 0.05]}
         color="#7e8cb1"
         radius={0.015}
       />
       <Box
+        name="studio-desk-drawer-handle-lower"
         position={[1.34, 0.39, 0.62]}
         scale={[0.48, 0.1, 0.05]}
         color="#7e8cb1"

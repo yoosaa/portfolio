@@ -7,6 +7,7 @@ type CorkboardProps = { onOpen: () => void };
 export function Corkboard({ onOpen }: CorkboardProps) {
   return (
     <group
+      name="studio-corkboard"
       position={[2.15, UPPER_MAT_TOP + 2.1, -3.78]}
       onClick={(event) => {
         event.stopPropagation();
@@ -39,6 +40,7 @@ export function Corkboard({ onOpen }: CorkboardProps) {
           rotationIntensity={0.018}
         >
           <mesh
+            name={`studio-corkboard-old-note-${index}`}
             position={[Number(x), Number(y), 0.17]}
             rotation={[0, 0, Number(rotate)]}
           >

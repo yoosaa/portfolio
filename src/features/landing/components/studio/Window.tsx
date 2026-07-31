@@ -5,6 +5,7 @@ type WindowProps = { onOpen: () => void };
 export function Window({ onOpen }: WindowProps) {
   return (
     <group
+      name="studio-window"
       position={[-4.28, 2.58, 0.42]}
       rotation={[0, Math.PI / 2, 0]}
       onClick={(event) => {

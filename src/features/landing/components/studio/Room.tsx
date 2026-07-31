@@ -43,7 +43,7 @@ export function Room({
   const upperFloorHeight = UPPER_FLOOR_TOP - BASE_TOP;
   const upperFloorY = (BASE_TOP + UPPER_FLOOR_TOP) / 2;
   return (
-    <group>
+    <group name="studio-room">
       <Box
         position={[0, -0.22, -0.35]}
         scale={[8.2, 0.42, 7.15]}
@@ -170,7 +170,11 @@ export function Room({
       <Corkboard onOpen={onOpenCorkboard} />
       <PendantLamp />
       <Window onOpen={onOpenWindow} />
-      <Plant position={[-4.02, 1.92, 0.95]} scale={0.45} />
+      <Plant
+        name="studio-window-plant"
+        position={[-4.02, 1.92, 0.95]}
+        scale={0.45}
+      />
       <Plant
         position={[-1.42, UPPER_MAT_TOP + 0.36 * 0.78, -2.72]}
         scale={0.78}

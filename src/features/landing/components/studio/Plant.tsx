@@ -2,9 +2,13 @@ import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import * as THREE from "three";
 
-type PlantProps = { position: [number, number, number]; scale?: number };
+type PlantProps = {
+  name?: string;
+  position: [number, number, number];
+  scale?: number;
+};
 
-export function Plant({ position, scale = 1 }: PlantProps) {
+export function Plant({ name, position, scale = 1 }: PlantProps) {
   const [active, setActive] = useState(false);
   const leaves = useRef<THREE.Group>(null);
   useFrame((state, delta) => {
@@ -25,6 +29,7 @@ export function Plant({ position, scale = 1 }: PlantProps) {
   });
   return (
     <group
+      name={name}
       position={position}
       scale={scale}
       onClick={(event) => {
