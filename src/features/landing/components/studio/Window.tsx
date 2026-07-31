@@ -34,14 +34,6 @@ export function Window({ onOpen }: WindowProps) {
           <boxGeometry args={[1.52, 0.16, 0.12]} />
           <meshStandardMaterial color="#a77f56" roughness={0.92} />
         </mesh>
-        <mesh castShadow receiveShadow position={[0, 0, 0.2]}>
-          <boxGeometry args={[0.08, 1.12, 0.08]} />
-          <meshStandardMaterial color="#eee5ce" roughness={0.94} />
-        </mesh>
-        <mesh castShadow receiveShadow position={[0, 0, 0.2]}>
-          <boxGeometry args={[1.12, 0.08, 0.08]} />
-          <meshStandardMaterial color="#eee5ce" roughness={0.94} />
-        </mesh>
       </group>
     </group>
   );
