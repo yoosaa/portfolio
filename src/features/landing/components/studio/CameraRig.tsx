@@ -33,70 +33,6 @@ type CameraRigProps = {
   onRoomRestored: () => void;
 };
 
-/**
- * studio配下のコンポーネントで付与したnameを使い、既存オブジェクトを参照する。
- */
-const WINDOW_RECESS_COLORS = new Set(["cdb393", "d4bd9d"]);
-
-function getStandardMaterial(object: THREE.Object3D) {
-  if (!(object instanceof THREE.Mesh)) return null;
-  const material = Array.isArray(object.material)
-    ? object.material[0]
-    : object.material;
-  return material instanceof THREE.MeshStandardMaterial ? material : null;
-}
-
-/**
- * CameraRig内で後付けする小物用の共通Box生成関数。
- * ここで作ったgeometry/materialは、effectのcleanup時に必ずdisposeする。
- */
-function createBoxMesh(
-  scale: [number, number, number],
-  color: string,
-  roughness = 0.93,
-) {
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(...scale),
-    new THREE.MeshStandardMaterial({ color, roughness }),
-  );
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  return mesh;
-}
-
-/**
- * 元のvisible値を保存してから非表示にする。
- * 単純に visible = false だけにすると、HMRや再マウント時に元へ戻せなくなる。
- */
-function hideObject(
-  object: THREE.Object3D,
-  restoredVisibility: Map<THREE.Object3D, boolean>,
-) {
-  if (!restoredVisibility.has(object))
-    restoredVisibility.set(object, object.visible);
-  object.visible = false;
-}
-
-// CameraRigが追加したObject3Dだけを破棄するためのcleanup用ヘルパー。
-function disposeObjectTree(root: THREE.Object3D) {
-  root.traverse((object) => {
-    if (!(object instanceof THREE.Mesh)) return;
-    object.geometry.dispose();
-    const materials = Array.isArray(object.material)
-      ? object.material
-      : [object.material];
-    materials.forEach((material) => material.dispose());
-  });
-}
-
-// 左壁の窓周辺を埋める補助パネル。窓の位置を変えるときはこの座標も要確認。
-function createWindowWallPanel() {
-  const panel = createBoxMesh([0.25, 4.62, 2.42], "#e6d8c2", 0.95);
-  panel.name = "studio-window-wall-panel";
-  panel.position.set(-4.075, 2.29, 0.55);
-  return panel;
-}
-
 // カメラ遷移の進み方。位置や向きではなく、移動の緩急だけを決める。
 function easeDisplayTransition(progress: number) {
   if (progress <= 0 || progress >= 1) return progress <= 0 ? 0 : 1;
@@ -122,7 +58,7 @@ export function CameraRig({
   onWindowReached,
   onRoomRestored,
 }: CameraRigProps) {
-  const { camera, scene } = useThree();
+  const { camera } = useThree();
   const targetCamera = useMemo(() => new THREE.PerspectiveCamera(), []);
   const settledPhase = useRef<StudioPhase | null>(null);
 
@@ -148,53 +84,6 @@ export function CameraRig({
     mediaQuery.addEventListener("change", updatePreference);
     return () => mediaQuery.removeEventListener("change", updatePreference);
   }, []);
-
-  /**
-   * StudioScene.tsxで宣言されたシーンを一度走査し、見た目を補正するeffect。
-   *
-   * 処理の流れ:
-   * 1. 明示的なnameから対象groupを見つける
-   * 2. 元の色やvisibleを保存する
-   * 3. 不要な元オブジェクトを非表示にする
-   * 4. 差し替えパーツを追加する
-   * 5. cleanupで元の状態へ戻し、追加パーツをdisposeする
-   *
-   * 見た目が二重になった・差し替えが消えた場合は、各コンポーネントのnameを確認する。
-   */
-  useEffect(() => {
-    const restoredVisibility = new Map<THREE.Object3D, boolean>();
-    const addedObjects: THREE.Object3D[] = [];
-    const roomGroup = scene.getObjectByName("studio-room");
-
-    scene.traverse((object) => {
-      const material = getStandardMaterial(object);
-      if (material) {
-        const colorHex = material.color.getHexString();
-
-        // 旧窓のくぼみを非表示にする。
-        if (WINDOW_RECESS_COLORS.has(colorHex)) {
-          hideObject(object, restoredVisibility);
-        }
-      }
-    });
-
-    if (roomGroup) {
-      const wallPanel = createWindowWallPanel();
-      roomGroup.add(wallPanel);
-      addedObjects.push(wallPanel);
-    }
-
-    return () => {
-      // Strict Mode、HMR、Canvas再マウント時に元のシーンへ戻せるよう必ず復元する。
-      restoredVisibility.forEach((visible, object) => {
-        object.visible = visible;
-      });
-      addedObjects.forEach((object) => {
-        object.removeFromParent();
-        disposeObjectTree(object);
-      });
-    };
-  }, [scene]);
 
   /**
    * カメラのposition・quaternion・FOVを毎フレーム補間する。
