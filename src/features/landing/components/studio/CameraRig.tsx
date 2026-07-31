@@ -36,7 +36,6 @@ type CameraRigProps = {
 /**
  * studio配下のコンポーネントで付与したnameを使い、既存オブジェクトを参照する。
  */
-const STRAY_ACCENT_COLORS = new Set(["91a18d", "c98672"]);
 const WINDOW_RECESS_COLORS = new Set(["cdb393", "d4bd9d"]);
 
 function getStandardMaterial(object: THREE.Object3D) {
@@ -232,11 +231,8 @@ export function CameraRig({
       if (material) {
         const colorHex = material.color.getHexString();
 
-        // 旧アクセントと旧窓のくぼみを非表示にする。
-        if (
-          STRAY_ACCENT_COLORS.has(colorHex) ||
-          WINDOW_RECESS_COLORS.has(colorHex)
-        ) {
+        // 旧窓のくぼみを非表示にする。
+        if (WINDOW_RECESS_COLORS.has(colorHex)) {
           hideObject(object, restoredVisibility);
         }
       }
