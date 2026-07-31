@@ -8,6 +8,12 @@ type DeskProps = { accent: string; active: boolean; onOpen: () => void };
 export function Desk({ accent, active, onOpen }: DeskProps) {
   const [hovered, setHovered] = useState(false);
   const screenMaterial = useRef<THREE.MeshStandardMaterial>(null);
+  const deskLegPositions: Array<[number, number, number]> = [
+    [-1.4, 0.54, -0.56],
+    [1.34, 0.54, -0.56],
+    [-1.4, 0.54, 0.56],
+    [1.34, 0.54, 0.56],
+  ];
   useFrame((_, delta) => {
     if (screenMaterial.current)
       screenMaterial.current.emissiveIntensity = THREE.MathUtils.damp(
@@ -29,34 +35,6 @@ export function Desk({ accent, active, onOpen }: DeskProps) {
         scale={[3.42, 0.3, 1.58]}
         color="#6176bd"
         radius={0.12}
-      />
-      <Box
-        name="studio-desk-left-cabinet"
-        position={[-1.4, 0.55, 0]}
-        scale={[0.25, 1.35, 1.2]}
-        color="#4f5f86"
-        radius={0.06}
-      />
-      <Box
-        name="studio-desk-right-cabinet"
-        position={[1.34, 0.59, 0]}
-        scale={[0.66, 1.16, 1.22]}
-        color="#53668f"
-        radius={0.08}
-      />
-      <Box
-        name="studio-desk-drawer-handle-upper"
-        position={[1.34, 0.75, 0.62]}
-        scale={[0.48, 0.1, 0.05]}
-        color="#7e8cb1"
-        radius={0.015}
-      />
-      <Box
-        name="studio-desk-drawer-handle-lower"
-        position={[1.34, 0.39, 0.62]}
-        scale={[0.48, 0.1, 0.05]}
-        color="#7e8cb1"
-        radius={0.015}
       />
       <group
         position={[0.15, 2.08, -0.25]}
@@ -150,6 +128,19 @@ export function Desk({ accent, active, onOpen }: DeskProps) {
           <cylinderGeometry args={[0.02, 0.02, 0.54, 10]} />
           <meshStandardMaterial color="#6d7f78" roughness={0.82} />
         </mesh>
+      </group>
+      <group name="studio-light-desk-legs">
+        {deskLegPositions.map((position) => (
+          <mesh
+            key={position.join(",")}
+            position={position}
+            castShadow
+            receiveShadow
+          >
+            <boxGeometry args={[0.16, 1.06, 0.16]} />
+            <meshStandardMaterial color="#4f5f86" roughness={0.93} />
+          </mesh>
+        ))}
       </group>
     </group>
   );
