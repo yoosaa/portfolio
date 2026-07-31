@@ -125,25 +125,6 @@ function createWallArtwork() {
   return artwork;
 }
 
-function createDeskLegs() {
-  const legs = new THREE.Group();
-  legs.name = "studio-light-desk-legs";
-
-  // Desk groupを原点として、天板の四隅に細い脚を置く。
-  const positions: Array<[number, number, number]> = [
-    [-1.4, 0.54, -0.56],
-    [1.34, 0.54, -0.56],
-    [-1.4, 0.54, 0.56],
-    [1.34, 0.54, 0.56],
-  ];
-  positions.forEach((position) => {
-    const leg = createBoxMesh([0.16, 1.06, 0.16], "#4f5f86");
-    leg.position.set(...position);
-    legs.add(leg);
-  });
-  return legs;
-}
-
 function createBookshelfDetails() {
   const details = new THREE.Group();
   details.name = "studio-bookshelf-details";
@@ -409,7 +390,6 @@ export function CameraRig({
     const addedObjects: THREE.Object3D[] = [];
     const roomGroup = scene.getObjectByName("studio-room");
     const pendantGroup = scene.getObjectByName("studio-pendant-lamp");
-    const deskGroup = scene.getObjectByName("studio-desk");
     const bookshelfGroup = scene.getObjectByName("studio-bookshelf");
     const corkboardGroup = scene.getObjectByName("studio-corkboard");
     const windowGroup = scene.getObjectByName("studio-window");
@@ -466,23 +446,6 @@ export function CameraRig({
       const wallPanel = createWindowWallPanel();
       roomGroup?.add(wallPanel);
       addedObjects.push(wallPanel);
-    }
-
-    // 机の箱型収納を隠し、軽い4本脚へ差し替える。モニターは変更しない。
-    if (deskGroup) {
-      deskGroup.traverse((object) => {
-        const isLeftCabinet = object.name === "studio-desk-left-cabinet";
-        const isRightCabinet = object.name === "studio-desk-right-cabinet";
-        const isDrawerHandle = object.name.startsWith(
-          "studio-desk-drawer-handle-",
-        );
-        if (isLeftCabinet || isRightCabinet || isDrawerHandle) {
-          hideObject(object, restoredVisibility);
-        }
-      });
-      const deskLegs = createDeskLegs();
-      deskGroup.add(deskLegs);
-      addedObjects.push(deskLegs);
     }
 
     // 本棚上の植物と一部の本を隠し、収納箱と小さな額へ置き換える。
