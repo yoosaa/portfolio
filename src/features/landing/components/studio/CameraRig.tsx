@@ -104,27 +104,6 @@ function disposeObjectTree(root: THREE.Object3D) {
  *
  * 配置値は親groupのローカル座標。家具全体を動かす場合は、親側の座標も考慮すること。
  */
-function createWallArtwork() {
-  const artwork = new THREE.Group();
-  artwork.name = "studio-wall-artwork";
-  artwork.position.set(-4.22, 2.66, -1.43);
-  artwork.rotation.set(0, Math.PI / 2, 0);
-
-  const frame = createBoxMesh([1.08, 0.88, 0.12], "#a98d6d", 0.92);
-  const canvas = createBoxMesh([0.84, 0.64, 0.07], "#eee2ca", 0.96);
-  canvas.position.z = 0.08;
-  const shape = new THREE.Mesh(
-    new THREE.CircleGeometry(0.18, 20),
-    new THREE.MeshStandardMaterial({ color: "#7f9a83", roughness: 0.95 }),
-  );
-  shape.position.set(-0.16, 0.08, 0.125);
-  const accent = createBoxMesh([0.3, 0.12, 0.025], "#cc8b72", 0.95);
-  accent.position.set(0.17, -0.13, 0.13);
-  accent.rotation.z = -0.18;
-  artwork.add(frame, canvas, shape, accent);
-  return artwork;
-}
-
 /**
  * 元のWindow group配下を非表示にしたあと、同じ親groupへ追加される差し替え窓。
  * 親group自体のposition/rotationはStudioScene.tsx側にある。
@@ -296,11 +275,6 @@ export function CameraRig({
         }
       }
     });
-
-    // room直下へ追加する補助オブジェクト。
-    const artwork = createWallArtwork();
-    roomGroup?.add(artwork);
-    addedObjects.push(artwork);
 
     const upperBackFiller = createUpperBackFiller();
     roomGroup?.add(upperBackFiller);

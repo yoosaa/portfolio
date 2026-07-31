@@ -9,6 +9,7 @@ import { LevelStairs } from "./LevelStairs";
 import { Plant } from "./Plant";
 import { Box, SolidBox } from "./ScenePrimitives";
 import { Window } from "./Window";
+import { WallArtwork } from "./WallArtwork";
 import {
   BASE_TOP,
   LOWER_FLOOR_TOP,
@@ -43,6 +44,7 @@ export function Room({
   const upperFloorY = (BASE_TOP + UPPER_FLOOR_TOP) / 2;
   return (
     <group name="studio-room">
+      <WallArtwork />
       <Box
         position={[0, -0.22, -0.35]}
         scale={[8.2, 0.42, 7.15]}
