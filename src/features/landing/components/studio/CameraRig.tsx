@@ -125,71 +125,6 @@ function createWallArtwork() {
   return artwork;
 }
 
-function createCorkboardDetails() {
-  const details = new THREE.Group();
-  details.name = "studio-corkboard-details";
-
-  // position/sizeはコルクボードgroup内のローカル座標。
-  const notes = [
-    {
-      position: [-0.52, 0.28, 0.2] as const,
-      size: [0.42, 0.58] as const,
-      color: "#eee0c4",
-      rotation: -0.08,
-      pinColor: "#80584b",
-    },
-    {
-      position: [0.02, 0.34, 0.205] as const,
-      size: [0.56, 0.38] as const,
-      color: "#dfe7dc",
-      rotation: 0.05,
-      pinColor: "#718474",
-    },
-    {
-      position: [0.52, 0.12, 0.2] as const,
-      size: [0.38, 0.52] as const,
-      color: "#d8dce6",
-      rotation: 0.09,
-      pinColor: "#775e54",
-    },
-    {
-      position: [-0.25, -0.3, 0.21] as const,
-      size: [0.58, 0.32] as const,
-      color: "#e7cfaa",
-      rotation: -0.04,
-      pinColor: "#806253",
-    },
-    {
-      position: [0.4, -0.34, 0.215] as const,
-      size: [0.3, 0.26] as const,
-      color: "#ece5d2",
-      rotation: 0.08,
-      pinColor: "#6f7f72",
-    },
-  ];
-
-  notes.forEach(({ position, size, color, rotation, pinColor }) => {
-    const note = new THREE.Mesh(
-      new THREE.PlaneGeometry(...size),
-      new THREE.MeshStandardMaterial({ color, roughness: 0.96 }),
-    );
-    note.position.set(position[0], position[1], position[2]);
-    note.rotation.z = rotation;
-    const pin = new THREE.Mesh(
-      new THREE.SphereGeometry(0.035, 10, 8),
-      new THREE.MeshStandardMaterial({ color: pinColor, roughness: 0.9 }),
-    );
-    pin.position.set(
-      position[0],
-      position[1] + size[1] / 2 - 0.045,
-      position[2] + 0.035,
-    );
-    pin.castShadow = true;
-    details.add(note, pin);
-  });
-  return details;
-}
-
 /**
  * 元のWindow group配下を非表示にしたあと、同じ親groupへ追加される差し替え窓。
  * 親group自体のposition/rotationはStudioScene.tsx側にある。
@@ -372,7 +307,6 @@ export function CameraRig({
     const addedObjects: THREE.Object3D[] = [];
     const roomGroup = scene.getObjectByName("studio-room");
     const pendantGroup = scene.getObjectByName("studio-pendant-lamp");
-    const corkboardGroup = scene.getObjectByName("studio-corkboard");
     const windowGroup = scene.getObjectByName("studio-window");
     const windowPlant = scene.getObjectByName("studio-window-plant");
 
@@ -427,18 +361,6 @@ export function CameraRig({
       const wallPanel = createWindowWallPanel();
       roomGroup?.add(wallPanel);
       addedObjects.push(wallPanel);
-    }
-
-    // 旧3枚メモを隠し、サイズと角度にばらつきのあるメモへ差し替える。
-    if (corkboardGroup) {
-      corkboardGroup.traverse((object) => {
-        if (object.name.startsWith("studio-corkboard-old-note-")) {
-          hideObject(object, restoredVisibility);
-        }
-      });
-      const corkboardDetails = createCorkboardDetails();
-      corkboardGroup.add(corkboardDetails);
-      addedObjects.push(corkboardDetails);
     }
 
     return () => {

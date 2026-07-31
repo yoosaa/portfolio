@@ -1,10 +1,47 @@
-import { Float } from "@react-three/drei";
 import { Box } from "./ScenePrimitives";
 import { UPPER_MAT_TOP } from "./scene-levels";
 
 type CorkboardProps = { onOpen: () => void };
 
 export function Corkboard({ onOpen }: CorkboardProps) {
+  const notes = [
+    {
+      position: [-0.52, 0.28, 0.2] as const,
+      size: [0.42, 0.58] as const,
+      color: "#eee0c4",
+      rotation: -0.08,
+      pinColor: "#80584b",
+    },
+    {
+      position: [0.02, 0.34, 0.205] as const,
+      size: [0.56, 0.38] as const,
+      color: "#dfe7dc",
+      rotation: 0.05,
+      pinColor: "#718474",
+    },
+    {
+      position: [0.52, 0.12, 0.2] as const,
+      size: [0.38, 0.52] as const,
+      color: "#d8dce6",
+      rotation: 0.09,
+      pinColor: "#775e54",
+    },
+    {
+      position: [-0.25, -0.3, 0.21] as const,
+      size: [0.58, 0.32] as const,
+      color: "#e7cfaa",
+      rotation: -0.04,
+      pinColor: "#806253",
+    },
+    {
+      position: [0.4, -0.34, 0.215] as const,
+      size: [0.3, 0.26] as const,
+      color: "#ece5d2",
+      rotation: 0.08,
+      pinColor: "#6f7f72",
+    },
+  ];
+
   return (
     <group
       name="studio-corkboard"
@@ -28,27 +65,32 @@ export function Corkboard({ onOpen }: CorkboardProps) {
         color="#d99072"
         radius={0.05}
       />
-      {[
-        [-0.5, 0.2, "#eee0c4", -0.08],
-        [0, -0.18, "#dfe7dc", 0.04],
-        [0.5, 0.18, "#d8dce6", 0.09],
-      ].map(([x, y, color, rotate], index) => (
-        <Float
-          key={index}
-          speed={1 + index * 0.15}
-          floatIntensity={0.025}
-          rotationIntensity={0.018}
-        >
-          <mesh
-            name={`studio-corkboard-old-note-${index}`}
-            position={[Number(x), Number(y), 0.17]}
-            rotation={[0, 0, Number(rotate)]}
-          >
-            <planeGeometry args={[0.48, 0.62]} />
-            <meshStandardMaterial color={String(color)} roughness={0.96} />
-          </mesh>
-        </Float>
-      ))}
+      <group name="studio-corkboard-details">
+        {notes.flatMap(
+          ({ position, size, color, rotation, pinColor }, index) => [
+            <mesh
+              key={`note-${index}`}
+              position={position}
+              rotation={[0, 0, rotation]}
+            >
+              <planeGeometry args={size} />
+              <meshStandardMaterial color={color} roughness={0.96} />
+            </mesh>,
+            <mesh
+              key={`pin-${index}`}
+              position={[
+                position[0],
+                position[1] + size[1] / 2 - 0.045,
+                position[2] + 0.035,
+              ]}
+              castShadow
+            >
+              <sphereGeometry args={[0.035, 10, 8]} />
+              <meshStandardMaterial color={pinColor} roughness={0.9} />
+            </mesh>,
+          ],
+        )}
+      </group>
     </group>
   );
 }
