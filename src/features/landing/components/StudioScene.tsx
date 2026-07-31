@@ -4,7 +4,6 @@ import {
   ContactShadows,
   Float,
   PresentationControls,
-  RoundedBox,
 } from "@react-three/drei";
 import { Canvas, type ThreeEvent, useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
@@ -13,6 +12,8 @@ import { ROOM_CAMERA_POSITION, ROOM_FOV } from "../model/scene-config";
 import type { StudioSceneProps } from "../model/studio-scene";
 import { CameraRig } from "./studio/CameraRig";
 import { CanvasResizeSync } from "./studio/CanvasResizeSync";
+import { LevelStairs } from "./studio/LevelStairs";
+import { Box, SolidBox } from "./studio/ScenePrimitives";
 import {
   BASE_TOP,
   LOWER_FLOOR_TOP,
@@ -21,82 +22,6 @@ import {
   UPPER_FLOOR_TOP,
   UPPER_MAT_TOP,
 } from "./studio/scene-levels";
-
-type BoxProps = {
-  position: [number, number, number];
-  scale: [number, number, number];
-  color: string;
-  rotation?: [number, number, number];
-  radius?: number;
-};
-
-function Box({ position, scale, color, rotation, radius = 0.06 }: BoxProps) {
-  return (
-    <RoundedBox
-      position={position}
-      scale={scale}
-      rotation={rotation}
-      radius={radius}
-      smoothness={4}
-      castShadow
-      receiveShadow
-    >
-      <meshStandardMaterial color={color} roughness={0.93} metalness={0.01} />
-    </RoundedBox>
-  );
-}
-
-function SolidBox({ position, scale, color, rotation }: BoxProps) {
-  return (
-    <mesh
-      position={position}
-      scale={scale}
-      rotation={rotation}
-      castShadow
-      receiveShadow
-    >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={color} roughness={0.93} metalness={0.01} />
-    </mesh>
-  );
-}
-
-function LevelStairs({
-  position,
-  fromY,
-  toY,
-  stepCount,
-  width = 1.18,
-  treadDepth = 0.38,
-}: {
-  position: [number, number, number];
-  fromY: number;
-  toY: number;
-  stepCount: number;
-  width?: number;
-  treadDepth?: number;
-}) {
-  const rise = (toY - fromY) / stepCount;
-  const depthOffset = ((stepCount - 1) * treadDepth) / 2;
-
-  return (
-    <group position={position}>
-      {Array.from({ length: stepCount }, (_, index) => {
-        const stepTop = fromY + rise * (index + 1);
-        const height = stepTop - fromY;
-
-        return (
-          <SolidBox
-            key={index}
-            position={[0, fromY + height / 2, depthOffset - index * treadDepth]}
-            scale={[width, height, treadDepth]}
-            color="#d7c2a2"
-          />
-        );
-      })}
-    </group>
-  );
-}
 
 function DeskChair() {
   const casters: Array<[number, number, number]> = [
