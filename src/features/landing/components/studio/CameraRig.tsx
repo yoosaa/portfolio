@@ -125,89 +125,6 @@ function createWallArtwork() {
   return artwork;
 }
 
-function createBookshelfDetails() {
-  const details = new THREE.Group();
-  details.name = "studio-bookshelf-details";
-  const storageBox = createBoxMesh([0.82, 0.48, 0.52], "#c7aa80", 0.95);
-  storageBox.position.set(0.45, 1.03, 0.02);
-  const storageLabel = createBoxMesh([0.34, 0.12, 0.03], "#eee2ca", 0.96);
-  storageLabel.position.set(0.45, 1.05, 0.3);
-  const frame = createBoxMesh([0.72, 0.54, 0.12], "#a98d6d", 0.93);
-  frame.position.set(0, 1.82, 0.02);
-  const frameCanvas = createBoxMesh([0.52, 0.34, 0.08], "#e8ddc7", 0.96);
-  frameCanvas.position.set(0, 1.82, 0.1);
-  const frameShape = createBoxMesh([0.22, 0.1, 0.025], "#7f9a83", 0.95);
-  frameShape.position.set(-0.08, 1.86, 0.155);
-  frameShape.rotation.z = 0.16;
-  details.add(storageBox, storageLabel, frame, frameCanvas, frameShape);
-  return details;
-}
-
-function createCorkboardDetails() {
-  const details = new THREE.Group();
-  details.name = "studio-corkboard-details";
-
-  // position/sizeはコルクボードgroup内のローカル座標。
-  const notes = [
-    {
-      position: [-0.52, 0.28, 0.2] as const,
-      size: [0.42, 0.58] as const,
-      color: "#eee0c4",
-      rotation: -0.08,
-      pinColor: "#80584b",
-    },
-    {
-      position: [0.02, 0.34, 0.205] as const,
-      size: [0.56, 0.38] as const,
-      color: "#dfe7dc",
-      rotation: 0.05,
-      pinColor: "#718474",
-    },
-    {
-      position: [0.52, 0.12, 0.2] as const,
-      size: [0.38, 0.52] as const,
-      color: "#d8dce6",
-      rotation: 0.09,
-      pinColor: "#775e54",
-    },
-    {
-      position: [-0.25, -0.3, 0.21] as const,
-      size: [0.58, 0.32] as const,
-      color: "#e7cfaa",
-      rotation: -0.04,
-      pinColor: "#806253",
-    },
-    {
-      position: [0.4, -0.34, 0.215] as const,
-      size: [0.3, 0.26] as const,
-      color: "#ece5d2",
-      rotation: 0.08,
-      pinColor: "#6f7f72",
-    },
-  ];
-
-  notes.forEach(({ position, size, color, rotation, pinColor }) => {
-    const note = new THREE.Mesh(
-      new THREE.PlaneGeometry(...size),
-      new THREE.MeshStandardMaterial({ color, roughness: 0.96 }),
-    );
-    note.position.set(position[0], position[1], position[2]);
-    note.rotation.z = rotation;
-    const pin = new THREE.Mesh(
-      new THREE.SphereGeometry(0.035, 10, 8),
-      new THREE.MeshStandardMaterial({ color: pinColor, roughness: 0.9 }),
-    );
-    pin.position.set(
-      position[0],
-      position[1] + size[1] / 2 - 0.045,
-      position[2] + 0.035,
-    );
-    pin.castShadow = true;
-    details.add(note, pin);
-  });
-  return details;
-}
-
 /**
  * 元のWindow group配下を非表示にしたあと、同じ親groupへ追加される差し替え窓。
  * 親group自体のposition/rotationはStudioScene.tsx側にある。
@@ -390,8 +307,6 @@ export function CameraRig({
     const addedObjects: THREE.Object3D[] = [];
     const roomGroup = scene.getObjectByName("studio-room");
     const pendantGroup = scene.getObjectByName("studio-pendant-lamp");
-    const bookshelfGroup = scene.getObjectByName("studio-bookshelf");
-    const corkboardGroup = scene.getObjectByName("studio-corkboard");
     const windowGroup = scene.getObjectByName("studio-window");
     const windowPlant = scene.getObjectByName("studio-window-plant");
 
@@ -446,34 +361,6 @@ export function CameraRig({
       const wallPanel = createWindowWallPanel();
       roomGroup?.add(wallPanel);
       addedObjects.push(wallPanel);
-    }
-
-    // 本棚上の植物と一部の本を隠し、収納箱と小さな額へ置き換える。
-    if (bookshelfGroup) {
-      bookshelfGroup.traverse((object) => {
-        if (
-          object.name === "studio-bookshelf-top-plant" ||
-          object.name === "studio-bookshelf-top-plant-pot" ||
-          object.name.startsWith("studio-bookshelf-replaced-book-")
-        ) {
-          hideObject(object, restoredVisibility);
-        }
-      });
-      const bookshelfDetails = createBookshelfDetails();
-      bookshelfGroup.add(bookshelfDetails);
-      addedObjects.push(bookshelfDetails);
-    }
-
-    // 旧3枚メモを隠し、サイズと角度にばらつきのあるメモへ差し替える。
-    if (corkboardGroup) {
-      corkboardGroup.traverse((object) => {
-        if (object.name.startsWith("studio-corkboard-old-note-")) {
-          hideObject(object, restoredVisibility);
-        }
-      });
-      const corkboardDetails = createCorkboardDetails();
-      corkboardGroup.add(corkboardDetails);
-      addedObjects.push(corkboardDetails);
     }
 
     return () => {
