@@ -98,37 +98,37 @@ export function Room({
       <SolidBox
         position={[-2.55, 2.29, -3.91]}
         scale={[3.2, 4.6, 0.24]}
-        color="#b3bba4"
+        color="#e6d8c2"
       />
       <SolidBox
         position={[0, 2.29, -3.91]}
         scale={[2, 4.6, 0.24]}
-        color="#eadbc4"
+        color="#e6d8c2"
       />
       <SolidBox
         position={[2.55, 2.29, -3.91]}
         scale={[3.2, 4.6, 0.24]}
-        color="#d8a08c"
+        color="#e6d8c2"
       />
       <SolidBox
         position={[-4.09, 2.29, -2.45]}
         scale={[0.24, 4.6, 2.96]}
-        color="#aab59e"
+        color="#e6d8c2"
       />
       <SolidBox
         position={[-4.09, 2.29, -0.79]}
         scale={[0.24, 4.6, 0.38]}
-        color="#dbc29e"
+        color="#e6d8c2"
       />
       <SolidBox
         position={[-4.09, 2.29, 2.44]}
         scale={[0.24, 4.6, 1.52]}
-        color="#dbc29e"
+        color="#e6d8c2"
       />
       <SolidBox
         position={[-4.09, 4.09, 0.55]}
         scale={[0.24, 1, 2.3]}
-        color="#dbc29e"
+        color="#e6d8c2"
       />
       <SolidBox
         position={[-4.36, 2.29, 0.55]}

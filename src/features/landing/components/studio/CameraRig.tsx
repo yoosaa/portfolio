@@ -36,14 +36,6 @@ type CameraRigProps = {
 /**
  * studio配下のコンポーネントで付与したnameを使い、既存オブジェクトを参照する。
  */
-const WALL_SOURCE_COLORS = new Set([
-  "b3bba4",
-  "eadbc4",
-  "d8a08c",
-  "aab59e",
-  "dbc29e",
-]);
-const WALL_COLOR = new THREE.Color("#e6d8c2");
 const STRAY_ACCENT_COLORS = new Set(["91a18d", "c98672"]);
 const WINDOW_RECESS_COLORS = new Set(["cdb393", "d4bd9d"]);
 
@@ -230,7 +222,6 @@ export function CameraRig({
    * 見た目が二重になった・差し替えが消えた場合は、各コンポーネントのnameを確認する。
    */
   useEffect(() => {
-    const restoredColors = new Map<THREE.MeshStandardMaterial, THREE.Color>();
     const restoredVisibility = new Map<THREE.Object3D, boolean>();
     const addedObjects: THREE.Object3D[] = [];
     const roomGroup = scene.getObjectByName("studio-room");
@@ -240,13 +231,6 @@ export function CameraRig({
       const material = getStandardMaterial(object);
       if (material) {
         const colorHex = material.color.getHexString();
-
-        // 複数色で作られていた壁を、現在のクリーム色へ統一する。
-        if (WALL_SOURCE_COLORS.has(colorHex)) {
-          restoredColors.set(material, material.color.clone());
-          material.color.copy(WALL_COLOR);
-          material.needsUpdate = true;
-        }
 
         // 旧アクセントと旧窓のくぼみを非表示にする。
         if (
@@ -274,10 +258,6 @@ export function CameraRig({
 
     return () => {
       // Strict Mode、HMR、Canvas再マウント時に元のシーンへ戻せるよう必ず復元する。
-      restoredColors.forEach((color, material) => {
-        material.color.copy(color);
-        material.needsUpdate = true;
-      });
       restoredVisibility.forEach((visible, object) => {
         object.visible = visible;
       });
