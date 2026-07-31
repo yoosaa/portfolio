@@ -89,64 +89,6 @@ function disposeObjectTree(root: THREE.Object3D) {
   });
 }
 
-/**
- * 以下の createXxx 関数は StudioScene.tsx の既存モデルを直接書き換えず、
- * CameraRigのeffect内で追加する「見た目の差し替えパーツ」を生成する。
- *
- * 配置値は親groupのローカル座標。家具全体を動かす場合は、親側の座標も考慮すること。
- */
-/**
- * 元のWindow group配下を非表示にしたあと、同じ親groupへ追加される差し替え窓。
- * 親group自体のposition/rotationはStudioScene.tsx側にある。
- * 窓全体を移動したい場合は、ここではなく親groupとscene-config.tsを確認する。
- */
-function createSquareWindow() {
-  const window = new THREE.Group();
-  window.name = "studio-square-window";
-  window.position.set(0, 0, 0.22);
-
-  const glass = createBoxMesh([1.12, 1.12, 0.07], "#d7e0d6", 0.78);
-  glass.position.z = 0.08;
-
-  const frameColor = "#a77f56";
-  const frameDepth = 0.12;
-  const frameZ = 0.17;
-  const frameThickness = 0.16;
-  const frameSize = 1.52;
-  const left = createBoxMesh(
-    [frameThickness, frameSize, frameDepth],
-    frameColor,
-    0.92,
-  );
-  left.position.set(-0.68, 0, frameZ);
-  const right = createBoxMesh(
-    [frameThickness, frameSize, frameDepth],
-    frameColor,
-    0.92,
-  );
-  right.position.set(0.68, 0, frameZ);
-  const top = createBoxMesh(
-    [frameSize, frameThickness, frameDepth],
-    frameColor,
-    0.92,
-  );
-  top.position.set(0, 0.68, frameZ);
-  const bottom = createBoxMesh(
-    [frameSize, frameThickness, frameDepth],
-    frameColor,
-    0.92,
-  );
-  bottom.position.set(0, -0.68, frameZ);
-
-  const verticalBar = createBoxMesh([0.08, 1.12, 0.08], "#eee5ce", 0.94);
-  verticalBar.position.z = 0.2;
-  const horizontalBar = createBoxMesh([1.12, 0.08, 0.08], "#eee5ce", 0.94);
-  horizontalBar.position.z = 0.2;
-
-  window.add(glass, left, right, top, bottom, verticalBar, horizontalBar);
-  return window;
-}
-
 // 左壁の窓周辺を埋める補助パネル。窓の位置を変えるときはこの座標も要確認。
 function createWindowWallPanel() {
   const panel = createBoxMesh([0.25, 4.62, 2.42], "#e6d8c2", 0.95);
@@ -155,7 +97,6 @@ function createWindowWallPanel() {
   return panel;
 }
 
-// 上段床の奥に見える隙間を塞ぐための補助形状。
 // カメラ遷移の進み方。位置や向きではなく、移動の緩急だけを決める。
 function easeDisplayTransition(progress: number) {
   if (progress <= 0 || progress >= 1) return progress <= 0 ? 0 : 1;
@@ -224,7 +165,6 @@ export function CameraRig({
     const restoredVisibility = new Map<THREE.Object3D, boolean>();
     const addedObjects: THREE.Object3D[] = [];
     const roomGroup = scene.getObjectByName("studio-room");
-    const windowGroup = scene.getObjectByName("studio-window");
 
     scene.traverse((object) => {
       const material = getStandardMaterial(object);
@@ -238,17 +178,9 @@ export function CameraRig({
       }
     });
 
-    // Windowのクリック可能な親groupは残し、見た目のmeshだけを差し替える。
-    if (windowGroup) {
-      windowGroup.traverse((object) => {
-        if (object instanceof THREE.Mesh)
-          hideObject(object, restoredVisibility);
-      });
-      const squareWindow = createSquareWindow();
-      windowGroup.add(squareWindow);
-      addedObjects.push(squareWindow);
+    if (roomGroup) {
       const wallPanel = createWindowWallPanel();
-      roomGroup?.add(wallPanel);
+      roomGroup.add(wallPanel);
       addedObjects.push(wallPanel);
     }
 
