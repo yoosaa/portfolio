@@ -9,6 +9,7 @@ import { LevelStairs } from "./LevelStairs";
 import { Plant } from "./Plant";
 import { Box, SolidBox } from "./ScenePrimitives";
 import { Window } from "./Window";
+import { WindowWallPanel } from "./WindowWallPanel";
 import { WallArtwork } from "./WallArtwork";
 import { UpperBackFiller } from "./UpperBackFiller";
 import {
@@ -47,6 +48,7 @@ export function Room({
     <group name="studio-room">
       <WallArtwork />
       <UpperBackFiller />
+      <WindowWallPanel />
       <Box
         position={[0, -0.22, -0.35]}
         scale={[8.2, 0.42, 7.15]}
@@ -129,26 +131,6 @@ export function Room({
         position={[-4.09, 4.09, 0.55]}
         scale={[0.24, 1, 2.3]}
         color="#e6d8c2"
-      />
-      <SolidBox
-        position={[-4.36, 2.29, 0.55]}
-        scale={[0.3, 4.6, 2.3]}
-        color="#d4bd9d"
-      />
-      <SolidBox
-        position={[-4.225, 1.84, -0.6]}
-        scale={[0.27, 3.7, 0.14]}
-        color="#cdb393"
-      />
-      <SolidBox
-        position={[-4.225, 1.84, 1.7]}
-        scale={[0.27, 3.7, 0.14]}
-        color="#cdb393"
-      />
-      <SolidBox
-        position={[-4.225, 3.65, 0.55]}
-        scale={[0.27, 0.14, 2.3]}
-        color="#cdb393"
       />
       <group position={[-2.35, LOWER_MAT_TOP, 0.1]}>
         <Desk
