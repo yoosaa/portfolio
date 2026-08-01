@@ -72,6 +72,7 @@ export function StudioEditor() {
   const [camera, setCamera] = useState<StudioCameraConfig>(() => structuredClone(roomCamera));
   const [selected, setSelected] = useState<ObjectKey>("bookshelf");
   const [message, setMessage] = useState("");
+  const [isApplying, setIsApplying] = useState(false);
   const output = useMemo(() => JSON.stringify({ layout, camera }, null, 2), [layout, camera]);
 
   const updateTransform = (key: TransformKey, value: StudioVector3) => {
@@ -79,6 +80,30 @@ export function StudioEditor() {
       ...current,
       [selected]: { ...current[selected], [key]: value },
     }));
+  };
+
+  const applyToWorktree = async () => {
+    setIsApplying(true);
+    setMessage("対象worktreeへ反映中です…");
+
+    try {
+      const response = await fetch("/api/dev/studio/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: output,
+      });
+      const result = (await response.json()) as { message?: string };
+
+      if (!response.ok) {
+        throw new Error(result.message ?? "反映に失敗しました");
+      }
+
+      setMessage("対象worktreeの設定ファイルへ反映しました");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "反映に失敗しました");
+    } finally {
+      setIsApplying(false);
+    }
   };
 
   return (
@@ -131,6 +156,9 @@ export function StudioEditor() {
         </label>
 
         <div style={{ display: "grid", gap: 8 }}>
+          <button type="button" onClick={applyToWorktree} disabled={isApplying} style={{ padding: 10, fontWeight: 700 }}>
+            {isApplying ? "反映中…" : "対象worktreeへ反映"}
+          </button>
           <button type="button" onClick={async () => { await navigator.clipboard.writeText(output); setMessage("JSONをコピーしました"); }} style={{ padding: 10 }}>JSONをコピー</button>
           <button type="button" onClick={() => { setLayout(structuredClone(studioLayout)); setCamera(structuredClone(roomCamera)); setMessage("初期値へ戻しました"); }} style={{ padding: 10 }}>初期値へ戻す</button>
         </div>
