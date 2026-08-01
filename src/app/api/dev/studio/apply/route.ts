@@ -1,0 +1,146 @@
+import { execFile } from "node:child_process";
+import { access, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { promisify } from "node:util";
+import { NextResponse } from "next/server";
+import type { StudioCameraConfig } from "../../../../../features/landing/model/studio-camera";
+import type { StudioLayout } from "../../../../../features/landing/model/studio-layout";
+
+const execFileAsync = promisify(execFile);
+
+const TARGET_FILES = {
+  layout: "src/features/landing/model/studio-layout.ts",
+  camera: "src/features/landing/model/studio-camera.ts",
+} as const;
+
+type ApplyPayload = {
+  layout: StudioLayout;
+  camera: StudioCameraConfig;
+};
+
+function isVector3(value: unknown): value is [number, number, number] {
+  return (
+    Array.isArray(value) &&
+    value.length === 3 &&
+    value.every((item) => typeof item === "number" && Number.isFinite(item))
+  );
+}
+
+function isTransform(value: unknown): boolean {
+  if (!value || typeof value !== "object") return false;
+  const transform = value as Record<string, unknown>;
+
+  return (
+    isVector3(transform.position) &&
+    isVector3(transform.rotation) &&
+    isVector3(transform.scale)
+  );
+}
+
+function isPayload(value: unknown): value is ApplyPayload {
+  if (!value || typeof value !== "object") return false;
+
+  const payload = value as Record<string, unknown>;
+  const layout = payload.layout as Record<string, unknown> | undefined;
+  const camera = payload.camera as Record<string, unknown> | undefined;
+
+  return Boolean(
+    layout &&
+      isTransform(layout.bookshelf) &&
+      isTransform(layout.deskArea) &&
+      camera &&
+      isVector3(camera.position) &&
+      isVector3(camera.target) &&
+      typeof camera.fov === "number" &&
+      Number.isFinite(camera.fov),
+  );
+}
+
+function createLayoutSource(layout: StudioLayout): string {
+  return `import { LOWER_MAT_TOP, UPPER_MAT_TOP } from "../components/studio/scene-levels";\n\nexport type StudioVector3 = [number, number, number];\n\nexport type StudioTransform = {\n  position: StudioVector3;\n  rotation: StudioVector3;\n  scale: StudioVector3;\n};\n\nexport type StudioLayout = {\n  bookshelf: StudioTransform;\n  deskArea: StudioTransform;\n};\n\nexport const studioLayout = ${JSON.stringify(layout, null, 2)} satisfies StudioLayout;\n`;
+}
+
+function createCameraSource(camera: StudioCameraConfig): string {
+  return `export type StudioCameraConfig = {\n  position: [number, number, number];\n  target: [number, number, number];\n  fov: number;\n};\n\nexport const roomCamera = ${JSON.stringify(camera, null, 2)} satisfies StudioCameraConfig;\n`;
+}
+
+export async function POST(request: Request) {
+  const host = request.headers.get("host") ?? "";
+  const isLocalhost = host.startsWith("localhost:") || host.startsWith("127.0.0.1:");
+
+  if (process.env.NODE_ENV !== "development" || !isLocalhost) {
+    return NextResponse.json({ message: "Not found" }, { status: 404 });
+  }
+
+  const targetWorktree = process.env.STUDIO_TARGET_WORKTREE;
+  const expectedBranch = process.env.STUDIO_TARGET_BRANCH ?? "dev";
+
+  if (!targetWorktree) {
+    return NextResponse.json(
+      { message: "STUDIO_TARGET_WORKTREE が設定されていません" },
+      { status: 500 },
+    );
+  }
+
+  const payload: unknown = await request.json();
+  if (!isPayload(payload)) {
+    return NextResponse.json({ message: "編集データの形式が不正です" }, { status: 400 });
+  }
+
+  try {
+    const { stdout: branchOutput } = await execFileAsync("git", [
+      "-C",
+      targetWorktree,
+      "branch",
+      "--show-current",
+    ]);
+    const currentBranch = branchOutput.trim();
+
+    if (currentBranch !== expectedBranch) {
+      return NextResponse.json(
+        {
+          message: `対象worktreeは ${currentBranch} ブランチです。${expectedBranch} に切り替えてください`,
+        },
+        { status: 409 },
+      );
+    }
+
+    const targetPaths = Object.values(TARGET_FILES).map((file) =>
+      path.join(targetWorktree, file),
+    );
+    await Promise.all(targetPaths.map((targetPath) => access(targetPath)));
+
+    const { stdout: statusOutput } = await execFileAsync("git", [
+      "-C",
+      targetWorktree,
+      "status",
+      "--porcelain",
+      "--",
+      ...Object.values(TARGET_FILES),
+    ]);
+
+    if (statusOutput.trim()) {
+      return NextResponse.json(
+        { message: "対象の設定ファイルに未コミット差分があるため、上書きを中止しました" },
+        { status: 409 },
+      );
+    }
+
+    await Promise.all([
+      writeFile(targetPaths[0], createLayoutSource(payload.layout), "utf8"),
+      writeFile(targetPaths[1], createCameraSource(payload.camera), "utf8"),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      files: Object.values(TARGET_FILES),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+
+    return NextResponse.json(
+      { message: `対象worktreeへの反映に失敗しました: ${message}` },
+      { status: 500 },
+    );
+  }
+}
