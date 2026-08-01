@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { roomCamera } from "./studio-camera";
 
 /**
  * 3Dシーンのカメラ設定。
@@ -15,9 +16,9 @@ import * as THREE from "three";
 
 // 部屋全体を見せる初期カメラ。
 // xを増やすと画面右側から、yを増やすとより上から、zを増やすと遠くから見る。
-export const ROOM_CAMERA_POSITION = new THREE.Vector3(8.8, 6.6, 11.4);
+export const ROOM_CAMERA_POSITION = new THREE.Vector3(...roomCamera.position);
 // 初期表示で画面中央に置きたい地点。部屋全体の構図調整ではここも一緒に触る。
-export const ROOM_LOOK_AT = new THREE.Vector3(0, 1.55, 0);
+export const ROOM_LOOK_AT = new THREE.Vector3(...roomCamera.target);
 
 // PCディスプレイへ寄ったときのカメラ。
 // StudioScene.tsxのDesk内にあるモニターを移動した場合は、POSITIONとLOOK_ATを両方見直す。
@@ -39,7 +40,7 @@ export const WINDOW_CAMERA_POSITION = new THREE.Vector3(-2.35, 2.52, 0.42);
 export const WINDOW_LOOK_AT = new THREE.Vector3(-4.22, 2.52, 0.42);
 
 // 初期表示は少し望遠寄りにして、アイソメトリック風の歪みを抑えている。
-export const ROOM_FOV = 36;
+export const ROOM_FOV = roomCamera.fov;
 // 個別表示は対象を見やすくするため初期表示より広角。
 export const DISPLAY_FOV = 48;
 export const BOOKSHELF_FOV = 48;
