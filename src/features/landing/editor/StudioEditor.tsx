@@ -16,6 +16,11 @@ const noop = () => undefined;
 type ObjectKey = keyof StudioLayout;
 type TransformKey = "position" | "rotation" | "scale";
 
+type DirtyState = {
+  layout: boolean;
+  camera: boolean;
+};
+
 function CameraSync({ config }: { config: StudioCameraConfig }) {
   const { camera } = useThree();
 
@@ -73,16 +78,32 @@ export function StudioEditor() {
   const [selected, setSelected] = useState<ObjectKey>("bookshelf");
   const [message, setMessage] = useState("");
   const [isApplying, setIsApplying] = useState(false);
-  const output = useMemo(() => JSON.stringify({ layout, camera }, null, 2), [layout, camera]);
+  const [dirty, setDirty] = useState<DirtyState>({ layout: false, camera: false });
+
+  const output = useMemo(
+    () => JSON.stringify({ layout, camera, changed: dirty }, null, 2),
+    [layout, camera, dirty],
+  );
 
   const updateTransform = (key: TransformKey, value: StudioVector3) => {
     setLayout((current) => ({
       ...current,
       [selected]: { ...current[selected], [key]: value },
     }));
+    setDirty((current) => ({ ...current, layout: true }));
+  };
+
+  const updateCamera = (next: Partial<StudioCameraConfig>) => {
+    setCamera((current) => ({ ...current, ...next }));
+    setDirty((current) => ({ ...current, camera: true }));
   };
 
   const applyToWorktree = async () => {
+    if (!dirty.layout && !dirty.camera) {
+      setMessage("変更された設定はありません");
+      return;
+    }
+
     setIsApplying(true);
     setMessage("対象worktreeへ反映中です…");
 
@@ -92,13 +113,14 @@ export function StudioEditor() {
         headers: { "Content-Type": "application/json" },
         body: output,
       });
-      const result = (await response.json()) as { message?: string };
+      const result = (await response.json()) as { message?: string; files?: string[] };
 
       if (!response.ok) {
         throw new Error(result.message ?? "反映に失敗しました");
       }
 
-      setMessage("対象worktreeの設定ファイルへ反映しました");
+      setDirty({ layout: false, camera: false });
+      setMessage(`反映しました: ${(result.files ?? []).join(", ")}`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "反映に失敗しました");
     } finally {
@@ -134,6 +156,9 @@ export function StudioEditor() {
         <header>
           <h1 style={{ margin: 0, fontSize: 22 }}>Studio Editor</h1>
           <p style={{ margin: "6px 0 0", fontSize: 13 }}>数値を変更するとリアルタイムで反映されます。</p>
+          <p style={{ margin: "6px 0 0", fontSize: 12 }}>
+            未保存: {[dirty.layout && "layout", dirty.camera && "camera"].filter(Boolean).join(", ") || "なし"}
+          </p>
         </header>
 
         <label style={{ display: "grid", gap: 6, fontWeight: 700 }}>
@@ -147,20 +172,20 @@ export function StudioEditor() {
         <VectorEditor label="Position" value={layout[selected].position} step={0.01} onChange={(value) => updateTransform("position", value)} />
         <VectorEditor label="Rotation" value={layout[selected].rotation} step={0.01} onChange={(value) => updateTransform("rotation", value)} />
         <VectorEditor label="Scale" value={layout[selected].scale} step={0.01} onChange={(value) => updateTransform("scale", value)} />
-        <VectorEditor label="Camera position" value={camera.position} step={0.05} onChange={(position) => setCamera((current) => ({ ...current, position }))} />
-        <VectorEditor label="Camera target" value={camera.target} step={0.05} onChange={(target) => setCamera((current) => ({ ...current, target }))} />
+        <VectorEditor label="Camera position" value={camera.position} step={0.05} onChange={(position) => updateCamera({ position })} />
+        <VectorEditor label="Camera target" value={camera.target} step={0.05} onChange={(target) => updateCamera({ target })} />
 
         <label style={{ display: "grid", gap: 4, fontWeight: 700 }}>
           FOV
-          <input type="number" value={camera.fov} step={1} onChange={(event) => setCamera((current) => ({ ...current, fov: Number(event.target.value) }))} style={{ padding: 7 }} />
+          <input type="number" value={camera.fov} step={1} onChange={(event) => updateCamera({ fov: Number(event.target.value) })} style={{ padding: 7 }} />
         </label>
 
         <div style={{ display: "grid", gap: 8 }}>
-          <button type="button" onClick={applyToWorktree} disabled={isApplying} style={{ padding: 10, fontWeight: 700 }}>
+          <button type="button" onClick={applyToWorktree} disabled={isApplying || (!dirty.layout && !dirty.camera)} style={{ padding: 10, fontWeight: 700 }}>
             {isApplying ? "反映中…" : "対象worktreeへ反映"}
           </button>
           <button type="button" onClick={async () => { await navigator.clipboard.writeText(output); setMessage("JSONをコピーしました"); }} style={{ padding: 10 }}>JSONをコピー</button>
-          <button type="button" onClick={() => { setLayout(structuredClone(studioLayout)); setCamera(structuredClone(roomCamera)); setMessage("初期値へ戻しました"); }} style={{ padding: 10 }}>初期値へ戻す</button>
+          <button type="button" onClick={() => { setLayout(structuredClone(studioLayout)); setCamera(structuredClone(roomCamera)); setDirty({ layout: false, camera: false }); setMessage("初期値へ戻しました"); }} style={{ padding: 10 }}>初期値へ戻す</button>
         </div>
 
         {message ? <p role="status" style={{ margin: 0, fontSize: 13 }}>{message}</p> : null}
