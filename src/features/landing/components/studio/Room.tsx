@@ -1,4 +1,4 @@
-import { studioLayout } from "../../model/studio-layout";
+import { studioLayout, type StudioLayout } from "../../model/studio-layout";
 import type { StudioSceneProps } from "../../model/studio-scene";
 import { Bookshelf } from "./Bookshelf";
 import { Corkboard } from "./Corkboard";
@@ -21,7 +21,9 @@ type RoomProps = Pick<
   | "onOpenBookshelf"
   | "onOpenCorkboard"
   | "onOpenWindow"
->;
+> & {
+  layout?: StudioLayout;
+};
 
 export function Room({
   phase,
@@ -31,6 +33,7 @@ export function Room({
   onOpenBookshelf,
   onOpenCorkboard,
   onOpenWindow,
+  layout = studioLayout,
 }: RoomProps) {
   void projectIndex;
 
@@ -39,30 +42,20 @@ export function Room({
       <WallArtwork />
       <RoomStructure />
       <group
-        position={studioLayout.deskArea.position}
-        rotation={studioLayout.deskArea.rotation}
-        scale={studioLayout.deskArea.scale}
+        position={layout.deskArea.position}
+        rotation={layout.deskArea.rotation}
+        scale={layout.deskArea.scale}
       >
-        <Desk
-          accent={accent}
-          active={phase === "projects"}
-          onOpen={onOpenProjects}
-        />
+        <Desk accent={accent} active={phase === "projects"} onOpen={onOpenProjects} />
         <DeskChair />
         <DeskLamp />
       </group>
-      <Bookshelf onOpen={onOpenBookshelf} />
+      <Bookshelf transform={layout.bookshelf} onOpen={onOpenBookshelf} />
       <Corkboard onOpen={onOpenCorkboard} />
       <Window onOpen={onOpenWindow} />
-      <Plant
-        position={[-1.42, UPPER_MAT_TOP + 0.36 * 0.78, -2.72]}
-        scale={0.78}
-      />
+      <Plant position={[-1.42, UPPER_MAT_TOP + 0.36 * 0.78, -2.72]} scale={0.78} />
       <FloorBookStack />
-      <Plant
-        position={[3.22, LOWER_MAT_TOP + 0.36 * 0.68, 2.62]}
-        scale={0.68}
-      />
+      <Plant position={[3.22, LOWER_MAT_TOP + 0.36 * 0.68, 2.62]} scale={0.68} />
       <pointLight
         position={[0.4, 4.7, 3.2]}
         color="#f4dfb7"
