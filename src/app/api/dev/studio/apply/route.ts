@@ -17,16 +17,10 @@ const TARGET_FILES = {
 type ApplyPayload = {
   layout: StudioLayout;
   camera: StudioCameraConfig;
-};
-
-type TargetKey = keyof typeof TARGET_FILES;
-
-type TargetFile = {
-  key: TargetKey;
-  relativePath: (typeof TARGET_FILES)[TargetKey];
-  absolutePath: string;
-  currentSource: string;
-  nextSource: string;
+  changed: {
+    layout: boolean;
+    camera: boolean;
+  };
 };
 
 function isVector3(value: unknown): value is [number, number, number] {
@@ -54,6 +48,7 @@ function isPayload(value: unknown): value is ApplyPayload {
   const payload = value as Record<string, unknown>;
   const layout = payload.layout as Record<string, unknown> | undefined;
   const camera = payload.camera as Record<string, unknown> | undefined;
+  const changed = payload.changed as Record<string, unknown> | undefined;
 
   return Boolean(
     layout &&
@@ -63,7 +58,11 @@ function isPayload(value: unknown): value is ApplyPayload {
       isVector3(camera.position) &&
       isVector3(camera.target) &&
       typeof camera.fov === "number" &&
-      Number.isFinite(camera.fov),
+      Number.isFinite(camera.fov) &&
+      changed &&
+      typeof changed.layout === "boolean" &&
+      typeof changed.camera === "boolean" &&
+      (changed.layout || changed.camera),
   );
 }
 
@@ -73,22 +72,6 @@ function createLayoutSource(layout: StudioLayout): string {
 
 function createCameraSource(camera: StudioCameraConfig): string {
   return `${GENERATED_MARKER}\nexport type StudioCameraConfig = {\n  position: [number, number, number];\n  target: [number, number, number];\n  fov: number;\n};\n\nexport const roomCamera = ${JSON.stringify(camera, null, 2)} satisfies StudioCameraConfig;\n`;
-}
-
-async function hasUncommittedChanges(
-  targetWorktree: string,
-  relativePath: string,
-): Promise<boolean> {
-  const { stdout } = await execFileAsync("git", [
-    "-C",
-    targetWorktree,
-    "status",
-    "--porcelain",
-    "--",
-    relativePath,
-  ]);
-
-  return Boolean(stdout.trim());
 }
 
 export async function POST(request: Request) {
@@ -132,56 +115,69 @@ export async function POST(request: Request) {
       );
     }
 
-    const nextSources: Record<TargetKey, string> = {
-      layout: createLayoutSource(payload.layout),
-      camera: createCameraSource(payload.camera),
-    };
-
-    const targetFiles = await Promise.all(
-      (Object.keys(TARGET_FILES) as TargetKey[]).map(async (key): Promise<TargetFile> => {
-        const relativePath = TARGET_FILES[key];
-        const absolutePath = path.join(targetWorktree, relativePath);
-        await access(absolutePath);
-
-        return {
-          key,
-          relativePath,
-          absolutePath,
-          currentSource: await readFile(absolutePath, "utf8"),
-          nextSource: nextSources[key],
-        };
-      }),
+    const requestedKeys = (Object.keys(TARGET_FILES) as Array<keyof typeof TARGET_FILES>).filter(
+      (key) => payload.changed[key],
     );
+    const requestedFiles = requestedKeys.map((key) => TARGET_FILES[key]);
+    const requestedPaths = requestedFiles.map((file) => path.join(targetWorktree, file));
 
-    const changedFiles = targetFiles.filter(
-      ({ currentSource, nextSource }) => currentSource !== nextSource,
-    );
+    await Promise.all(requestedPaths.map((targetPath) => access(targetPath)));
 
-    for (const file of changedFiles) {
-      const isDirty = await hasUncommittedChanges(targetWorktree, file.relativePath);
-      const editorGenerated = file.currentSource.startsWith(GENERATED_MARKER);
+    const { stdout: statusOutput } = await execFileAsync("git", [
+      "-C",
+      targetWorktree,
+      "status",
+      "--porcelain",
+      "--",
+      ...requestedFiles,
+    ]);
 
-      if (isDirty && !editorGenerated) {
+    if (statusOutput.trim()) {
+      const currentSources = await Promise.all(
+        requestedPaths.map((targetPath) => readFile(targetPath, "utf8")),
+      );
+      const editorGenerated = currentSources.every((source) =>
+        source.startsWith(GENERATED_MARKER),
+      );
+
+      if (!editorGenerated) {
         return NextResponse.json(
           {
-            message: `${file.relativePath} に手動の未コミット差分があるため、上書きを中止しました`,
+            message:
+              "対象の設定ファイルに手動の未コミット差分があるため、上書きを中止しました",
           },
           { status: 409 },
         );
       }
     }
 
-    await Promise.all(
-      changedFiles.map((file) => writeFile(file.absolutePath, file.nextSource, "utf8")),
-    );
+    const writes: Promise<void>[] = [];
+
+    if (payload.changed.layout) {
+      writes.push(
+        writeFile(
+          path.join(targetWorktree, TARGET_FILES.layout),
+          createLayoutSource(payload.layout),
+          "utf8",
+        ),
+      );
+    }
+
+    if (payload.changed.camera) {
+      writes.push(
+        writeFile(
+          path.join(targetWorktree, TARGET_FILES.camera),
+          createCameraSource(payload.camera),
+          "utf8",
+        ),
+      );
+    }
+
+    await Promise.all(writes);
 
     return NextResponse.json({
       success: true,
-      files: changedFiles.map((file) => file.relativePath),
-      message:
-        changedFiles.length > 0
-          ? `${changedFiles.length}件の設定ファイルを更新しました`
-          : "設定値に変更はありません",
+      files: requestedFiles,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
