@@ -1,3 +1,4 @@
+import { studioLayout, type StudioLayout } from "../../model/studio-layout";
 import type { StudioSceneProps } from "../../model/studio-scene";
 import { Bookshelf } from "./Bookshelf";
 import { Corkboard } from "./Corkboard";
@@ -20,7 +21,9 @@ type RoomProps = Pick<
   | "onOpenBookshelf"
   | "onOpenCorkboard"
   | "onOpenWindow"
->;
+> & {
+  layout?: StudioLayout;
+};
 
 export function Room({
   phase,
@@ -30,13 +33,19 @@ export function Room({
   onOpenBookshelf,
   onOpenCorkboard,
   onOpenWindow,
+  layout = studioLayout,
 }: RoomProps) {
   void projectIndex;
+
   return (
     <group name="studio-room">
       <WallArtwork />
       <RoomStructure />
-      <group position={[-2.35, LOWER_MAT_TOP, 0.1]}>
+      <group
+        position={layout.deskArea.position}
+        rotation={layout.deskArea.rotation}
+        scale={layout.deskArea.scale}
+      >
         <Desk
           accent={accent}
           active={phase === "projects"}
@@ -45,7 +54,7 @@ export function Room({
         <DeskChair />
         <DeskLamp />
       </group>
-      <Bookshelf onOpen={onOpenBookshelf} />
+      <Bookshelf transform={layout.bookshelf} onOpen={onOpenBookshelf} />
       <Corkboard onOpen={onOpenCorkboard} />
       <Window onOpen={onOpenWindow} />
       <Plant
