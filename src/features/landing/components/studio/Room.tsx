@@ -1,3 +1,4 @@
+import { studioLayout } from "../../model/studio-layout";
 import type { StudioSceneProps } from "../../model/studio-scene";
 import { Bookshelf } from "./Bookshelf";
 import { Corkboard } from "./Corkboard";
@@ -32,11 +33,17 @@ export function Room({
   onOpenWindow,
 }: RoomProps) {
   void projectIndex;
+  const deskTransform = studioLayout.deskArea;
+
   return (
     <group name="studio-room">
       <WallArtwork />
       <RoomStructure />
-      <group position={[-2.35, LOWER_MAT_TOP, 0.1]}>
+      <group
+        position={deskTransform.position}
+        rotation={deskTransform.rotation}
+        scale={deskTransform.scale}
+      >
         <Desk
           accent={accent}
           active={phase === "projects"}
