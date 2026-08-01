@@ -1,15 +1,18 @@
+import { studioLayout } from "../../model/studio-layout";
 import { Box } from "./ScenePrimitives";
-import { UPPER_MAT_TOP } from "./scene-levels";
 
 type BookshelfProps = { onOpen: () => void };
 
 export function Bookshelf({ onOpen }: BookshelfProps) {
   const bookColors = ["#c78976", "#d3b56f", "#89a28a", "#91a5b7", "#dac79b"];
   const shelfLevels = [0.72, 1.48, 2.24];
+
   return (
     <group
       name="studio-bookshelf"
-      position={[-2.9, UPPER_MAT_TOP - 0.07, -3.18]}
+      position={studioLayout.bookshelf.position}
+      rotation={studioLayout.bookshelf.rotation}
+      scale={studioLayout.bookshelf.scale}
       onClick={(event) => {
         event.stopPropagation();
         onOpen();
