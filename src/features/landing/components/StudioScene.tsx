@@ -116,6 +116,7 @@ export function StudioScene({
           <CanvasResizeSync viewRef={viewRef} />
           <CameraRig
             phase={cameraPhase}
+            isMobile={isMobile}
             onDisplayReached={onDisplayReached}
             onBookshelfReached={onBookshelfReached}
             onCorkboardReached={onCorkboardReached}
