@@ -169,6 +169,7 @@ export function StudioEditor() {
             <option value="upperFloorLeft">Upper floor left</option>
             <option value="upperFloorRight">Upper floor right</option>
             <option value="stairs">Stairs</option>
+            <option value="backWall">Back wall</option>
           </select>
         </label>
 
