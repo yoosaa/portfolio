@@ -12,7 +12,7 @@ import {
 type RoomStructureProps = {
   layout: Pick<
     StudioLayout,
-    "upperFloorLeft" | "upperFloorRight" | "stairs"
+    "upperFloorLeft" | "upperFloorRight" | "stairs" | "backWall"
   >;
 };
 
@@ -91,21 +91,18 @@ export function RoomStructure({ layout }: RoomStructureProps) {
           stepCount={3}
         />
       </group>
-      <SolidBox
-        position={[-2.55, 2.29, -3.91]}
-        scale={[3.2, 4.6, 0.24]}
-        color="#e6d8c2"
-      />
-      <SolidBox
-        position={[0, 2.29, -3.91]}
-        scale={[2, 4.6, 0.24]}
-        color="#e6d8c2"
-      />
-      <SolidBox
-        position={[2.55, 2.29, -3.91]}
-        scale={[3.2, 4.6, 0.24]}
-        color="#e6d8c2"
-      />
+      <group
+        name="studio-back-wall"
+        position={layout.backWall.position}
+        rotation={layout.backWall.rotation}
+        scale={layout.backWall.scale}
+      >
+        <SolidBox
+          position={[0, 0, 0]}
+          scale={[8.3, 4.6, 0.24]}
+          color="#e6d8c2"
+        />
+      </group>
       <SolidBox
         position={[-4.09, 2.29, -2.45]}
         scale={[0.24, 4.6, 2.96]}
