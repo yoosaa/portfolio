@@ -13,6 +13,7 @@ export type StudioLayout = {
   deskArea: StudioTransform;
   upperFloorLeft: StudioTransform;
   upperFloorRight: StudioTransform;
+  stairs: StudioTransform;
 };
 
 export const studioLayout = {
@@ -33,6 +34,11 @@ export const studioLayout = {
   },
   upperFloorRight: {
     position: [2.6, 0, -2.43],
+    rotation: [0, 0, 0],
+    scale: [1, 1, 1],
+  },
+  stairs: {
+    position: [1.85, 0, -1.05],
     rotation: [0, 0, 0],
     scale: [1, 1, 1],
   },
