@@ -1,11 +1,21 @@
-type WindowProps = { onOpen: () => void };
+import type { StudioVector3 } from "../../model/studio-layout";
 
-export function Window({ onOpen }: WindowProps) {
+type WindowProps = {
+  onOpen: () => void;
+  position?: StudioVector3;
+  rotation?: StudioVector3;
+};
+
+export function Window({
+  onOpen,
+  position = [-4.28, 2.58, 0.42],
+  rotation = [0, Math.PI / 2, 0],
+}: WindowProps) {
   return (
     <group
       name="studio-window"
-      position={[-4.28, 2.58, 0.42]}
-      rotation={[0, Math.PI / 2, 0]}
+      position={position}
+      rotation={rotation}
       onClick={(event) => {
         event.stopPropagation();
         onOpen();
