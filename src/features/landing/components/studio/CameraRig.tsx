@@ -24,9 +24,17 @@ import {
 } from "../../model/scene-config";
 import type { StudioPhase } from "../../model/studio-state";
 
+export type MobileViewport = {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+};
+
 type CameraRigProps = {
   phase: StudioPhase;
   isMobile: boolean;
+  mobileViewport: MobileViewport | null;
   onDisplayReached: () => void;
   onBookshelfReached: () => void;
   onCorkboardReached: () => void;
@@ -34,7 +42,15 @@ type CameraRigProps = {
   onRoomRestored: () => void;
 };
 
-// カメラ遷移の進み方。位置や向きではなく、移動の緩急だけを決める。
+type CameraTransition = {
+  phase: StudioPhase;
+  startedAt: number;
+  position: THREE.Vector3;
+  quaternion: THREE.Quaternion;
+  fov: number;
+  viewport: MobileViewport | null;
+};
+
 function easeDisplayTransition(progress: number) {
   if (progress <= 0 || progress >= 1) return progress <= 0 ? 0 : 1;
   const sampleCurve = (time: number, point1: number, point2: number) =>
@@ -51,9 +67,36 @@ function easeDisplayTransition(progress: number) {
   return sampleCurve((lower + upper) / 2, 1, 1);
 }
 
+function interpolateViewport(
+  from: MobileViewport,
+  to: MobileViewport,
+  progress: number,
+): MobileViewport {
+  return {
+    left: THREE.MathUtils.lerp(from.left, to.left, progress),
+    top: THREE.MathUtils.lerp(from.top, to.top, progress),
+    width: THREE.MathUtils.lerp(from.width, to.width, progress),
+    height: THREE.MathUtils.lerp(from.height, to.height, progress),
+  };
+}
+
+function phaseUsesExpandedViewport(phase: StudioPhase) {
+  return [
+    "zooming-to-display",
+    "projects",
+    "zooming-to-bookshelf",
+    "bookshelf-projects",
+    "zooming-to-corkboard",
+    "corkboard-projects",
+    "zooming-to-window",
+    "window-projects",
+  ].includes(phase);
+}
+
 export function CameraRig({
   phase,
   isMobile,
+  mobileViewport,
   onDisplayReached,
   onBookshelfReached,
   onCorkboardReached,
@@ -63,19 +106,11 @@ export function CameraRig({
   const { camera } = useThree();
   const targetCamera = useMemo(() => new THREE.PerspectiveCamera(), []);
   const settledPhase = useRef<StudioPhase | null>(null);
-
-  // phaseが変わった瞬間のカメラ状態を保存し、そこから目的地まで補間する。
-  const transition = useRef<{
-    phase: StudioPhase;
-    startedAt: number;
-    position: THREE.Vector3;
-    quaternion: THREE.Quaternion;
-    fov: number;
-  } | null>(null);
+  const transition = useRef<CameraTransition | null>(null);
+  const currentViewport = useRef<MobileViewport | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
-    // 同じphaseで到着callbackが複数回発火しないよう、phase変更時だけリセットする。
     settledPhase.current = null;
   }, [phase]);
 
@@ -87,13 +122,6 @@ export function CameraRig({
     return () => mediaQuery.removeEventListener("change", updatePreference);
   }, []);
 
-  /**
-   * カメラのposition・quaternion・FOVを毎フレーム補間する。
-   * 目的地の数値は scene-config.ts に集約している。
-   * 家具を移動してズーム先がずれた場合は、まずそちらを調整する。
-   */
-  // R3F camera transforms are intentionally updated inside its render loop.
-  // eslint-disable-next-line react-hooks/immutability
   useFrame((state) => {
     const isDisplayView =
       phase === "zooming-to-display" || phase === "projects";
@@ -134,8 +162,17 @@ export function CameraRig({
     targetCamera.position.copy(targetPosition);
     targetCamera.lookAt(targetLookAt);
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
+    const fullViewport: MobileViewport = {
+      left: 0,
+      top: 0,
+      width: state.size.width,
+      height: state.size.height,
+    };
+    const targetViewport =
+      isMobile && mobileViewport && !phaseUsesExpandedViewport(phase)
+        ? mobileViewport
+        : fullViewport;
 
-    // phaseが変わったフレームだけ、補間の始点を現在のカメラ状態で作り直す。
     if (!transition.current || transition.current.phase !== phase) {
       transition.current = {
         phase,
@@ -143,6 +180,11 @@ export function CameraRig({
         position: camera.position.clone(),
         quaternion: camera.quaternion.clone(),
         fov: perspectiveCamera.fov,
+        viewport: currentViewport.current
+          ? { ...currentViewport.current }
+          : isMobile && mobileViewport
+            ? { ...mobileViewport }
+            : { ...fullViewport },
       };
     }
 
@@ -162,22 +204,42 @@ export function CameraRig({
       targetCamera.quaternion,
       easedProgress,
     );
+    perspectiveCamera.fov = THREE.MathUtils.lerp(
+      transition.current.fov,
+      targetFov,
+      easedProgress,
+    );
 
-    if (!isMobile) {
-      // eslint-disable-next-line react-hooks/immutability
-      perspectiveCamera.fov = THREE.MathUtils.lerp(
-        transition.current.fov,
-        targetFov,
+    if (isMobile && transition.current.viewport) {
+      const viewport = interpolateViewport(
+        transition.current.viewport,
+        targetViewport,
         easedProgress,
       );
-      perspectiveCamera.updateProjectionMatrix();
-    }
+      currentViewport.current = viewport;
 
-    // 位置・FOV・角度の3条件が揃った時点で、画面側へ「到着」を通知する。
+      // Canvasは全画面のまま、カード領域を仮想的な描画面全体として扱う。
+      // 負のoffsetとCanvas全体のwidth/heightを渡すことで、カード内には
+      // カードサイズのCanvasだったときと同じ構図が収まる。
+      perspectiveCamera.aspect = viewport.width / viewport.height;
+      perspectiveCamera.setViewOffset(
+        viewport.width,
+        viewport.height,
+        -viewport.left,
+        -viewport.top,
+        state.size.width,
+        state.size.height,
+      );
+    } else {
+      currentViewport.current = null;
+      perspectiveCamera.clearViewOffset();
+      perspectiveCamera.aspect = state.size.width / state.size.height;
+    }
+    perspectiveCamera.updateProjectionMatrix();
+
     const hasReachedTarget =
       camera.position.distanceTo(targetPosition) < CAMERA_POSITION_EPSILON &&
-      (isMobile ||
-        Math.abs(perspectiveCamera.fov - targetFov) < CAMERA_FOV_EPSILON) &&
+      Math.abs(perspectiveCamera.fov - targetFov) < CAMERA_FOV_EPSILON &&
       camera.quaternion.angleTo(targetCamera.quaternion) < CAMERA_ANGLE_EPSILON;
     if (!hasReachedTarget || settledPhase.current === phase) return;
 
