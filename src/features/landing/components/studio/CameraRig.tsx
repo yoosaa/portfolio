@@ -219,14 +219,14 @@ export function CameraRig({
       currentViewport.current = viewport;
 
       // Canvasは全画面のまま、カード領域を仮想的な描画面全体として扱う。
-      // 負のoffsetとCanvas全体のwidth/heightを渡すことで、カード内には
-      // カードサイズのCanvasだったときと同じ構図が収まる。
+      // カードの画面上の位置を正のoffsetとして渡し、カード中央と
+      // 仮想ビューポートの構図中央を一致させる。
       perspectiveCamera.aspect = viewport.width / viewport.height;
       perspectiveCamera.setViewOffset(
         viewport.width,
         viewport.height,
-        -viewport.left,
-        -viewport.top,
+        viewport.left,
+        viewport.top,
         state.size.width,
         state.size.height,
       );
