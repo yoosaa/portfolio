@@ -26,7 +26,7 @@ export function RoomStructure({ layout }: RoomStructureProps) {
         position={[0, -0.22, -0.35]}
         scale={[8.2, 0.42, 7.15]}
         color="#d8c5a5"
-        radius={0.08}
+        radius={0}
       />
       <Box
         position={[-1.15, LOWER_FLOOR_TOP + MAT_THICKNESS / 2, 0.6]}
