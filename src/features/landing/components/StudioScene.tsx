@@ -9,6 +9,17 @@ import { CameraRig } from "./studio/CameraRig";
 import { CanvasResizeSync } from "./studio/CanvasResizeSync";
 import { Room } from "./studio/Room";
 
+const EXPANDED_CAMERA_PHASES = new Set([
+  "zooming-to-display",
+  "zooming-to-bookshelf",
+  "bookshelf-projects",
+  "zooming-to-corkboard",
+  "corkboard-projects",
+  "zooming-to-window",
+  "window-projects",
+  "projects",
+]);
+
 export function StudioScene({
   phase,
   cameraPhase,
@@ -27,10 +38,28 @@ export function StudioScene({
   const roomIsInteractive = phase === "room";
   const viewRef = useRef<HTMLDivElement>(null!);
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileCardClip, setMobileCardClip] = useState(
+    "inset(100px 18px 58px 18px round 36px)",
+  );
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
-    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
+
+    const updateIsMobile = () => {
+      if (mediaQuery.matches && viewRef.current) {
+        const rect = viewRef.current.getBoundingClientRect();
+        const top = Math.max(rect.top, 0);
+        const right = Math.max(window.innerWidth - rect.right, 0);
+        const bottom = Math.max(window.innerHeight - rect.bottom, 0);
+        const left = Math.max(rect.left, 0);
+
+        setMobileCardClip(
+          `inset(${top}px ${right}px ${bottom}px ${left}px round 36px)`,
+        );
+      }
+
+      setIsMobile(mediaQuery.matches);
+    };
 
     updateIsMobile();
     mediaQuery.addEventListener("change", updateIsMobile);
@@ -39,6 +68,7 @@ export function StudioScene({
 
   const shadowMapSize = isMobile ? 512 : 1024;
   const contactShadowResolution = isMobile ? 256 : 512;
+  const mobileViewIsExpanded = EXPANDED_CAMERA_PHASES.has(cameraPhase);
   const room = (
     <Room
       phase={phase}
@@ -61,7 +91,26 @@ export function StudioScene({
       <div
         ref={viewRef}
         className="studio-view"
-        style={{ pointerEvents: roomIsInteractive ? "auto" : "none" }}
+        style={{
+          pointerEvents: roomIsInteractive ? "auto" : "none",
+          ...(isMobile
+            ? {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+                borderColor: "transparent",
+                borderRadius: 0,
+                boxShadow: "none",
+                clipPath: mobileViewIsExpanded
+                  ? "inset(0 round 0)"
+                  : mobileCardClip,
+                transition:
+                  "clip-path 1680ms cubic-bezier(0.16, 1, 0.3, 1)",
+                willChange: "clip-path",
+              }
+            : {}),
+        }}
       >
         <Canvas
           shadows
