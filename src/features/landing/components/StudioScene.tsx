@@ -61,7 +61,21 @@ export function StudioScene({
       <div
         ref={viewRef}
         className="studio-view"
-        style={{ pointerEvents: roomIsInteractive ? "auto" : "none" }}
+        style={{
+          pointerEvents: roomIsInteractive ? "auto" : "none",
+          ...(isMobile
+            ? {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+                borderColor: "transparent",
+                borderRadius: 0,
+                boxShadow: "none",
+                transition: "none",
+              }
+            : {}),
+        }}
       >
         <Canvas
           shadows
