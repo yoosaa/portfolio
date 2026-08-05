@@ -10,7 +10,10 @@ import {
 } from "./scene-levels";
 
 type RoomStructureProps = {
-  layout: Pick<StudioLayout, "upperFloorLeft" | "upperFloorRight">;
+  layout: Pick<
+    StudioLayout,
+    "upperFloorLeft" | "upperFloorRight" | "stairs"
+  >;
 };
 
 export function RoomStructure({ layout }: RoomStructureProps) {
@@ -75,12 +78,19 @@ export function RoomStructure({ layout }: RoomStructureProps) {
           radius={0.055}
         />
       </group>
-      <LevelStairs
-        position={[1.85, 0, -1.05]}
-        fromY={-0.01}
-        toY={0.88}
-        stepCount={3}
-      />
+      <group
+        name="studio-stairs"
+        position={layout.stairs.position}
+        rotation={layout.stairs.rotation}
+        scale={layout.stairs.scale}
+      >
+        <LevelStairs
+          position={[0, 0, 0]}
+          fromY={-0.01}
+          toY={0.88}
+          stepCount={3}
+        />
+      </group>
       <SolidBox
         position={[-2.55, 2.29, -3.91]}
         scale={[3.2, 4.6, 0.24]}
