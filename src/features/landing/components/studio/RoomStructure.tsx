@@ -1,6 +1,5 @@
 import { LevelStairs } from "./LevelStairs";
 import { Box, SolidBox } from "./ScenePrimitives";
-import { UpperBackFiller } from "./UpperBackFiller";
 import { WindowWallPanel } from "./WindowWallPanel";
 import {
   BASE_TOP,
@@ -15,7 +14,6 @@ export function RoomStructure() {
 
   return (
     <>
-      <UpperBackFiller />
       <WindowWallPanel />
       <Box
         position={[0, -0.22, -0.35]}
@@ -35,17 +33,15 @@ export function RoomStructure() {
         color="#d8b98d"
         radius={0.045}
       />
-      <Box
+      <SolidBox
         position={[-0.65, upperFloorY, -2.55]}
         scale={[6.9, upperFloorHeight, 2.75]}
         color="#d8c3a2"
-        radius={0.07}
       />
-      <Box
-        position={[2.6, upperFloorY, -2.25]}
-        scale={[2.55, upperFloorHeight, 2.35]}
+      <SolidBox
+        position={[2.6, upperFloorY, -2.43]}
+        scale={[2.55, upperFloorHeight, 2.72]}
         color="#d8c3a2"
-        radius={0.07}
       />
       <Box
         position={[-2.5, UPPER_FLOOR_TOP + MAT_THICKNESS / 2, -2.58]}
