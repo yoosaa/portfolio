@@ -54,6 +54,8 @@ function isPayload(value: unknown): value is ApplyPayload {
     layout &&
       isTransform(layout.bookshelf) &&
       isTransform(layout.deskArea) &&
+      isTransform(layout.upperFloorLeft) &&
+      isTransform(layout.upperFloorRight) &&
       camera &&
       isVector3(camera.position) &&
       isVector3(camera.target) &&
@@ -67,7 +69,7 @@ function isPayload(value: unknown): value is ApplyPayload {
 }
 
 function createLayoutSource(layout: StudioLayout): string {
-  return `${GENERATED_MARKER}\nimport { LOWER_MAT_TOP, UPPER_MAT_TOP } from "../components/studio/scene-levels";\n\nexport type StudioVector3 = [number, number, number];\n\nexport type StudioTransform = {\n  position: StudioVector3;\n  rotation: StudioVector3;\n  scale: StudioVector3;\n};\n\nexport type StudioLayout = {\n  bookshelf: StudioTransform;\n  deskArea: StudioTransform;\n};\n\nexport const studioLayout = ${JSON.stringify(layout, null, 2)} satisfies StudioLayout;\n`;
+  return `${GENERATED_MARKER}\nexport type StudioVector3 = [number, number, number];\n\nexport type StudioTransform = {\n  position: StudioVector3;\n  rotation: StudioVector3;\n  scale: StudioVector3;\n};\n\nexport type StudioLayout = {\n  bookshelf: StudioTransform;\n  deskArea: StudioTransform;\n  upperFloorLeft: StudioTransform;\n  upperFloorRight: StudioTransform;\n};\n\nexport const studioLayout = ${JSON.stringify(layout, null, 2)} satisfies StudioLayout;\n`;
 }
 
 function createCameraSource(camera: StudioCameraConfig): string {
