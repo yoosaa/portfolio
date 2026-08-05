@@ -52,7 +52,7 @@ type CameraTransition = {
 };
 
 const MOBILE_ROOM_LOOK_AT = ROOM_LOOK_AT.clone().add(
-  new THREE.Vector3(0.45, 0, 0),
+  new THREE.Vector3(0.6, 0, 0),
 );
 
 function easeDisplayTransition(progress: number) {
