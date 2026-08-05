@@ -26,6 +26,7 @@ import type { StudioPhase } from "../../model/studio-state";
 
 type CameraRigProps = {
   phase: StudioPhase;
+  isMobile: boolean;
   onDisplayReached: () => void;
   onBookshelfReached: () => void;
   onCorkboardReached: () => void;
@@ -52,6 +53,7 @@ function easeDisplayTransition(progress: number) {
 
 export function CameraRig({
   phase,
+  isMobile,
   onDisplayReached,
   onBookshelfReached,
   onCorkboardReached,
@@ -160,18 +162,22 @@ export function CameraRig({
       targetCamera.quaternion,
       easedProgress,
     );
-    // eslint-disable-next-line react-hooks/immutability
-    perspectiveCamera.fov = THREE.MathUtils.lerp(
-      transition.current.fov,
-      targetFov,
-      easedProgress,
-    );
-    perspectiveCamera.updateProjectionMatrix();
+
+    if (!isMobile) {
+      // eslint-disable-next-line react-hooks/immutability
+      perspectiveCamera.fov = THREE.MathUtils.lerp(
+        transition.current.fov,
+        targetFov,
+        easedProgress,
+      );
+      perspectiveCamera.updateProjectionMatrix();
+    }
 
     // 位置・FOV・角度の3条件が揃った時点で、画面側へ「到着」を通知する。
     const hasReachedTarget =
       camera.position.distanceTo(targetPosition) < CAMERA_POSITION_EPSILON &&
-      Math.abs(perspectiveCamera.fov - targetFov) < CAMERA_FOV_EPSILON &&
+      (isMobile ||
+        Math.abs(perspectiveCamera.fov - targetFov) < CAMERA_FOV_EPSILON) &&
       camera.quaternion.angleTo(targetCamera.quaternion) < CAMERA_ANGLE_EPSILON;
     if (!hasReachedTarget || settledPhase.current === phase) return;
 
