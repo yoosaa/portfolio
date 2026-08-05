@@ -166,6 +166,8 @@ export function StudioEditor() {
           <select value={selected} onChange={(event) => setSelected(event.target.value as ObjectKey)} style={{ padding: 8 }}>
             <option value="bookshelf">Bookshelf</option>
             <option value="deskArea">Desk area</option>
+            <option value="upperFloorLeft">Upper floor left</option>
+            <option value="upperFloorRight">Upper floor right</option>
           </select>
         </label>
 
