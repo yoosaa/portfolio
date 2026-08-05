@@ -168,6 +168,7 @@ export function StudioEditor() {
             <option value="deskArea">Desk area</option>
             <option value="upperFloorLeft">Upper floor left</option>
             <option value="upperFloorRight">Upper floor right</option>
+            <option value="stairs">Stairs</option>
           </select>
         </label>
 
