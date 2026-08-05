@@ -1,7 +1,6 @@
 import type { StudioLayout } from "../../model/studio-layout";
 import { LevelStairs } from "./LevelStairs";
 import { Box, SolidBox } from "./ScenePrimitives";
-import { WindowWallPanel } from "./WindowWallPanel";
 import {
   BASE_TOP,
   LOWER_FLOOR_TOP,
@@ -23,7 +22,6 @@ export function RoomStructure({ layout }: RoomStructureProps) {
 
   return (
     <>
-      <WindowWallPanel />
       <Box
         position={[0, -0.22, -0.35]}
         scale={[8.2, 0.42, 7.15]}
@@ -103,26 +101,6 @@ export function RoomStructure({ layout }: RoomStructureProps) {
           color="#e6d8c2"
         />
       </group>
-      <SolidBox
-        position={[-4.09, 2.29, -2.45]}
-        scale={[0.24, 4.6, 2.96]}
-        color="#e6d8c2"
-      />
-      <SolidBox
-        position={[-4.09, 2.29, -0.79]}
-        scale={[0.24, 4.6, 0.38]}
-        color="#e6d8c2"
-      />
-      <SolidBox
-        position={[-4.09, 2.29, 2.44]}
-        scale={[0.24, 4.6, 1.52]}
-        color="#e6d8c2"
-      />
-      <SolidBox
-        position={[-4.09, 4.09, 0.55]}
-        scale={[0.24, 1, 2.3]}
-        color="#e6d8c2"
-      />
     </>
   );
 }
