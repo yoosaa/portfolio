@@ -51,6 +51,10 @@ type CameraTransition = {
   viewport: MobileViewport | null;
 };
 
+const MOBILE_ROOM_LOOK_AT = ROOM_LOOK_AT.clone().add(
+  new THREE.Vector3(0.45, 0, 0),
+);
+
 function easeDisplayTransition(progress: number) {
   if (progress <= 0 || progress >= 1) return progress <= 0 ? 0 : 1;
   const sampleCurve = (time: number, point1: number, point2: number) =>
@@ -148,7 +152,9 @@ export function CameraRig({
           ? CORKBOARD_LOOK_AT
           : isWindowView
             ? WINDOW_LOOK_AT
-            : ROOM_LOOK_AT;
+            : isMobile
+              ? MOBILE_ROOM_LOOK_AT
+              : ROOM_LOOK_AT;
     const targetFov = isDisplayView
       ? DISPLAY_FOV
       : isBookshelfView
