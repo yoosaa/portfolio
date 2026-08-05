@@ -2,7 +2,7 @@
 
 import { ContactShadows, PresentationControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ROOM_CAMERA_POSITION, ROOM_FOV } from "../model/scene-config";
 import type { StudioSceneProps } from "../model/studio-scene";
 import { CameraRig } from "./studio/CameraRig";
@@ -26,6 +26,19 @@ export function StudioScene({
 }: StudioSceneProps) {
   const roomIsInteractive = phase === "room";
   const viewRef = useRef<HTMLDivElement>(null!);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
+
+    updateIsMobile();
+    mediaQuery.addEventListener("change", updateIsMobile);
+    return () => mediaQuery.removeEventListener("change", updateIsMobile);
+  }, []);
+
+  const shadowMapSize = isMobile ? 512 : 1024;
+  const contactShadowResolution = isMobile ? 256 : 512;
 
   return (
     <div
@@ -41,7 +54,7 @@ export function StudioScene({
       >
         <Canvas
           shadows
-          dpr={[1, 1.6]}
+          dpr={isMobile ? 1 : [1, 1.6]}
           camera={{
             position: ROOM_CAMERA_POSITION.toArray(),
             fov: ROOM_FOV,
@@ -59,7 +72,7 @@ export function StudioScene({
             intensity={2}
             color="#fff0cf"
             castShadow
-            shadow-mapSize={[1024, 1024]}
+            shadow-mapSize={[shadowMapSize, shadowMapSize]}
             shadow-camera-far={25}
             shadow-camera-left={-8}
             shadow-camera-right={8}
@@ -72,7 +85,7 @@ export function StudioScene({
             scale={11}
             blur={2.5}
             far={5.5}
-            resolution={512}
+            resolution={contactShadowResolution}
             frames={1}
           />
           <CanvasResizeSync viewRef={viewRef} />
