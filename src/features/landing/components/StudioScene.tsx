@@ -5,7 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import { ROOM_CAMERA_POSITION, ROOM_FOV } from "../model/scene-config";
 import type { StudioSceneProps } from "../model/studio-scene";
-import { CameraRig } from "./studio/CameraRig";
+import { CameraRig, type MobileViewport } from "./studio/CameraRig";
 import { CanvasResizeSync } from "./studio/CanvasResizeSync";
 import { Room } from "./studio/Room";
 
@@ -38,37 +38,51 @@ export function StudioScene({
   const roomIsInteractive = phase === "room";
   const viewRef = useRef<HTMLDivElement>(null!);
   const [isMobile, setIsMobile] = useState(false);
-  const [mobileCardClip, setMobileCardClip] = useState(
-    "inset(100px 18px 58px 18px round 36px)",
+  const [mobileViewport, setMobileViewport] = useState<MobileViewport | null>(
+    null,
   );
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
 
-    const updateIsMobile = () => {
-      if (mediaQuery.matches && viewRef.current) {
-        const rect = viewRef.current.getBoundingClientRect();
-        const top = Math.max(rect.top, 0);
-        const right = Math.max(window.innerWidth - rect.right, 0);
-        const bottom = Math.max(window.innerHeight - rect.bottom, 0);
-        const left = Math.max(rect.left, 0);
+    const measureMobileViewport = () => {
+      const isMobileViewport = mediaQuery.matches;
 
-        setMobileCardClip(
-          `inset(${top}px ${right}px ${bottom}px ${left}px round 36px)`,
-        );
+      if (isMobileViewport && viewRef.current && !isMobile) {
+        const rect = viewRef.current.getBoundingClientRect();
+        setMobileViewport({
+          left: Math.max(rect.left, 0),
+          top: Math.max(rect.top, 0),
+          width: rect.width,
+          height: rect.height,
+        });
       }
 
-      setIsMobile(mediaQuery.matches);
+      setIsMobile(isMobileViewport);
     };
 
-    updateIsMobile();
-    mediaQuery.addEventListener("change", updateIsMobile);
-    return () => mediaQuery.removeEventListener("change", updateIsMobile);
-  }, []);
+    measureMobileViewport();
+    mediaQuery.addEventListener("change", measureMobileViewport);
+    window.addEventListener("orientationchange", measureMobileViewport);
+
+    return () => {
+      mediaQuery.removeEventListener("change", measureMobileViewport);
+      window.removeEventListener("orientationchange", measureMobileViewport);
+    };
+  }, [isMobile]);
 
   const shadowMapSize = isMobile ? 512 : 1024;
   const contactShadowResolution = isMobile ? 256 : 512;
   const mobileViewIsExpanded = EXPANDED_CAMERA_PHASES.has(cameraPhase);
+  const mobileClip = mobileViewport
+    ? `inset(${mobileViewport.top}px ${Math.max(
+        window.innerWidth - mobileViewport.left - mobileViewport.width,
+        0,
+      )}px ${Math.max(
+        window.innerHeight - mobileViewport.top - mobileViewport.height,
+        0,
+      )}px ${mobileViewport.left}px round 36px)`
+    : "inset(100px 18px 58px 18px round 36px)";
   const room = (
     <Room
       phase={phase}
@@ -104,7 +118,7 @@ export function StudioScene({
                 boxShadow: "none",
                 clipPath: mobileViewIsExpanded
                   ? "inset(0 round 0)"
-                  : mobileCardClip,
+                  : mobileClip,
                 transition:
                   "clip-path 1680ms cubic-bezier(0.16, 1, 0.3, 1)",
                 willChange: "clip-path",
@@ -152,6 +166,7 @@ export function StudioScene({
           <CameraRig
             phase={cameraPhase}
             isMobile={isMobile}
+            mobileViewport={mobileViewport}
             onDisplayReached={onDisplayReached}
             onBookshelfReached={onBookshelfReached}
             onCorkboardReached={onCorkboardReached}
