@@ -14,6 +14,7 @@ export type StudioLayout = {
   upperFloorLeft: StudioTransform;
   upperFloorRight: StudioTransform;
   stairs: StudioTransform;
+  backWall: StudioTransform;
 };
 
 export const studioLayout = {
@@ -39,6 +40,11 @@ export const studioLayout = {
   },
   stairs: {
     position: [1.85, 0, -1.05],
+    rotation: [0, 0, 0],
+    scale: [1, 1, 1],
+  },
+  backWall: {
+    position: [0, 2.29, -3.91],
     rotation: [0, 0, 0],
     scale: [1, 1, 1],
   },
