@@ -20,8 +20,6 @@ const EXPANDED_CAMERA_PHASES = new Set([
   "projects",
 ]);
 
-const MOBILE_ROOM_OFFSET: [number, number, number] = [-0.55, 0, 0];
-
 export function StudioScene({
   phase,
   cameraPhase,
@@ -171,9 +169,7 @@ export function StudioScene({
             onRoomRestored={onRoomRestored}
           />
           {isMobile ? (
-            <group position={MOBILE_ROOM_OFFSET} rotation={[0, -0.08, 0]}>
-              {room}
-            </group>
+            <group rotation={[0, -0.08, 0]}>{room}</group>
           ) : (
             <PresentationControls
               global
