@@ -10,7 +10,6 @@ import { Plant } from "./Plant";
 import { RoomStructure } from "./RoomStructure";
 import { SolidBox } from "./ScenePrimitives";
 import { Window } from "./Window";
-import { WallArtwork } from "./WallArtwork";
 import { LOWER_MAT_TOP, UPPER_MAT_TOP } from "./scene-levels";
 
 type RoomProps = Pick<
@@ -40,7 +39,6 @@ export function Room({
 
   return (
     <group name="studio-room">
-      <WallArtwork />
       <RoomStructure layout={layout} />
       <group
         name="studio-window-wall"
