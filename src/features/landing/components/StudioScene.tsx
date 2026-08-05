@@ -39,6 +39,8 @@ export function StudioScene({
 
   const shadowMapSize = isMobile ? 512 : 1024;
   const contactShadowResolution = isMobile ? 256 : 512;
+  const cameraIsTransitioning =
+    cameraPhase.startsWith("zooming-") || cameraPhase.startsWith("returning-");
 
   return (
     <div
@@ -88,7 +90,10 @@ export function StudioScene({
             resolution={contactShadowResolution}
             frames={1}
           />
-          <CanvasResizeSync viewRef={viewRef} />
+          <CanvasResizeSync
+            viewRef={viewRef}
+            suspended={isMobile && cameraIsTransitioning}
+          />
           <CameraRig
             phase={cameraPhase}
             onDisplayReached={onDisplayReached}
