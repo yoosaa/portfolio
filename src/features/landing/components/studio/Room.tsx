@@ -40,7 +40,7 @@ export function Room({
   return (
     <group name="studio-room">
       <WallArtwork />
-      <RoomStructure />
+      <RoomStructure layout={layout} />
       <group
         position={layout.deskArea.position}
         rotation={layout.deskArea.rotation}

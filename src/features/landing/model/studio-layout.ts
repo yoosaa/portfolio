@@ -11,6 +11,8 @@ export type StudioTransform = {
 export type StudioLayout = {
   bookshelf: StudioTransform;
   deskArea: StudioTransform;
+  upperFloorLeft: StudioTransform;
+  upperFloorRight: StudioTransform;
 };
 
 export const studioLayout = {
@@ -21,6 +23,16 @@ export const studioLayout = {
   },
   deskArea: {
     position: [-2.35, LOWER_MAT_TOP, 0.1],
+    rotation: [0, 0, 0],
+    scale: [1, 1, 1],
+  },
+  upperFloorLeft: {
+    position: [-0.65, 0, -2.55],
+    rotation: [0, 0, 0],
+    scale: [1, 1, 1],
+  },
+  upperFloorRight: {
+    position: [2.6, 0, -2.43],
     rotation: [0, 0, 0],
     scale: [1, 1, 1],
   },
