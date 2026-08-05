@@ -4,9 +4,13 @@ import { useWindowSimplification } from "./useWindowSimplification";
 
 type CanvasResizeSyncProps = {
   viewRef: RefObject<HTMLDivElement | null>;
+  suspended?: boolean;
 };
 
-export function CanvasResizeSync({ viewRef }: CanvasResizeSyncProps) {
+export function CanvasResizeSync({
+  viewRef,
+  suspended = false,
+}: CanvasResizeSyncProps) {
   const setSize = useThree((state) => state.setSize);
   const pendingSize = useRef<{
     width: number;
@@ -45,7 +49,7 @@ export function CanvasResizeSync({ viewRef }: CanvasResizeSyncProps) {
   // priority -1: 通常のシーン描画より前に実行する。
   useFrame(() => {
     const nextSize = pendingSize.current;
-    if (!nextSize) {
+    if (!nextSize || suspended) {
       return;
     }
 
