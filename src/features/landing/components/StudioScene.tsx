@@ -39,6 +39,17 @@ export function StudioScene({
 
   const shadowMapSize = isMobile ? 512 : 1024;
   const contactShadowResolution = isMobile ? 256 : 512;
+  const room = (
+    <Room
+      phase={phase}
+      accent={accent}
+      projectIndex={projectIndex}
+      onOpenProjects={onOpenProjects}
+      onOpenBookshelf={onOpenBookshelf}
+      onOpenCorkboard={onOpenCorkboard}
+      onOpenWindow={onOpenWindow}
+    />
+  );
 
   return (
     <div
@@ -97,27 +108,23 @@ export function StudioScene({
             onWindowReached={onWindowReached}
             onRoomRestored={onRoomRestored}
           />
-          <PresentationControls
-            global
-            enabled={roomIsInteractive && !isMobile}
-            cursor
-            snap={!isMobile}
-            speed={0.9}
-            zoom={0.82}
-            rotation={[0, -0.08, 0]}
-            polar={[-0.08, 0.18]}
-            azimuth={[-0.4, 0.35]}
-          >
-            <Room
-              phase={phase}
-              accent={accent}
-              projectIndex={projectIndex}
-              onOpenProjects={onOpenProjects}
-              onOpenBookshelf={onOpenBookshelf}
-              onOpenCorkboard={onOpenCorkboard}
-              onOpenWindow={onOpenWindow}
-            />
-          </PresentationControls>
+          {isMobile ? (
+            <group rotation={[0, -0.08, 0]}>{room}</group>
+          ) : (
+            <PresentationControls
+              global
+              enabled={roomIsInteractive}
+              cursor
+              snap
+              speed={0.9}
+              zoom={0.82}
+              rotation={[0, -0.08, 0]}
+              polar={[-0.08, 0.18]}
+              azimuth={[-0.4, 0.35]}
+            >
+              {room}
+            </PresentationControls>
+          )}
         </Canvas>
       </div>
     </div>
