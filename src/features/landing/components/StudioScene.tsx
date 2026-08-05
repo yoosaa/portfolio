@@ -38,51 +38,46 @@ export function StudioScene({
   const roomIsInteractive = phase === "room";
   const viewRef = useRef<HTMLDivElement>(null!);
   const [isMobile, setIsMobile] = useState(false);
-  const [mobileViewport, setMobileViewport] = useState<MobileViewport | null>(
-    null,
+  const [mobileViewport, setMobileViewport] = useState<MobileViewport | null>(null);
+  const [mobileClip, setMobileClip] = useState(
+    "inset(100px 18px 58px 18px round 36px)",
   );
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
 
-    const measureMobileViewport = () => {
-      const isMobileViewport = mediaQuery.matches;
+    const updateIsMobile = () => {
+      const matches = mediaQuery.matches;
 
-      if (isMobileViewport && viewRef.current && !isMobile) {
+      if (matches && viewRef.current) {
         const rect = viewRef.current.getBoundingClientRect();
+        const left = Math.max(rect.left, 0);
+        const top = Math.max(rect.top, 0);
+        const right = Math.max(window.innerWidth - rect.right, 0);
+        const bottom = Math.max(window.innerHeight - rect.bottom, 0);
+
         setMobileViewport({
-          left: Math.max(rect.left, 0),
-          top: Math.max(rect.top, 0),
+          left,
+          top,
           width: rect.width,
           height: rect.height,
         });
+        setMobileClip(
+          `inset(${top}px ${right}px ${bottom}px ${left}px round 36px)`,
+        );
       }
 
-      setIsMobile(isMobileViewport);
+      setIsMobile(matches);
     };
 
-    measureMobileViewport();
-    mediaQuery.addEventListener("change", measureMobileViewport);
-    window.addEventListener("orientationchange", measureMobileViewport);
-
-    return () => {
-      mediaQuery.removeEventListener("change", measureMobileViewport);
-      window.removeEventListener("orientationchange", measureMobileViewport);
-    };
-  }, [isMobile]);
+    updateIsMobile();
+    mediaQuery.addEventListener("change", updateIsMobile);
+    return () => mediaQuery.removeEventListener("change", updateIsMobile);
+  }, []);
 
   const shadowMapSize = isMobile ? 512 : 1024;
   const contactShadowResolution = isMobile ? 256 : 512;
   const mobileViewIsExpanded = EXPANDED_CAMERA_PHASES.has(cameraPhase);
-  const mobileClip = mobileViewport
-    ? `inset(${mobileViewport.top}px ${Math.max(
-        window.innerWidth - mobileViewport.left - mobileViewport.width,
-        0,
-      )}px ${Math.max(
-        window.innerHeight - mobileViewport.top - mobileViewport.height,
-        0,
-      )}px ${mobileViewport.left}px round 36px)`
-    : "inset(100px 18px 58px 18px round 36px)";
   const room = (
     <Room
       phase={phase}
