@@ -103,7 +103,7 @@ export function CameraRig({
   onWindowReached,
   onRoomRestored,
 }: CameraRigProps) {
-  const { camera, gl } = useThree();
+  const { camera } = useThree();
   const targetCamera = useMemo(() => new THREE.PerspectiveCamera(), []);
   const settledPhase = useRef<StudioPhase | null>(null);
   const transition = useRef<CameraTransition | null>(null);
@@ -218,30 +218,17 @@ export function CameraRig({
       );
       currentViewport.current = viewport;
 
-      // Canvasの描画バッファは全画面で固定し、WebGLのviewportだけを
-      // カード領域から全画面へ広げる。これならカード内に常に部屋全体が収まり、
-      // Canvasのresizeに伴う投影行列の揺れも発生しない。
-      const viewportBottom =
-        state.size.height - viewport.top - viewport.height;
-      gl.setViewport(
-        viewport.left,
-        viewportBottom,
-        viewport.width,
-        viewport.height,
-      );
-      gl.setScissor(
-        viewport.left,
-        viewportBottom,
-        viewport.width,
-        viewport.height,
-      );
-      gl.setScissorTest(true);
-      perspectiveCamera.clearViewOffset();
       perspectiveCamera.aspect = viewport.width / viewport.height;
+      perspectiveCamera.setViewOffset(
+        viewport.width,
+        viewport.height,
+        0,
+        -viewport.top,
+        state.size.width,
+        state.size.height,
+      );
     } else {
       currentViewport.current = null;
-      gl.setScissorTest(false);
-      gl.setViewport(0, 0, state.size.width, state.size.height);
       perspectiveCamera.clearViewOffset();
       perspectiveCamera.aspect = state.size.width / state.size.height;
     }
