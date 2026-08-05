@@ -1,6 +1,6 @@
+import type { StudioLayout } from "../../model/studio-layout";
 import { LevelStairs } from "./LevelStairs";
 import { Box, SolidBox } from "./ScenePrimitives";
-import { UpperBackFiller } from "./UpperBackFiller";
 import { WindowWallPanel } from "./WindowWallPanel";
 import {
   BASE_TOP,
@@ -9,13 +9,17 @@ import {
   UPPER_FLOOR_TOP,
 } from "./scene-levels";
 
-export function RoomStructure() {
+type RoomStructureProps = {
+  layout: Pick<StudioLayout, "upperFloorLeft" | "upperFloorRight">;
+};
+
+export function RoomStructure({ layout }: RoomStructureProps) {
   const upperFloorHeight = UPPER_FLOOR_TOP - BASE_TOP;
   const upperFloorY = (BASE_TOP + UPPER_FLOOR_TOP) / 2;
+  const upperMatY = UPPER_FLOOR_TOP + MAT_THICKNESS / 2;
 
   return (
     <>
-      <UpperBackFiller />
       <WindowWallPanel />
       <Box
         position={[0, -0.22, -0.35]}
@@ -35,30 +39,42 @@ export function RoomStructure() {
         color="#d8b98d"
         radius={0.045}
       />
-      <Box
-        position={[-0.65, upperFloorY, -2.55]}
-        scale={[6.9, upperFloorHeight, 2.75]}
-        color="#d8c3a2"
-        radius={0.07}
-      />
-      <Box
-        position={[2.6, upperFloorY, -2.25]}
-        scale={[2.55, upperFloorHeight, 2.35]}
-        color="#d8c3a2"
-        radius={0.07}
-      />
-      <Box
-        position={[-2.5, UPPER_FLOOR_TOP + MAT_THICKNESS / 2, -2.58]}
-        scale={[2.96, MAT_THICKNESS, 2.3]}
-        color="#7da28b"
-        radius={0.055}
-      />
-      <Box
-        position={[2.68, UPPER_FLOOR_TOP + MAT_THICKNESS / 2, -2.38]}
-        scale={[2.18, MAT_THICKNESS, 1.96]}
-        color="#d97d68"
-        radius={0.055}
-      />
+      <group
+        name="studio-upper-floor-left"
+        position={layout.upperFloorLeft.position}
+        rotation={layout.upperFloorLeft.rotation}
+        scale={layout.upperFloorLeft.scale}
+      >
+        <SolidBox
+          position={[0, upperFloorY, 0]}
+          scale={[6.9, upperFloorHeight, 2.75]}
+          color="#d8c3a2"
+        />
+        <Box
+          position={[-1.85, upperMatY, -0.03]}
+          scale={[2.96, MAT_THICKNESS, 2.3]}
+          color="#7da28b"
+          radius={0.055}
+        />
+      </group>
+      <group
+        name="studio-upper-floor-right"
+        position={layout.upperFloorRight.position}
+        rotation={layout.upperFloorRight.rotation}
+        scale={layout.upperFloorRight.scale}
+      >
+        <SolidBox
+          position={[0, upperFloorY, 0]}
+          scale={[2.55, upperFloorHeight, 2.72]}
+          color="#d8c3a2"
+        />
+        <Box
+          position={[0.08, upperMatY, 0.05]}
+          scale={[2.18, MAT_THICKNESS, 1.96]}
+          color="#d97d68"
+          radius={0.055}
+        />
+      </group>
       <LevelStairs
         position={[1.85, 0, -1.05]}
         fromY={-0.01}
