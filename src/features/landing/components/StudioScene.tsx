@@ -39,8 +39,6 @@ export function StudioScene({
 
   const shadowMapSize = isMobile ? 512 : 1024;
   const contactShadowResolution = isMobile ? 256 : 512;
-  const cameraIsTransitioning =
-    cameraPhase.startsWith("zooming-") || cameraPhase.startsWith("returning-");
 
   return (
     <div
@@ -90,10 +88,7 @@ export function StudioScene({
             resolution={contactShadowResolution}
             frames={1}
           />
-          <CanvasResizeSync
-            viewRef={viewRef}
-            suspended={isMobile && cameraIsTransitioning}
-          />
+          <CanvasResizeSync viewRef={viewRef} />
           <CameraRig
             phase={cameraPhase}
             onDisplayReached={onDisplayReached}
@@ -104,9 +99,9 @@ export function StudioScene({
           />
           <PresentationControls
             global
-            enabled={roomIsInteractive}
+            enabled={roomIsInteractive && !isMobile}
             cursor
-            snap
+            snap={!isMobile}
             speed={0.9}
             zoom={0.82}
             rotation={[0, -0.08, 0]}
