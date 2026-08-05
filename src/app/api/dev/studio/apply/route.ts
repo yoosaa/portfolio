@@ -58,6 +58,7 @@ function isPayload(value: unknown): value is ApplyPayload {
       isTransform(layout.upperFloorRight) &&
       isTransform(layout.stairs) &&
       isTransform(layout.backWall) &&
+      isTransform(layout.windowWall) &&
       camera &&
       isVector3(camera.position) &&
       isVector3(camera.target) &&
@@ -71,7 +72,7 @@ function isPayload(value: unknown): value is ApplyPayload {
 }
 
 function createLayoutSource(layout: StudioLayout): string {
-  return `${GENERATED_MARKER}\nexport type StudioVector3 = [number, number, number];\n\nexport type StudioTransform = {\n  position: StudioVector3;\n  rotation: StudioVector3;\n  scale: StudioVector3;\n};\n\nexport type StudioLayout = {\n  bookshelf: StudioTransform;\n  deskArea: StudioTransform;\n  upperFloorLeft: StudioTransform;\n  upperFloorRight: StudioTransform;\n  stairs: StudioTransform;\n  backWall: StudioTransform;\n};\n\nexport const studioLayout = ${JSON.stringify(layout, null, 2)} satisfies StudioLayout;\n`;
+  return `${GENERATED_MARKER}\nexport type StudioVector3 = [number, number, number];\n\nexport type StudioTransform = {\n  position: StudioVector3;\n  rotation: StudioVector3;\n  scale: StudioVector3;\n};\n\nexport type StudioLayout = {\n  bookshelf: StudioTransform;\n  deskArea: StudioTransform;\n  upperFloorLeft: StudioTransform;\n  upperFloorRight: StudioTransform;\n  stairs: StudioTransform;\n  backWall: StudioTransform;\n  windowWall: StudioTransform;\n};\n\nexport const studioLayout = ${JSON.stringify(layout, null, 2)} satisfies StudioLayout;\n`;
 }
 
 function createCameraSource(camera: StudioCameraConfig): string {
