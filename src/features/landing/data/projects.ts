@@ -44,7 +44,7 @@ export const deskProjects = [
     note: "実務案件のため公開リンクはありません。",
   },
   {
-    title: "ポータルサイト開発・運用",
+    title: "ポータルサイトSPA開発",
     summary:
       "Vue.jsによるSPA開発に参加。Atomic Designを用いたコンポーネント設計から、テスト、運用保守まで継続して担当しました。",
     tags: ["Vue.js", "JavaScript", "Atomic Design", "SPA"],
