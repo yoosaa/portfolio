@@ -5,6 +5,8 @@ export type Project = {
   accent: string;
   demo: string | null;
   source?: string | null;
+  category: "personal" | "professional";
+  note?: string;
 };
 
 export const deskProjects = [
@@ -16,6 +18,7 @@ export const deskProjects = [
     accent: "#b98278",
     demo: "https://totonote-pink.vercel.app",
     source: "https://github.com/yoosaa/totonote",
+    category: "personal",
   },
   {
     title: "Restocknote",
@@ -25,6 +28,7 @@ export const deskProjects = [
     accent: "#bd8f67",
     demo: "https://restocknote.vercel.app",
     source: "https://github.com/yoosaa/restocknote",
+    category: "personal",
   },
   {
     title: "Decision note",
@@ -34,6 +38,51 @@ export const deskProjects = [
     accent: "#879bb0",
     demo: "https://decision-note-eight.vercel.app",
     source: "https://github.com/yoosaa/decision-note",
+    category: "personal",
+  },
+  {
+    title: "配送管理SaaS",
+    summary:
+      "配送業務向けSaaSの開発に参加。SvelteKit移行、HonoによるBFF実装、PlaywrightのE2E、Storybook整備などを担当しました。",
+    tags: ["SvelteKit", "TypeScript", "Hono", "Playwright"],
+    accent: "#8c9f8e",
+    demo: null,
+    source: null,
+    category: "professional",
+    note: "実務案件のため公開リンクはありません。",
+  },
+  {
+    title: "施工管理システム",
+    summary:
+      "既存業務システムのWebリプレース開発に参加。React / TypeScriptでの画面実装、詳細設計、Java API追加、各種試験を担当しました。",
+    tags: ["React", "TypeScript", "Java", "Testing"],
+    accent: "#9c8f7a",
+    demo: null,
+    source: null,
+    category: "professional",
+    note: "実務案件のため公開リンクはありません。",
+  },
+  {
+    title: "勤怠管理システム",
+    summary:
+      "Vue / TypeScriptを用いた既存機能改修、不具合修正、新規機能追加を担当。仕様調整やコードレビューにも関わりました。",
+    tags: ["Vue", "TypeScript", "Jest", "Code Review"],
+    accent: "#8698a7",
+    demo: null,
+    source: null,
+    category: "professional",
+    note: "実務案件のため公開リンクはありません。",
+  },
+  {
+    title: "ポータルサイト開発・運用",
+    summary:
+      "Vue.jsによるSPA開発に参加。Atomic Designを用いたコンポーネント設計から、テスト、運用保守まで継続して担当しました。",
+    tags: ["Vue.js", "JavaScript", "Atomic Design", "SPA"],
+    accent: "#a48b82",
+    demo: null,
+    source: null,
+    category: "professional",
+    note: "実務案件のため公開リンクはありません。",
   },
 ] as const satisfies readonly Project[];
 
@@ -45,6 +94,7 @@ export const bookshelfProjects = [
     tags: ["Next.js", "MDX", "TypeScript", "Vercel"],
     accent: "#a78762",
     demo: null,
+    category: "personal",
   },
   {
     title: "Pattern shelf",
@@ -53,6 +103,7 @@ export const bookshelfProjects = [
     tags: ["React", "Storybook", "CSS", "Vitest"],
     accent: "#8b9d83",
     demo: null,
+    category: "personal",
   },
   {
     title: "Archive note",
@@ -61,6 +112,7 @@ export const bookshelfProjects = [
     tags: ["Astro", "Content Collections", "Cloudflare", "Playwright"],
     accent: "#9b9aae",
     demo: null,
+    category: "personal",
   },
 ] as const satisfies readonly Project[];
 
@@ -72,6 +124,7 @@ export const corkboardProjects = [
     tags: ["React", "dnd-kit", "TypeScript", "Supabase"],
     accent: "#bf9d6f",
     demo: null,
+    category: "personal",
   },
   {
     title: "Idea threads",
@@ -80,6 +133,7 @@ export const corkboardProjects = [
     tags: ["Svelte", "SQLite", "Motion", "Vitest"],
     accent: "#b68172",
     demo: null,
+    category: "personal",
   },
   {
     title: "Launch board",
@@ -88,6 +142,7 @@ export const corkboardProjects = [
     tags: ["Next.js", "Prisma", "PostgreSQL", "GitHub Actions"],
     accent: "#879f88",
     demo: null,
+    category: "personal",
   },
 ] as const satisfies readonly Project[];
 
@@ -99,6 +154,7 @@ export const windowProjects = [
     tags: ["Next.js", "Open-Meteo", "TypeScript", "Vercel"],
     accent: "#92aa9a",
     demo: null,
+    category: "personal",
   },
   {
     title: "Weather window",
@@ -107,6 +163,7 @@ export const windowProjects = [
     tags: ["React", "TanStack Query", "CSS", "Playwright"],
     accent: "#8ea7b2",
     demo: null,
+    category: "personal",
   },
   {
     title: "City pulse",
@@ -115,6 +172,7 @@ export const windowProjects = [
     tags: ["MapLibre", "Hono", "Cloudflare D1", "Vitest"],
     accent: "#a8a17e",
     demo: null,
+    category: "personal",
   },
 ] as const satisfies readonly Project[];
 
