@@ -11,36 +11,6 @@ export type Project = {
 
 export const deskProjects = [
   {
-    title: "Totonote",
-    summary:
-      "小規模店舗・個人事業向けの予約受付メモと来店準備管理ツール。予約から事前準備、来店後の記録までをひとつの流れとして整理しました。",
-    tags: ["Next.js", "TypeScript", "Vitest", "Playwright"],
-    accent: "#b98278",
-    demo: "https://totonote-pink.vercel.app",
-    source: "https://github.com/yoosaa/totonote",
-    category: "personal",
-  },
-  {
-    title: "Restocknote",
-    summary:
-      "小規模店舗の入荷・補充を迷わず共有するメモツール。Svelte 5とStorybookで、日常業務に馴染むUIを検証しました。",
-    tags: ["Svelte 5", "Storybook", "Playwright", "Vercel"],
-    accent: "#bd8f67",
-    demo: "https://restocknote.vercel.app",
-    source: "https://github.com/yoosaa/restocknote",
-    category: "personal",
-  },
-  {
-    title: "Decision note",
-    summary:
-      "複数の選択肢を落ち着いて比較するための意思決定メモ。小さく作り、テストとCIを通して公開する一連の流れを実践しました。",
-    tags: ["Next.js", "TypeScript", "Vitest", "GitHub Actions"],
-    accent: "#879bb0",
-    demo: "https://decision-note-eight.vercel.app",
-    source: "https://github.com/yoosaa/decision-note",
-    category: "personal",
-  },
-  {
     title: "配送管理SaaS",
     summary:
       "配送業務向けSaaSの開発に参加。SvelteKit移行、HonoによるBFF実装、PlaywrightのE2E、Storybook整備などを担当しました。",
@@ -83,6 +53,36 @@ export const deskProjects = [
     source: null,
     category: "professional",
     note: "実務案件のため公開リンクはありません。",
+  },
+  {
+    title: "Totonote",
+    summary:
+      "小規模店舗・個人事業向けの予約受付メモと来店準備管理ツール。予約から事前準備、来店後の記録までをひとつの流れとして整理しました。",
+    tags: ["Next.js", "TypeScript", "Vitest", "Playwright"],
+    accent: "#b98278",
+    demo: "https://totonote-pink.vercel.app",
+    source: "https://github.com/yoosaa/totonote",
+    category: "personal",
+  },
+  {
+    title: "Restocknote",
+    summary:
+      "小規模店舗の入荷・補充を迷わず共有するメモツール。Svelte 5とStorybookで、日常業務に馴染むUIを検証しました。",
+    tags: ["Svelte 5", "Storybook", "Playwright", "Vercel"],
+    accent: "#bd8f67",
+    demo: "https://restocknote.vercel.app",
+    source: "https://github.com/yoosaa/restocknote",
+    category: "personal",
+  },
+  {
+    title: "Decision note",
+    summary:
+      "複数の選択肢を落ち着いて比較するための意思決定メモ。小さく作り、テストとCIを通して公開する一連の流れを実践しました。",
+    tags: ["Next.js", "TypeScript", "Vitest", "GitHub Actions"],
+    accent: "#879bb0",
+    demo: "https://decision-note-eight.vercel.app",
+    source: "https://github.com/yoosaa/decision-note",
+    category: "personal",
   },
 ] as const satisfies readonly Project[];
 
