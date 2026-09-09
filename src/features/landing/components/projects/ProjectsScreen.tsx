@@ -33,6 +33,10 @@ export function ProjectsScreen({
     scale: entry === "from-depth" ? 0.78 : 1,
   };
   const hasPublicLink = Boolean(project.demo || project.source);
+  const eyebrow =
+    project.category === "professional"
+      ? "実務で携わったWebプロダクト"
+      : "個人で設計・開発したWebアプリケーション";
 
   return (
     <motion.section
@@ -58,9 +62,7 @@ export function ProjectsScreen({
         transition={{ duration: 0.35 }}
         aria-live="polite"
       >
-        <p className="studio-eyebrow">
-          個人で設計・開発したWebアプリケーション
-        </p>
+        <p className="studio-eyebrow">{eyebrow}</p>
         <h2>{project.title}</h2>
         <p className="project-summary">{project.summary}</p>
 
@@ -108,7 +110,9 @@ export function ProjectsScreen({
             ) : null}
           </div>
         ) : (
-          <p className="project-note">公開リンクは準備中です。</p>
+          <p className="project-note">
+            {project.note ?? "公開リンクは準備中です。"}
+          </p>
         )}
       </motion.article>
     </motion.section>
