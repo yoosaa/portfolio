@@ -46,7 +46,7 @@ export const deskProjects = [
   {
     title: "ポータルサイトSPA開発",
     summary:
-      "Vue.jsによるSPA開発に参加。Atomic Designを用いたコンポーネント設計から、テスト、運用保守まで継続して担当しました。",
+      "Vue.jsによるSPA開発に参加。Atomic Designを用いたコンポーネント設計や設計ドキュメント整備、SPA開発・運用保守を担当しました。",
     tags: ["Vue.js", "JavaScript", "Atomic Design", "SPA"],
     accent: "#a48b82",
     demo: null,
